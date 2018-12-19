@@ -1,0 +1,1001 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning</title>
+<link href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning" property="og:title"/>
+<meta content="It can be useful to have an upper and lower limit on data. These bounds can be used to help identify anomalies and set expectations for what to expect. A bound on observations from a population is called a tolerance interval. A tolerance interval is different from a prediction interval that quantifies the uncertainty for …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Statistical Methods" property="article:section"/>
+<meta content="2018-05-31T19:00:17+00:00" property="article:published_time"/>
+<meta content="2018-05-21T22:03:23+00:00" property="article:modified_time"/>
+<meta content="2018-05-21T22:03:23+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size.png" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size.png" property="og:image:secure_url"/>
+<meta content="1280" property="og:image:width"/>
+<meta content="960" property="og:image:height"/>
+<meta content="Error Bar Plot of Tolerance Interval vs Sample Size" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/feed/" rel="alternate" title="Machine Learning Mastery » A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=5333" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fstatistical-tolerance-intervals-in-machine-learning%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fstatistical-tolerance-intervals-in-machine-learning%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-5333 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-48"> <div class="textwidget"><p>Want help with statistics? <a href="https://machinelearningmastery.lpages.co/smfml-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-5333 post type-post status-publish format-standard has-post-thumbnail hentry category-statistical-methods">
+<header>
+<h1 class="title entry-title">A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2018-06-01T05:00:17+1100">June 1, 2018</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/statistical-methods/" title="View all items in Statistical Methods">Statistical Methods</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-5333 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Gentle+Introduction+to+Statistical+Tolerance+Intervals+in+Machine+Learning&amp;url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>It can be useful to have an upper and lower limit on data.</p>
+<p>These bounds can be used to help identify anomalies and set expectations for what to expect. A bound on observations from a population is called a tolerance interval.</p>
+<p>A tolerance interval is different from a prediction interval that quantifies the uncertainty for a single predicted value. It is also different from a confidence interval that quantifies the uncertainty of a population parameter such as a mean. Instead, a tolerance interval covers a proportion of the population distribution.</p>
+<p>In this tutorial, you will discover statistical tolerance intervals and how to calculate a tolerance interval for Gaussian data.</p>
+<p>After completing this tutorial, you will know:</p>
+<ul>
+<li>That statistical tolerance intervals provide a bounds on observations from a population.</li>
+<li>That a tolerance interval requires that both a coverage proportion and confidence be specified.</li>
+<li>That the tolerance interval for a data sample with a Gaussian distribution can be easily calculated.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_5341" style="width: 650px"><img alt="A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning" class="size-full wp-image-5341" height="480" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/06/A-Gentle-Introduction-to-Statistical-Tolerance-Intervals-in-Machine-Learning.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/06/A-Gentle-Introduction-to-Statistical-Tolerance-Intervals-in-Machine-Learning.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/06/A-Gentle-Introduction-to-Statistical-Tolerance-Intervals-in-Machine-Learning-300x225.jpg 300w" width="640"/><p class="wp-caption-text">A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning<br/>Photo by <a href="https://www.flickr.com/photos/pazhood/436154373/">Paul Hood</a>, some rights reserved.</p></div>
+<h2>Tutorial Overview</h2>
+<p>This tutorial is divided into 4 parts; they are:</p>
+<ol>
+<li>Bounds on Data</li>
+<li>What Are Statistical Tolerance Intervals?</li>
+<li>How to Calculate Tolerance Intervals</li>
+<li>Tolerance Interval for Gaussian Distribution</li>
+</ol>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with Statistics for Machine Learning?</h3>
+<p>Take my free 7-day email crash course now (with sample code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/142f75173f72a2%3A164f8be4f346dc/5750943224168448/" style="background: rgb(255, 206, 10); color: rgb(255, 255, 255); text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Download Your FREE Mini-Course</a><script data-config="%7B%7D" data-leadbox="142f75173f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/142f75173f72a2%3A164f8be4f346dc/5750943224168448/" src="https://machinelearningmastery.lpages.co/leadbox-1526328103.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Bounds on Data</h2>
+<p>It is useful to put bounds on data.</p>
+<p>For example, if you have a sample of data from a domain, knowing the upper and lower bound for normal values can be helpful for identifying anomalies or outliers in the data.</p>
+<p>For a process or model that is making predictions, it can be helpful to know the expected range that sensible predictions may take.</p>
+<p>Knowing the common range of values can help with setting expectations and detecting anomalies.</p>
+<p>The range of common values for data is called a tolerance interval.</p>
+<h2>What Are Statistical Tolerance Intervals?</h2>
+<p>The tolerance interval is a bound on an estimate of the proportion of data in a population.</p>
+<blockquote><p>A statistical tolerance interval [contains] a specified proportion of the units from the sampled population or process.</p></blockquote>
+<p>— Page 3, <a href="http://amzn.to/2G8w3IL">Statistical Intervals: A Guide for Practitioners and Researchers</a>, 2017.</p>
+<p>The interval is limited by the sampling error and by the variance of the population distribution. Given the law of large numbers, as the sample size is increased, the probabilities will better match the underlying population distribution.</p>
+<p>Below is an example of a stated tolerance interval:</p>
+<p><em>The range from x to y covers 95% of the data with a confidence of 99%.</em></p>
+<p>If the data is Gaussian, the interval can be expressed in the context of the mean value; for example:</p>
+<p><em>x +/- y covers 95% of the data with a confidence of 99%.</em></p>
+<p>We refer to these intervals as statistical tolerance intervals, to differentiate them from tolerance intervals in engineering that describe limits of acceptability, such as for a design or of a material. Generally, we will describe them as simply “tolerance intervals” for convenience.</p>
+<p>A tolerance interval is defined in terms of two quantities:</p>
+<ul>
+<li><strong>Coverage</strong>: The proportion of the population covered by the interval.</li>
+<li><strong>Confidence</strong>: The probabilistic confidence that the interval covers the proportion of the population.</li>
+</ul>
+<blockquote><p>The tolerance interval is constructed from data using two coefficients, the coverage and the tolerance coefficient. The coverage is the proportion of the population (p) that the interval is supposed to contain. The tolerance coefficient is the degree of confidence with which the interval reaches the specified coverage. A tolerance interval with coverage of 95% and a tolerance coefficient of 90% will contain 95% of the population distribution with a confidence of 90%.</p></blockquote>
+<p>— Page 175, <a href="http://amzn.to/2GmeuVM">Statistics for Environmental Engineers</a>, Second Edition, 2002.</p>
+<h2>How to Calculate Tolerance Intervals</h2>
+<p>The size of a tolerance interval is proportional to the size of the data sample from the population and the variance of the population.</p>
+<p>There are two main methods for calculating tolerance intervals depending on the distribution of data: parametric and nonparametric methods.</p>
+<ul>
+<li><strong>Parametric Tolerance Interval</strong>: Use knowledge of the population distribution in specifying both the coverage and confidence. Often used to refer to a Gaussian distribution.</li>
+<li><strong>Nonparametric Tolerance Interval</strong>: Use rank statistics to estimate the coverage and confidence, often resulting less precision (wider intervals) given the lack of information about the distribution.</li>
+</ul>
+<p>Tolerance intervals are relatively straightforward to calculate for a sample of independent observations drawn from a Gaussian distribution. We will demonstrate this calculation in the next section.</p>
+<h2>Tolerance Interval for Gaussian Distribution</h2>
+<p>In this section, we will work through an example of calculating the tolerance intervals on a data sample.</p>
+<p>First, let’s define our data sample. We will create a sample of 100 observations drawn from a Gaussian distribution with a mean of 50 and a standard deviation of 5.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08c2874330847" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# generate dataset
+data = 5 * randn(100) + 50</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08c2874330847-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08c2874330847-2">2</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08c2874330847-1"><span class="crayon-p"># generate dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08c2874330847-2"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">5</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e">randn</span><span class="crayon-sy">(</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-cn">50</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>During the example, we will assume that we are unaware of the true population mean and standard deviation, and that these values must be estimated.</p>
+<p>Because the population parameters have to be estimated, there is additional uncertainty. For example, for a 95% coverage, we could use 1.96 (or 2) standard deviations from the estimated mean as the tolerance interval. We must estimate the mean and standard deviation from the sample and take this uncertainty into account, therefore the calculation of the interval is slightly more complex.</p>
+<p>Next, we must specify the number of degrees of freedom. This will be used in the calculation of critical values and in the calculation of the interval. Specifically, it is used in the calculation of the standard deviation.</p>
+<p>Remember that the degrees of freedom are the number of values in the calculation that can vary. Here, we have 100 observations, therefore 100 degrees of freedom. We do not know the standard deviation, therefore it must be estimated using the mean. This means our degrees of freedom will be (N – 1) or 99.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08cc956037064" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# specify degrees of freedom
+n = len(data)
+dof = n - 1</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08cc956037064-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08cc956037064-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08cc956037064-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08cc956037064-1"><span class="crayon-p"># specify degrees of freedom</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08cc956037064-2"><span class="crayon-v">n</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08cc956037064-3"><span class="crayon-v">dof</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">n</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-cn">1</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>Next, we must specify the proportional coverage of the data. In this example, we are interested in the middle 95% of the data. The proportion is 95. We must shift this proportion so that it covers the middle 95%, that is from 2.5th percentile to the 97.5th percentile.</p>
+<p>We know that the critical value for 95% is 1.96 given that we use it so often; nevertheless, we can calculate it directly in Python given the percentage 2.5% of the inverse survival function. This can be calculated using the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html">norm.isf() SciPy function</a>.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08cf459486003" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# specify data coverage
+prop = 0.95
+prop_inv = (1.0 - prop) / 2.0
+gauss_critical = norm.isf(prop_inv)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08cf459486003-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08cf459486003-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08cf459486003-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08cf459486003-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08cf459486003-1"><span class="crayon-p"># specify data coverage</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08cf459486003-2"><span class="crayon-v">prop</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.95</span></div><div class="crayon-line" id="crayon-5c0c9affe08cf459486003-3"><span class="crayon-v">prop_inv</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1.0</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-v">prop</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-cn">2.0</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08cf459486003-4"><span class="crayon-v">gauss_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">norm</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">prop_inv</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>Next, we need to calculate the confidence of the coverage. We can do this by retrieving the critical value from the Chi Squared distribution for the given number of degrees of freedom and desired probability. We can use the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html">chi2.isf() SciPy function</a>.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d0440734214" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# specify confidence
+prob = 0.99
+chi_critical = chi2.isf(q=prob, df=dof)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d0440734214-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d0440734214-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08d0440734214-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d0440734214-1"><span class="crayon-p"># specify confidence</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d0440734214-2"><span class="crayon-v">prob</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.99</span></div><div class="crayon-line" id="crayon-5c0c9affe08d0440734214-3"><span class="crayon-v">chi_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">chi2</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">q</span><span class="crayon-o">=</span><span class="crayon-v">prob</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-o">=</span><span class="crayon-v">dof</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>We now have all of the pieces to calculate the Gaussian tolerance interval. The calculation is as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d2529248348" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+interval = sqrt((dof * (1 + (1/n)) * gauss_critical^2) / chi_critical)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d2529248348-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d2529248348-1"><span class="crayon-v">interval</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-v">gauss_critical</span><span class="crayon-o">^</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>Where <em>dof</em> is the number of degrees of freedom, <em>n</em> is the size of the data sample, <em>gauss_critical</em> is the critical value, such as 1.96 for 95% coverage of the population, and <em>chi_critical</em> is the Chi Squared critical value for the desired confidence and degrees of freedom.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d4193208341" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+interval = sqrt((dof * (1 + (1/n)) * gauss_critical**2) / chi_critical)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d4193208341-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d4193208341-1"><span class="crayon-v">interval</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e ">gauss_critical*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>We can tie all of this together and calculate the Gaussian tolerance interval for our data sample.</p>
+<p>The complete example is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d5762564023" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# parametric tolerance interval
+from numpy.random import seed
+from numpy.random import randn
+from numpy import mean
+from numpy import sqrt
+from scipy.stats import chi2
+from scipy.stats import norm
+# seed the random number generator
+seed(1)
+# generate dataset
+data = 5 * randn(100) + 50
+# specify degrees of freedom
+n = len(data)
+dof = n - 1
+# specify data coverage
+prop = 0.95
+prop_inv = (1.0 - prop) / 2.0
+gauss_critical = norm.isf(prop_inv)
+print('Gaussian critical value: %.3f (coverage=%d%%)' % (gauss_critical, prop*100))
+# specify confidence
+prob = 0.99
+chi_critical = chi2.isf(q=prob, df=dof)
+print('Chi-Squared critical value: %.3f (prob=%d%%, dof=%d)' % (chi_critical, prob*100, dof))
+# tolerance
+interval = sqrt((dof * (1 + (1/n)) * gauss_critical**2) / chi_critical)
+print('Tolerance Interval: %.3f' % interval)
+# summarize
+data_mean = mean(data)
+lower, upper = data_mean-interval, data_mean+interval
+print('%.2f to %.2f covers %d%% of data with a confidence of %d%%' % (lower, upper, prop*100, prob*100))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-4">4</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-6">6</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-8">8</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-10">10</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-12">12</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-14">14</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-16">16</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-18">18</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-20">20</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-22">22</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-24">24</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-26">26</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-28">28</div><div class="crayon-num" data-line="crayon-5c0c9affe08d5762564023-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d5762564023-30">30</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-1"><span class="crayon-p"># parametric tolerance interval</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-2"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">seed</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-3"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">randn</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-4"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">mean</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-5"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">sqrt</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-6"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-e">chi2</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-7"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-v">norm</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-8"><span class="crayon-p"># seed the random number generator</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-9"><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-10"><span class="crayon-p"># generate dataset</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-11"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">5</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e">randn</span><span class="crayon-sy">(</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-cn">50</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-12"><span class="crayon-p"># specify degrees of freedom</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-13"><span class="crayon-v">n</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-14"><span class="crayon-v">dof</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">n</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-cn">1</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-15"><span class="crayon-p"># specify data coverage</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-16"><span class="crayon-v">prop</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.95</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-17"><span class="crayon-v">prop_inv</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1.0</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-v">prop</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-cn">2.0</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-18"><span class="crayon-v">gauss_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">norm</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">prop_inv</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-19"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Gaussian critical value: %.3f (coverage=%d%%)'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">gauss_critical</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e ">prop*</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-20"><span class="crayon-p"># specify confidence</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-21"><span class="crayon-v">prob</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.99</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-22"><span class="crayon-v">chi_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">chi2</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">q</span><span class="crayon-o">=</span><span class="crayon-v">prob</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-o">=</span><span class="crayon-v">dof</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-23"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Chi-Squared critical value: %.3f (prob=%d%%, dof=%d)'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">chi_critical</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e ">prob*</span><span class="crayon-cn">100</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">dof</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-24"><span class="crayon-p"># tolerance</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-25"><span class="crayon-v">interval</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e ">gauss_critical*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-26"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Tolerance Interval: %.3f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-v">interval</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-27"><span class="crayon-p"># summarize</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-28"><span class="crayon-v">data_mean</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">mean</span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08d5762564023-29"><span class="crayon-v">lower</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">upper</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">data_mean</span><span class="crayon-o">-</span><span class="crayon-v">interval</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">data_mean</span><span class="crayon-o">+</span><span class="crayon-e">interval</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d5762564023-30"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'%.2f to %.2f covers %d%% of data with a confidence of %d%%'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">lower</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">upper</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e ">prop*</span><span class="crayon-cn">100</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e ">prob*</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0016 seconds] -->
+<p>Running the example first calculates and prints the relevant critical values for the Gaussian and Chi Squared distributions. The tolerance is printed, then presented correctly.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d7862294869" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Gaussian critical value: 1.960 (coverage=95%)
+Chi-Squared critical value: 69.230 (prob=99%, dof=99)
+Tolerance Interval: 2.355
+47.95 to 52.66 covers 95% of data with a confidence of 99%</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d7862294869-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d7862294869-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08d7862294869-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d7862294869-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d7862294869-1">Gaussian critical value: 1.960 (coverage=95%)</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d7862294869-2">Chi-Squared critical value: 69.230 (prob=99%, dof=99)</div><div class="crayon-line" id="crayon-5c0c9affe08d7862294869-3">Tolerance Interval: 2.355</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d7862294869-4">47.95 to 52.66 covers 95% of data with a confidence of 99%</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>It can also be helpful to demonstrate how the tolerance interval will decrease (become more precise) as the size of the sample is increased.</p>
+<p>The example below demonstrates this by calculating the tolerance interval for different sample sizes for the same small contrived problem.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe08d9355290309" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# plot tolerance interval vs sample size
+from numpy.random import seed
+from numpy.random import randn
+from numpy import sqrt
+from scipy.stats import chi2
+from scipy.stats import norm
+from matplotlib import pyplot
+# seed the random number generator
+seed(1)
+# sample sizes
+sizes = range(5,15)
+for n in sizes:
+	# generate dataset
+	data = 5 * randn(n) + 50
+	# calculate degrees of freedom
+	dof = n - 1
+	# specify data coverage
+	prop = 0.95
+	prop_inv = (1.0 - prop) / 2.0
+	gauss_critical = norm.isf(prop_inv)
+	# specify confidence
+	prob = 0.99
+	chi_critical = chi2.isf(q=prob, df=dof)
+	# tolerance
+	tol = sqrt((dof * (1 + (1/n)) * gauss_critical**2) / chi_critical)
+	# plot
+	pyplot.errorbar(n, 50, yerr=tol, color='blue', fmt='o')
+# plot results
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-2">2</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-4">4</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-6">6</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-8">8</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-10">10</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-12">12</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-14">14</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-16">16</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-18">18</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-20">20</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-22">22</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-24">24</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-26">26</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9affe08d9355290309-28">28</div><div class="crayon-num" data-line="crayon-5c0c9affe08d9355290309-29">29</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-1"><span class="crayon-p"># plot tolerance interval vs sample size</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-2"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">seed</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-3"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">randn</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-4"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">sqrt</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-5"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-e">chi2</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-6"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-e">norm</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-7"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-v">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-8"><span class="crayon-p"># seed the random number generator</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-9"><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-10"><span class="crayon-p"># sample sizes</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-11"><span class="crayon-v">sizes</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">5</span><span class="crayon-sy">,</span><span class="crayon-cn">15</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-12"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">n</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">sizes</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-13"><span class="crayon-h"> </span><span class="crayon-p"># generate dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-14"><span class="crayon-h"> </span><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">5</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e">randn</span><span class="crayon-sy">(</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-cn">50</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-15"><span class="crayon-h"> </span><span class="crayon-p"># calculate degrees of freedom</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-16"><span class="crayon-h"> </span><span class="crayon-v">dof</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">n</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-cn">1</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-17"><span class="crayon-h"> </span><span class="crayon-p"># specify data coverage</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-18"><span class="crayon-h"> </span><span class="crayon-v">prop</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.95</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-19"><span class="crayon-h"> </span><span class="crayon-v">prop_inv</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1.0</span><span class="crayon-h"> </span><span class="crayon-o">-</span><span class="crayon-h"> </span><span class="crayon-v">prop</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-cn">2.0</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-20"><span class="crayon-h"> </span><span class="crayon-v">gauss_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">norm</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">prop_inv</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-21"><span class="crayon-h"> </span><span class="crayon-p"># specify confidence</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-22"><span class="crayon-h"> </span><span class="crayon-v">prob</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.99</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-23"><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">chi2</span><span class="crayon-sy">.</span><span class="crayon-e">isf</span><span class="crayon-sy">(</span><span class="crayon-v">q</span><span class="crayon-o">=</span><span class="crayon-v">prob</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-o">=</span><span class="crayon-v">dof</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-24"><span class="crayon-h"> </span><span class="crayon-p"># tolerance</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-25"><span class="crayon-h"> </span><span class="crayon-v">tol</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e ">gauss_critical*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-26"><span class="crayon-h"> </span><span class="crayon-p"># plot</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-27"><span class="crayon-h"> </span><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">errorbar</span><span class="crayon-sy">(</span><span class="crayon-v">n</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">50</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yerr</span><span class="crayon-o">=</span><span class="crayon-v">tol</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">color</span><span class="crayon-o">=</span><span class="crayon-s">'blue'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">fmt</span><span class="crayon-o">=</span><span class="crayon-s">'o'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9affe08d9355290309-28"><span class="crayon-p"># plot results</span></div><div class="crayon-line" id="crayon-5c0c9affe08d9355290309-29"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0014 seconds] -->
+<p>Running the example creates a plot showing the tolerance interval around the true population mean.</p>
+<p>We can see that the interval becomes smaller (more precise) as the sample size is increased from 5 to 15 examples.</p>
+<div class="wp-caption aligncenter" id="attachment_5340" style="width: 1034px"><img alt="Error Bar Plot of Tolerance Interval vs Sample Size" class="size-large wp-image-5340" height="768" sizes="(max-width: 1024px) 100vw, 1024px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size-1024x768.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size-1024x768.png 1024w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size-768x576.png 768w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Error-Bar-Plot-of-Tolerance-Interval-vs-Sample-Size.png 1280w" width="1024"/><p class="wp-caption-text">Error Bar Plot of Tolerance Interval vs Sample Size</p></div>
+<h2>Extensions</h2>
+<p>This section lists some ideas for extending the tutorial that you may wish to explore.</p>
+<ul>
+<li>List 3 cases where a tolerance interval could be used in a machine learning project.</li>
+<li>Locate a dataset with a Gaussian variable and calculate tolerance intervals for it.</li>
+<li>Research and describe one method for calculating a nonparametric tolerance interval.</li>
+</ul>
+<p>If you explore any of these extensions, I’d love to know.</p>
+<h2>Further Reading</h2>
+<p>This section provides more resources on the topic if you are looking to go deeper.</p>
+<h3>Books</h3>
+<ul>
+<li><a href="http://amzn.to/2oQW6No">Understanding The New Statistics: Effect Sizes, Confidence Intervals, and Meta-Analysis</a>, 2017.</li>
+<li><a href="http://amzn.to/2G8w3IL">Statistical Intervals: A Guide for Practitioners and Researchers</a>, 2017.</li>
+</ul>
+<h3>API</h3>
+<ul>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html">scipy.stats.norm() API</a></li>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html">scipy.stats.chi2() API</a></li>
+<li><a href="https://matplotlib.org/2.1.0/api/_as_gen/matplotlib.pyplot.errorbar.html">matplotlib.pyplot.errorbar() API</a></li>
+</ul>
+<h3>Articles</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Tolerance_interval">Tolerance interval on Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule">68–95–99.7 rule on Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Percentile">Percentile on Wikipedia</a></li>
+<li><a href="http://www.itl.nist.gov/div898/handbook/prc/section2/prc263.htm">Tolerance intervals for a normal distribution</a></li>
+</ul>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered statistical tolerance intervals and how to calculate a tolerance interval for Gaussian data.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>That statistical tolerance intervals provide a bounds on observations from a population.</li>
+<li>That a tolerance interval requires that both a coverage proportion and confidence be specified.</li>
+<li>That the tolerance interval for a data sample with a Gaussian distribution can be easily calculated.</li>
+</ul>
+<p>Do you have any questions?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-49"> <div class="textwidget"><p></p><center><div class="woo-sc-hr"></div>
+<h2>Get a Handle on Statistics for Machine Learning!</h2>
+<p><a href="/statistics_for_machine_learning/"><img align="left" alt="Statistical Methods for Machine Learning" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop a working understanding of statistics</h4>
+<p>…by writing lines of code in python</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/statistics_for_machine_learning/">Statistical Methods for Machine Learning</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>Hypothesis Tests, Correlation, Nonparametric Stats, Resampling</em>, and much more…</p>
+<h4>Discover how to Transform Data into Knowledge</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/statistics_for_machine_learning/">Click to learn more</a>.<br/>
+</p><div class="woo-sc-hr"></div></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-5333 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Gentle+Introduction+to+Statistical+Tolerance+Intervals+in+Machine+Learning&amp;url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/prediction-intervals-for-machine-learning/" rel="prev"><i class="fa fa-angle-left"></i> Prediction Intervals for Machine Learning</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/estimation-statistics-for-machine-learning/" rel="next">A Gentle Introduction to Estimation Statistics for Machine Learning <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">6 Responses to <em>A Gentle Introduction to Statistical Tolerance Intervals in Machine Learning</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-439645">
+<div class="comment-container" id="li-comment-439645">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4cacef8937b1a3db309c7ba456c6f66a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4cacef8937b1a3db309c7ba456c6f66a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Anthony The Koala</span>
+<span class="date">June 3, 2018 at 9:23 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-439645" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Dear Dr Jason,<br/>
+(1)<br/>
+Could you please refer me to where the formula for the interval in line 25 of the first example code.came from:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe1587906361012" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+interval = sqrt((dof * (1 + (1/n)) * gauss_critical**2) / chi_critical)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe1587906361012-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe1587906361012-1"><span class="crayon-v">interval</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e ">gauss_critical*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>(2) Related to (1) is the output:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe1589791439911" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+47.95 to 52.66 covers 95% of data with a confidence of 99%</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe1589791439911-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe1589791439911-1"><span class="crayon-cn">47.95</span><span class="crayon-h"> </span><span class="crayon-st">to</span><span class="crayon-h"> </span><span class="crayon-cn">52.66</span><span class="crayon-h"> </span><span class="crayon-i">covers</span><span class="crayon-h"> </span><span class="crayon-cn">95</span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-e">of </span><span class="crayon-e">data </span><span class="crayon-i">with</span><span class="crayon-h"> </span><span class="crayon-i">a</span><span class="crayon-h"> </span><span class="crayon-e">confidence </span><span class="crayon-i">of</span><span class="crayon-h"> </span><span class="crayon-cn">99</span><span class="crayon-o">%</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>My question is this:<br/>
+I understand the idea of the confidence values of mean +- 2*std_dev. That is there is a 95% probability that the mean is within these values.<br/>
+What I don’t understand is the output 95% of data with a confidence of 99%. What is the meaning of 95% with 99% confidence.</p>
+<p>Thank you,<br/>
+Anthony of Sydney</p>
+<div class="reply">
+<a aria-label="Reply to Anthony The Koala" class="comment-reply-link" href="#comment-439645" onclick='return addComment.moveForm( "comment-439645", "439645", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-439691">
+<div class="comment-container" id="li-comment-439691">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 4, 2018 at 6:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-439691" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Equations are based on the NIST handbook:<br/>
+<a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc263.htm" rel="nofollow">https://www.itl.nist.gov/div898/handbook/prc/section2/prc263.htm</a></p>
+<p>As descried in the post, with tolerance we have both a range of data (coverage) and a likelihood (confidence) of that range.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439691" onclick='return addComment.moveForm( "comment-439691", "439691", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-439718">
+<div class="comment-container" id="li-comment-439718">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4cacef8937b1a3db309c7ba456c6f66a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4cacef8937b1a3db309c7ba456c6f66a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Anthony The Koala</span>
+<span class="date">June 4, 2018 at 1:40 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-439718" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Dear Dr Jason,<br/>
+Thank you for the reference. It appears that the NIST site did not want to load the page, so I went to the archive.org site at <a href="https://web.archive.org/web/20171202152145/https://www.itl.nist.gov/div898/handbook/prc/section2/prc263.htm" rel="nofollow">https://web.archive.org/web/20171202152145/https://www.itl.nist.gov/div898/handbook/prc/section2/prc263.htm</a> .</p>
+<p>The code in line 25,</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9affe1513186831077" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+tol = sqrt((dof * (1 + (1/n)) * gauss_critical**2) / chi_critical)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9affe1513186831077-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9affe1513186831077-1"><span class="crayon-v">tol</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e ">dof *</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">/</span><span class="crayon-v">n</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-e ">gauss_critical*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">chi_critical</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>corresponds to the forumula k2 on the page.</p>
+<p>The distinction between a confidence interval and a tolerance interval is “Confidence limits are limits within which we expect a given population parameter, such as the mean, to lie. Statistical tolerance limits are limits within which we expect a stated proportion of the population to lie.” 2nd para of the webpage.</p>
+<p>The key distinction is limits within a population parameter (eg mean) and limits of a stated proportion of a popultaion.</p>
+<p>Thank you,<br/>
+Anthony of Sydney</p>
+<div class="reply">
+<a aria-label="Reply to Anthony The Koala" class="comment-reply-link" href="#comment-439718" onclick='return addComment.moveForm( "comment-439718", "439718", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-439729">
+<div class="comment-container" id="li-comment-439729">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 4, 2018 at 2:38 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-439729" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Agreed.</p>
+<p>More here:<br/>
+<a href="https://machinelearningmastery.com/faq/single-faq/what-is-the-difference-between-tolerance-confidence-and-prediction-intervals" rel="nofollow">https://machinelearningmastery.com/faq/single-faq/what-is-the-difference-between-tolerance-confidence-and-prediction-intervals</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439729" onclick='return addComment.moveForm( "comment-439729", "439729", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-449202">
+<div class="comment-container" id="li-comment-449202">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/25a7c103d20127690542c5c76cd0e347?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/25a7c103d20127690542c5c76cd0e347?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kostas Theodor</span>
+<span class="date">September 18, 2018 at 7:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-449202" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Isn’t a multiplication by the sample standard deviation needed in the formula for interval calculation?<br/>
+“The size of a tolerance interval is (reversely ?) proportional to the size of the data sample from the population and proportional the variance of the population.”</p>
+<div class="reply">
+<a aria-label="Reply to Kostas Theodor" class="comment-reply-link" href="#comment-449202" onclick='return addComment.moveForm( "comment-449202", "449202", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-449219">
+<div class="comment-container" id="li-comment-449219">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 18, 2018 at 2:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/statistical-tolerance-intervals-in-machine-learning/#comment-449219" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>There are many ways to calculate an interval. A simple parametric method is to use a factor of the standard deviation.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449219" onclick='return addComment.moveForm( "comment-449219", "449219", "respond", "5333" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/statistical-tolerance-intervals-in-machine-learning/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="5333"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="04aef51424"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="82"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-50"> <div class="textwidget"><p></p><center><br/>
+<strong>Statistics for Machine Learning</strong><br/>
+Understand statistics by writing code in Python.
+<p><a href="/statistics_for_machine_learning/">Click to Get Started Now!</a><br/>
+<a href="/statistics_for_machine_learning/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1803 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Boosting and AdaBoost for Machine Learning</title>
+<link href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Boosting and AdaBoost for Machine Learning" property="og:title"/>
+<meta content="Boosting is an ensemble technique that attempts to create a strong classifier from a number of weak classifiers. In this post you will discover the AdaBoost Ensemble method for machine learning. After reading this post, you will know: What the boosting ensemble method is and generally how it works. How to learn to boost decision …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Understand Machine Learning Algorithms" property="article:section"/>
+<meta content="2016-04-24T19:00:27+00:00" property="article:published_time"/>
+<meta content="2016-09-22T00:55:05+00:00" property="article:modified_time"/>
+<meta content="2016-09-22T00:55:05+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Boosting-and-AdaBoost-for-Machine-Learning.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Boosting-and-AdaBoost-for-Machine-Learning.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="Boosting and AdaBoost for Machine Learning" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/feed/" rel="alternate" title="Machine Learning Mastery » Boosting and AdaBoost for Machine Learning Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=2394" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fboosting-and-adaboost-for-machine-learning%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fboosting-and-adaboost-for-machine-learning%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-2394 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-12"> <div class="textwidget"><p>Want help with algorithms? <a href="https://machinelearningmastery.leadpages.co/machine-learning-algorithms-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-2394 post type-post status-publish format-standard has-post-thumbnail hentry category-machine-learning-algorithms">
+<header>
+<h1 class="title entry-title">Boosting and AdaBoost for Machine Learning</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-04-25T05:00:27+1100">April 25, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/" title="View all items in Understand Machine Learning Algorithms">Understand Machine Learning Algorithms</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2394 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Boosting+and+AdaBoost+for+Machine+Learning&amp;url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Boosting is an ensemble technique that attempts to create a strong classifier from a number of weak classifiers.</p>
+<p>In this post you will discover the AdaBoost Ensemble method for machine learning. After reading this post, you will know:</p>
+<ul>
+<li>What the boosting ensemble method is and generally how it works.</li>
+<li>How to learn to boost decision trees using the AdaBoost algorithm.</li>
+<li>How to make predictions using the learned AdaBoost model.</li>
+<li>How to best prepare your data for use with the AdaBoost algorithm</li>
+</ul>
+<p>This post was written for developers and assumes no background in statistics or mathematics. The post focuses on how the algorithm works and how to use it for predictive modeling problems. If you have any questions, leave a comment and I will do my best to answer.</p>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_2395" style="width: 650px"><img alt="Boosting and AdaBoost for Machine Learning" class="size-full wp-image-2395" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Boosting-and-AdaBoost-for-Machine-Learning.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Boosting-and-AdaBoost-for-Machine-Learning.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Boosting-and-AdaBoost-for-Machine-Learning-300x200.jpg 300w" width="640"/><p class="wp-caption-text">Boosting and AdaBoost for Machine Learning<br/>Photo by <a href="https://www.flickr.com/photos/katiethebeau/8917329233/">KatieThebeau</a>, some rights reserved.</p></div>
+<h2>Boosting Ensemble Method</h2>
+<p><a href="https://en.wikipedia.org/wiki/Boosting_(machine_learning)">Boosting</a> is a general ensemble method that creates a strong classifier from a number of weak classifiers.</p>
+<p>This is done by building a model from the training data, then creating a second model that attempts to correct the errors from the first model. Models are added until the training set is predicted perfectly or a maximum number of models are added.</p>
+<p><a href="https://en.wikipedia.org/wiki/AdaBoost">AdaBoost</a> was the first really successful boosting algorithm developed for binary classification. It is the best starting point for understanding boosting.</p>
+<p>Modern boosting methods build on AdaBoost, most notably <a href="https://en.wikipedia.org/wiki/Gradient_boosting">stochastic gradient boosting machines</a>.</p>
+<h2 style="text-align: center;">Get your FREE Algorithms Mind Map</h2>
+<div class="wp-caption alignleft" id="attachment_2021" style="width: 395px"><img alt="Machine Learning Algorithms Mind Map" class="wp-image-2021 size-full" height="248" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2013/11/Machine-Learning-Algorithms-Mindmap-Sample.png" width="385"/><p class="wp-caption-text">Sample of the handy machine learning algorithms mind map.</p></div>
+<p>I've created a handy mind map of 60+ algorithms organized by type.</p>
+<p>Download it, print it and use it. </p>
+<center><a href="https://machinelearningmastery.leadpages.co/leadbox/147764973f72a2%3A164f8be4f346dc/5752754626625536/" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Download For Free</a>
+<p><br/>Also get exclusive access to the machine learning algorithms email mini-course.</p>
+</center>
+<p> </p>
+<p> </p>
+<h2>Learning An AdaBoost Model From Data</h2>
+<p>AdaBoost is best used to boost the performance of decision trees on binary classification problems.</p>
+<p>AdaBoost was originally called AdaBoost.M1 by the authors of the technique Freund and Schapire. More recently it may be referred to as discrete AdaBoost because it is used for classification rather than regression.</p>
+<p>AdaBoost can be used to boost the performance of any machine learning algorithm. It is best used with weak learners. These are models that achieve accuracy just above random chance on a classification problem.</p>
+<p>The most suited and therefore most common algorithm used with AdaBoost are decision trees with one level. Because these trees are so short and only contain one decision for classification, they are often called decision stumps.</p>
+<p>Each instance in the training dataset is weighted. The initial weight is set to:</p>
+<p style="text-align: center;">weight(xi) = 1/n</p>
+<p>Where xi is the i’th training instance and n is the number of training instances.</p>
+<h2>How To Train One Model</h2>
+<p>A weak classifier (decision stump) is prepared on the training data using the weighted samples. Only binary (two-class) classification problems are supported, so each decision stump makes one decision on one input variable and outputs a +1.0 or -1.0 value for the first or second class value.</p>
+<p>The misclassification rate is calculated for the trained model. Traditionally, this is calculated as:</p>
+<p style="text-align: center;">error = (correct – N) / N</p>
+<p>Where error is the misclassification rate, correct are the number of training instance predicted correctly by the model and N is the total number of training instances. For example, if the model predicted 78 of 100 training instances correctly the error or misclassification rate would be (78-100)/100 or 0.22.</p>
+<p>This is modified to use the weighting of the training instances:</p>
+<p style="text-align: center;">error = sum(w(i) * terror(i)) / sum(w)</p>
+<p>Which is the weighted sum of the misclassification rate, where w is the weight for training instance i and terror is the prediction error for training instance i which is 1 if misclassified and 0 if correctly classified.</p>
+<p>For example, if we had 3 training instances with the weights 0.01, 0.5 and 0.2. The predicted values were -1, -1 and -1, and the actual output variables in the instances were -1, 1 and -1, then the terrors would be 0, 1, and 0. The misclassification rate would be calculated as:</p>
+<p style="text-align: center;">error = (0.01*0 + 0.5*1 + 0.2*0) / (0.01 + 0.5 + 0.2)</p>
+<p style="text-align: center;">or</p>
+<p style="text-align: center;">error = 0.704</p>
+<p>A stage value is calculated for the trained model which provides a weighting for any predictions that the model makes. The stage value for a trained model is calculated as follows:</p>
+<p style="text-align: center;">stage = ln((1-error) / error)</p>
+<p>Where stage is the stage value used to weight predictions from the model, ln() is the natural logarithm and error is the misclassification error for the model. The effect of the stage weight is that more accurate models have more weight or contribution to the final prediction.</p>
+<p>The training weights are updated giving more weight to incorrectly predicted instances, and less weight to correctly predicted instances.</p>
+<p>For example, the weight of one training instance (w) is updated using:</p>
+<p style="text-align: center;">w = w * exp(stage * terror)</p>
+<p>Where w is the weight for a specific training instance, exp() is the numerical constant e or Euler’s number raised to a power, stage is the misclassification rate for the weak classifier and terror is the error the weak classifier made predicting the output variable for the training instance, evaluated as:</p>
+<p style="text-align: center;">terror = 0 if(y == p), otherwise 1</p>
+<p>Where y is the output variable for the training instance and p is the prediction from the weak learner.</p>
+<p>This has the effect of not changing the weight if the training instance was classified correctly and making the weight slightly larger if the weak learner misclassified the instance.</p>
+<h2>AdaBoost Ensemble</h2>
+<p>Weak models are added sequentially, trained using the weighted training data.</p>
+<p>The process continues until a pre-set number of weak learners have been created (a user parameter) or no further improvement can be made on the training dataset.</p>
+<p>Once completed, you are left with a pool of weak learners each with a stage value.</p>
+<h2>Making Predictions with AdaBoost</h2>
+<p>Predictions are made by calculating the weighted average of the weak classifiers.</p>
+<p>For a new input instance, each weak learner calculates a predicted value as either +1.0 or -1.0. The predicted values are weighted by each weak learners stage value. The prediction for the ensemble model is taken as a the sum of the weighted predictions. If the sum is positive, then the first class is predicted, if negative the second class is predicted.</p>
+<p>For example, 5 weak classifiers may predict the values 1.0, 1.0, -1.0, 1.0, -1.0. From a majority vote, it looks like the model will predict a value of 1.0 or the first class. These same 5 weak classifiers may have the stage values 0.2, 0.5, 0.8, 0.2 and 0.9 respectively. Calculating the weighted sum of these predictions results in an output of -0.8, which would be an ensemble prediction of -1.0 or the second class.</p>
+<h2>Data Preparation for AdaBoost</h2>
+<p>This section lists some heuristics for best preparing your data for AdaBoost.</p>
+<ul>
+<li><strong>Quality Data</strong>: Because the ensemble method continues to attempt to correct misclassifications in the training data, you need to be careful that the training data is of a high-quality.</li>
+<li><strong>Outliers</strong>: Outliers will force the ensemble down the rabbit hole of working hard to correct for cases that are unrealistic. These could be removed from the training dataset.</li>
+<li><strong>Noisy Data</strong>: Noisy data, specifically noise in the output variable can be problematic. If possible, attempt to isolate and clean these from your training dataset.</li>
+</ul>
+<h2>Further Reading</h2>
+<p>Below are some machine learning texts that describe AdaBoost from a machine learning perspective.</p>
+<ul>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/1461471370?tag=inspiredalgor-20">An Introduction to Statistical Learning: with Applications in R</a>, page 321</li>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/0387848576?tag=inspiredalgor-20">The Elements of Statistical Learning: Data Mining, Inference, and Prediction</a>, Chapter 10</li>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/1461468485?tag=inspiredalgor-20">Applied Predictive Modeling</a>, pages 203 amd 389</li>
+</ul>
+<p>Below are some seminal and good overview research articles on the method that may be useful if you are looking to dive deeper into the theoretical underpinnings of the method:</p>
+<ul>
+<li><a href="http://link.springer.com/chapter/10.1007/3-540-59119-2_166#page-1">A decision-theoretic generalization of on-line learning and an application to boosting</a>, 1995</li>
+<li><a href="http://link.springer.com/article/10.1023/A:1007614523901">Improved Boosting Algorithms Using Confidence-rated Predictions</a>, 1999</li>
+<li><a href="http://link.springer.com/chapter/10.1007/978-3-642-41136-6_5">Explaining Adaboost, Chapter from Empirical Inference</a>, 2013</li>
+<li><a href="http://www.site.uottawa.ca/~stan/csi5387/boost-tut-ppr.pdf">A Short Introduction to Boosting</a>, 1999</li>
+</ul>
+<h2>Summary</h2>
+<p>In this post you discovered the Boosting ensemble method for machine learning. You learned about:</p>
+<ul>
+<li>Boosting and how it is a general technique that keeps adding weak learners to correct classification errors.</li>
+<li>AdaBoost as the first successful boosting algorithm for binary classification problems.</li>
+<li>Learning the AdaBoost model by weighting training instances and the weak learners themselves.</li>
+<li>Predicting with AdaBoost by weighting predictions from weak learners.</li>
+<li>Where to look for more theoretical background on the AdaBoost algorithm.</li>
+</ul>
+<p>If you have any questions about this post or the Boosting or the AdaBoost algorithm ask in the comments and I will do my best to answer.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-36"> <div class="textwidget"><p></p><div class="woo-sc-hr"></div><br/>
+<center>
+<h2 style="text-align: center;">Frustrated With Machine Learning Math?</h2>
+<p><a href="/master-machine-learning-algorithms/"><img align="left" alt="Mater Machine Learning Algorithms" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/MasterMachineLearningAlgorithms-small.png" style="border: 0;"/></a></p>
+<h4 style="text-align: center;">See How Algorithms Work in Minutes</h4>
+<p style="text-align: center;">…with just arithmetic and simple examples</p>
+<p style="text-align: center;">Discover how in my new Ebook: <a href="/master-machine-learning-algorithms/">Master Machine Learning Algorithms</a></p>
+<p style="text-align: center;">It covers <strong>explanations</strong> and <strong>examples</strong> of <strong>10 top algorithms</strong>, like:<br/><em>Linear Regression</em>, <em>k-Nearest Neighbors</em>, <em>Support Vector Machines</em> and much more…</p>
+<h4 style="text-align: center;">Finally, Pull Back the Curtain on <br/>Machine Learning Algorithms</h4>
+<p style="text-align: center;">Skip the Academics. Just Results.</p>
+<p style="text-align: center;"><a href="/master-machine-learning-algorithms/">Click to learn more</a>.</p>
+<p></p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2394 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Boosting+and+AdaBoost+for+Machine+Learning&amp;url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/bagging-and-random-forest-ensemble-algorithms-for-machine-learning/" rel="prev"><i class="fa fa-angle-left"></i> Bagging and Random Forest Ensemble Algorithms for Machine Learning</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/question-to-understand-any-machine-learning-algorithm/" rel="next">6 Questions To Understand Any Machine Learning Algorithm <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">67 Responses to <em>Boosting and AdaBoost for Machine Learning</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-358044">
+<div class="comment-container" id="li-comment-358044">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/cc0890e98cb987767840a7496007470b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/cc0890e98cb987767840a7496007470b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://girisagar46.github.io" rel="external nofollow">Sagar Giri</a></span>
+<span class="date">July 26, 2016 at 5:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-358044" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank You! The article was really helpful to understand the AdaBoost Algorithm.<br/>
+In the article, you said, “AdaBoost is best used to boost the performance of decision trees on binary classification problems.” what does that mean? </p>
+<p>Can’t this algorithm be used in non-binary classification problems like “Fruit Recognition System” where training set contains feature matrix and associated name of different fruit. I need to know this for my research project.</p>
+<div class="reply">
+<a aria-label="Reply to Sagar Giri" class="comment-reply-link" href="#comment-358044" onclick='return addComment.moveForm( "comment-358044", "358044", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-358049">
+<div class="comment-container" id="li-comment-358049">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2016 at 6:00 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-358049" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>AdaBoost was designed for binary classification (two output classes) and makes use of decision trees.</p>
+<p>If you think the algorithm can be used on your problem, give it a shot and see if it works.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-358049" onclick='return addComment.moveForm( "comment-358049", "358049", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-358059">
+<div class="comment-container" id="li-comment-358059">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/cc0890e98cb987767840a7496007470b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/cc0890e98cb987767840a7496007470b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://girisagar46.github.io" rel="external nofollow">Sagar Giri</a></span>
+<span class="date">July 26, 2016 at 6:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-358059" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>So, choosing of machine learning algorithm is heuristic? That, I should keep on implementing different algorithms and choose the best one that fits into my problem and gives the best accuracy ?</p>
+<div class="reply">
+<a aria-label="Reply to Sagar Giri" class="comment-reply-link" href="#comment-358059" onclick='return addComment.moveForm( "comment-358059", "358059", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-358067">
+<div class="comment-container" id="li-comment-358067">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2016 at 8:03 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-358067" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Choosing the best algorithm and even the best representation of your problem is problem specific. You must discover the best combination empirically through experimentation.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-358067" onclick='return addComment.moveForm( "comment-358067", "358067", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-361065">
+<div class="comment-container" id="li-comment-361065">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/92997102675dd8d9ac6a7012740e1034?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/92997102675dd8d9ac6a7012740e1034?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jessica</span>
+<span class="date">August 23, 2016 at 2:22 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-361065" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This article is very helpful !<br/>
+I have some questions about adaboost. First, every weak learner or classifier in adaboost is decision tree based, can other algorithms like KNN or SVM be the basic components of the ensemble learning? My second question is, how adaboost algorithm deal with large dynamic sequential dataset such as global weather data or sensor dataset?</p>
+<p>Thank you very much!</p>
+<div class="reply">
+<a aria-label="Reply to Jessica" class="comment-reply-link" href="#comment-361065" onclick='return addComment.moveForm( "comment-361065", "361065", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-361103">
+<div class="comment-container" id="li-comment-361103">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 23, 2016 at 5:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-361103" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jessica. I guess other methods could be used, but traditionally the weak learner is one-level decision trees (decision stumps). A neural net might work if it was “weak”, as in only had one layer and maybe very few neurons (perhaps just one). It might be an interesting experiment, and I bet there is some literature on this if you’d like to check <a href="http://scholar.google.com" rel="nofollow">http://scholar.google.com</a></p>
+<p>I am not familiar with adaboost being used on time series. It may be possible, but I have not seen it. I expect large changes to the method may be required.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-361103" onclick='return addComment.moveForm( "comment-361103", "361103", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-431231">
+<div class="comment-container" id="li-comment-431231">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6053c4e31aee56718be01b9b62c4d549?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6053c4e31aee56718be01b9b62c4d549?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">amar</span>
+<span class="date">March 5, 2018 at 11:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-431231" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hi JESSICA according to your question about the ADABOOST algorithm that is coincidently one of y questions about this algorithm ,and due to the fact you mentionned datasets on global weather data or sensor datasets such as channel of deferent radiometers and meteosats can i ask you are you doing research in the field of meteorology or precipitation and climate estimation from meteosat data ? because thats the field of my research study now and i have the same question about the possibility of use of other weak classifiers such as SVM ANN or instead of DECISION STUMPS , ? , perhaps mr jason BROWNLEE can help us with</p>
+<div class="reply">
+<a aria-label="Reply to amar" class="comment-reply-link" href="#comment-431231" onclick='return addComment.moveForm( "comment-431231", "431231", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-431280">
+<div class="comment-container" id="li-comment-431280">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 6, 2018 at 6:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-431280" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Decision stumps are preferred in adaboost because they are weak learners.</p>
+<p>You could use other weak learners in theory, such as knn with a small sample or small k value.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-431280" onclick='return addComment.moveForm( "comment-431280", "431280", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-366659">
+<div class="comment-container" id="li-comment-366659">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3f009d72559f51e7e454b16e5d0687a1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3f009d72559f51e7e454b16e5d0687a1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://www.google.com" rel="external nofollow">Someone could not pass a college algebra course</a></span>
+<span class="date">October 9, 2016 at 9:04 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-366659" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Shouldn’t the error formula be </p>
+<p>error = (N – correct) / N ?</p>
+<p>Or otherwise you would get a negative misclassification error rate.</p>
+<div class="reply">
+<a aria-label="Reply to Someone could not pass a college algebra course" class="comment-reply-link" href="#comment-366659" onclick='return addComment.moveForm( "comment-366659", "366659", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-384565">
+<div class="comment-container" id="li-comment-384565">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f81df5d9d7cd0956516202159d283479?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f81df5d9d7cd0956516202159d283479?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Niels</span>
+<span class="date">January 27, 2017 at 8:42 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-384565" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Obviously 😉</p>
+<div class="reply">
+<a aria-label="Reply to Niels" class="comment-reply-link" href="#comment-384565" onclick='return addComment.moveForm( "comment-384565", "384565", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-369121">
+<div class="comment-container" id="li-comment-369121">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f5925619f85fddcda3531cd61ed744b3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f5925619f85fddcda3531cd61ed744b3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Prashant Nemade</span>
+<span class="date">November 2, 2016 at 4:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-369121" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, Thank you for the detailed clarification on adaboost algorithm. I have a question on this. How training weights are being used in this adaboost algorithm (meaning does adaboost algorithm repeat observations basis weights while building model or is it being used in some different way)?</p>
+<div class="reply">
+<a aria-label="Reply to Prashant Nemade" class="comment-reply-link" href="#comment-369121" onclick='return addComment.moveForm( "comment-369121", "369121", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-369224">
+<div class="comment-container" id="li-comment-369224">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 3, 2016 at 7:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-369224" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Prashant, the weights are used during the construction of subsequent decision stumps.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-369224" onclick='return addComment.moveForm( "comment-369224", "369224", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-395217">
+<div class="comment-container" id="li-comment-395217">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8908a8f1f6ae23860a2d77a16330042d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8908a8f1f6ae23860a2d77a16330042d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shreejit</span>
+<span class="date">April 3, 2017 at 10:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-395217" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>We would have a bunch of weights and models in the end. How is the final prediction decided for the example?</p>
+<div class="reply">
+<a aria-label="Reply to Shreejit" class="comment-reply-link" href="#comment-395217" onclick='return addComment.moveForm( "comment-395217", "395217", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-395328">
+<div class="comment-container" id="li-comment-395328">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 4, 2017 at 9:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-395328" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>We use the weighted models to make a prediction.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-395328" onclick='return addComment.moveForm( "comment-395328", "395328", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-395990">
+<div class="comment-container" id="li-comment-395990">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ntate Ndaba</span>
+<span class="date">April 10, 2017 at 10:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-395990" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for this Jason. It’s very helpful.</p>
+<div class="reply">
+<a aria-label="Reply to Ntate Ndaba" class="comment-reply-link" href="#comment-395990" onclick='return addComment.moveForm( "comment-395990", "395990", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-396040">
+<div class="comment-container" id="li-comment-396040">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 11, 2017 at 9:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-396040" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You’re welcome, I’m glad to hear it.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-396040" onclick='return addComment.moveForm( "comment-396040", "396040", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-396239">
+<div class="comment-container" id="li-comment-396239">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ntate Ndaba</span>
+<span class="date">April 13, 2017 at 12:41 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-396239" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p> I was wondering if there any rule for alphas (learner weights) in H(x)  = sign(Sum(alpha*h_i(x)) for h_i = 1…n. For example, the sum of alphas must be equal to 1, the value of  each alpha can’t be &gt; 1, etc.</p>
+<div class="reply">
+<a aria-label="Reply to Ntate Ndaba" class="comment-reply-link" href="#comment-396239" onclick='return addComment.moveForm( "comment-396239", "396239", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-396288">
+<div class="comment-container" id="li-comment-396288">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 13, 2017 at 10:02 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-396288" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No that I recall offhand. If you discover something in the literature, let me know.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-396288" onclick='return addComment.moveForm( "comment-396288", "396288", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-396337">
+<div class="comment-container" id="li-comment-396337">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ntate Ndaba</span>
+<span class="date">April 13, 2017 at 6:54 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-396337" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you. Will do.</p>
+<div class="reply">
+<a aria-label="Reply to Ntate Ndaba" class="comment-reply-link" href="#comment-396337" onclick='return addComment.moveForm( "comment-396337", "396337", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-403331">
+<div class="comment-container" id="li-comment-403331">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/dfe3e00ad1be7828fab7ec133f8161fc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/dfe3e00ad1be7828fab7ec133f8161fc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yi</span>
+<span class="date">June 22, 2017 at 12:28 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-403331" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Given the stage = ln((1-error) / error), the stage can be negative value if the error &gt; 0.5. Since the stage will be used as the weight of the model, can it be a negative value?</p>
+<div class="reply">
+<a aria-label="Reply to Yi" class="comment-reply-link" href="#comment-403331" onclick='return addComment.moveForm( "comment-403331", "403331", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-403397">
+<div class="comment-container" id="li-comment-403397">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/dfe3e00ad1be7828fab7ec133f8161fc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/dfe3e00ad1be7828fab7ec133f8161fc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yi</span>
+<span class="date">June 22, 2017 at 10:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-403397" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I guess I found my answer and share it here:</p>
+<p>The stage value can be negative when the error rate &gt; 0.5. In this case, the weight of the weak classifier become nagative, which means we flip its predication so that what the weak classifier says true become false and vice versa. In term of the misclassified data points from the weak classifier, since we flip the sign of the weak classifier, those data points are actually classified correctly. As compensation, we reduce their weight by w*exp(negative value)….</p>
+<div class="reply">
+<a aria-label="Reply to Yi" class="comment-reply-link" href="#comment-403397" onclick='return addComment.moveForm( "comment-403397", "403397", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-403490">
+<div class="comment-container" id="li-comment-403490">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 23, 2017 at 6:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-403490" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Yi.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-403490" onclick='return addComment.moveForm( "comment-403490", "403490", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-404130">
+<div class="comment-container" id="li-comment-404130">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/df93be10af30ad74e271ccc2cb131050?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/df93be10af30ad74e271ccc2cb131050?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Lalit</span>
+<span class="date">June 29, 2017 at 1:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-404130" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi,<br/>
+At first you said :-<br/>
+Each instance in the training dataset is weighted. weight(xi) = 1/n<br/>
+So every instance will have same weight , right ?</p>
+<p>then in example , you said :-<br/>
+“For example, if we had 3 training instances with the weights 0.01, 0.5 and 0.2.”</p>
+<p>How come above 3 instances have different weights and not same weights from (1/n formula = .33,.33,.33)</p>
+<div class="reply">
+<a aria-label="Reply to Lalit" class="comment-reply-link" href="#comment-404130" onclick='return addComment.moveForm( "comment-404130", "404130", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-407565">
+<div class="comment-container" id="li-comment-407565">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/da52b659dddc3414210272ce72dd92e9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/da52b659dddc3414210272ce72dd92e9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ali</span>
+<span class="date">July 28, 2017 at 1:22 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-407565" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>As Jason mentions in the article, the weights get updated based on w = w * exp(stage * terror) before the next classifier is applied.</p>
+<div class="reply">
+<a aria-label="Reply to Ali" class="comment-reply-link" href="#comment-407565" onclick='return addComment.moveForm( "comment-407565", "407565", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-3" id="comment-407622">
+<div class="comment-container" id="li-comment-407622">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 28, 2017 at 8:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-407622" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Ali.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-407622" onclick='return addComment.moveForm( "comment-407622", "407622", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-404159">
+<div class="comment-container" id="li-comment-404159">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ddf27afa4eca2094cb35e054469429ea?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ddf27afa4eca2094cb35e054469429ea?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Julia</span>
+<span class="date">June 29, 2017 at 6:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-404159" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This article is really helpful! I searched a lot for an introduction to Adaboost. This is the best!</p>
+<div class="reply">
+<a aria-label="Reply to Julia" class="comment-reply-link" href="#comment-404159" onclick='return addComment.moveForm( "comment-404159", "404159", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-404183">
+<div class="comment-container" id="li-comment-404183">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 29, 2017 at 6:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-404183" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Glad to hear it.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404183" onclick='return addComment.moveForm( "comment-404183", "404183", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-408432">
+<div class="comment-container" id="li-comment-408432">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d61a3ef0b41955a1c77e40546b5cf3e2?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d61a3ef0b41955a1c77e40546b5cf3e2?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hossein Sayadi</span>
+<span class="date">August 4, 2017 at 2:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-408432" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Thanks for the perfect description. I have a question! Is Adaboost or generally boosting methods for improving the accuracy of weak learners from on type? I mean, if we have different types of learners that are not doing accurately, can we use boosting for them and should? Basically the question is that in this case, should we apply boosting on each learning type individually or we should consider all the weak learner (even from different types) together and apply one boosting ? </p>
+<p>Thanks,</p>
+<div class="reply">
+<a aria-label="Reply to Hossein Sayadi" class="comment-reply-link" href="#comment-408432" onclick='return addComment.moveForm( "comment-408432", "408432", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-408475">
+<div class="comment-container" id="li-comment-408475">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 4, 2017 at 7:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-408475" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It was designed for decision trees (decision stumps).</p>
+<p>You can try on other models if you like.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-408475" onclick='return addComment.moveForm( "comment-408475", "408475", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-418416">
+<div class="comment-container" id="li-comment-418416">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/38d4a28c1dd2977e6a874151431c5356?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/38d4a28c1dd2977e6a874151431c5356?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kevin</span>
+<span class="date">October 30, 2017 at 8:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418416" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+That is a nice explanation, thanks. How exactly do the weights affect the tree learning algorithm? Do they feed directly into the entropy calculations for information gain? I assume they change the way the probabilities are calculated, but I can’t find a good explanation of how.</p>
+<div class="reply">
+<a aria-label="Reply to Kevin" class="comment-reply-link" href="#comment-418416" onclick='return addComment.moveForm( "comment-418416", "418416", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-418452">
+<div class="comment-container" id="li-comment-418452">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 30, 2017 at 3:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418452" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Exactly, the weights influence the splitting criteria used to select the split point of subsequent weak learners. It’s a way of weighting the model away from “easy” parts of the problem and toward “harder” parts, as defined by the parameter values for split points.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-418452" onclick='return addComment.moveForm( "comment-418452", "418452", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-418684">
+<div class="comment-container" id="li-comment-418684">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">hobart</span>
+<span class="date">November 1, 2017 at 5:09 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418684" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>When I try to practice Adaboost, I found I am still not clear about “how to build a new weak classifier by weighted training data”. You mentioned weights are used in computing errors, but let me say we use ID3 or CART, they are not error driven. How do we use weighted training data to build a new ID3/CART?</p>
+<p>Thanks!<br/>
+(P.S. I found myself visit this place more and more often. Many thanks for very helpful information.)</p>
+<div class="reply">
+<a aria-label="Reply to hobart" class="comment-reply-link" href="#comment-418684" onclick='return addComment.moveForm( "comment-418684", "418684", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-418727">
+<div class="comment-container" id="li-comment-418727">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 2, 2017 at 5:07 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418727" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Unlike CART and ID#, boosting will create multiple trees consecutively. Each tree is built on a weighted form of the dataset to ensure that the tree focuses on areas where the previous tree/trees performed poorly. The subsequent trees try to correct the errors of the prior trees.</p>
+<p>I hope that helps.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-418727" onclick='return addComment.moveForm( "comment-418727", "418727", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-418786">
+<div class="comment-container" id="li-comment-418786">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hobart</span>
+<span class="date">November 2, 2017 at 3:28 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418786" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not really ~~~<br/>
+question 1: How do we build CART stump or ID# stump (in adaboost)? Or they are not option?<br/>
+question 2: I see some examples use very simple formula like (x5.5) as a stumps, they do use weight to measure error, but is this the only thing we can use in adaboost?</p>
+<div class="reply">
+<a aria-label="Reply to Hobart" class="comment-reply-link" href="#comment-418786" onclick='return addComment.moveForm( "comment-418786", "418786", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-418792">
+<div class="comment-container" id="li-comment-418792">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 2, 2017 at 3:59 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418792" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can build a stump with one split point. The weight can be used to influence the choice of split point.</p>
+<p>Yes, this is the Adaboost algorithm.</p>
+<p>I do have a worked example in a spreadsheet in my “master machine learning algorithms” book.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-418792" onclick='return addComment.moveForm( "comment-418792", "418792", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-5" id="comment-418795">
+<div class="comment-container" id="li-comment-418795">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a660d2e127d3f197ec2f73a8f6d1a91b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hobart</span>
+<span class="date">November 2, 2017 at 4:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-418795" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Many thanks Jason!<br/>
+I was thinking a typical adaboost shall use some “advanced” algs as stumps. For example if I try to use adaboost in kaggle. Your guidence saves me a lot time.</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-425146">
+<div class="comment-container" id="li-comment-425146">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3d4f0e22d0d02e22e6d344622f73c081?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3d4f0e22d0d02e22e6d344622f73c081?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">San</span>
+<span class="date">December 30, 2017 at 1:59 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425146" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello,<br/>
+is there algorithm in ensemble can work in similarity?</p>
+<div class="reply">
+<a aria-label="Reply to San" class="comment-reply-link" href="#comment-425146" onclick='return addComment.moveForm( "comment-425146", "425146", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-425165">
+<div class="comment-container" id="li-comment-425165">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 30, 2017 at 5:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425165" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You could create an ensemble of similarity algorithms, sure.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-425165" onclick='return addComment.moveForm( "comment-425165", "425165", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-425148">
+<div class="comment-container" id="li-comment-425148">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/66906f07b58683700240dda6c2c06938?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/66906f07b58683700240dda6c2c06938?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mohammad</span>
+<span class="date">December 30, 2017 at 2:42 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425148" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello,<br/>
+is there algorithm in ensemble techniques work as similarity for predict based on specific rules?</p>
+<div class="reply">
+<a aria-label="Reply to Mohammad" class="comment-reply-link" href="#comment-425148" onclick='return addComment.moveForm( "comment-425148", "425148", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-425166">
+<div class="comment-container" id="li-comment-425166">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 30, 2017 at 5:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425166" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I don’t follow, can you give an example?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-425166" onclick='return addComment.moveForm( "comment-425166", "425166", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-425176">
+<div class="comment-container" id="li-comment-425176">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/66906f07b58683700240dda6c2c06938?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/66906f07b58683700240dda6c2c06938?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mohammad</span>
+<span class="date">December 30, 2017 at 9:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425176" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Attribute 1	    Attribute 2	  Attribute 3	Class label<br/>
+Class1 	 4	                  5	                5<br/>
+Class 2	 2	                  3            	1<br/>
+Class 3	 4                    	  5       	        5<br/>
+Class 4	 1              	  3	                5<br/>
+Class5 	 2	                  3               	1<br/>
+Class 6	 4	                  5	                5	</p>
+<p>now class label the value of it 1 or 0<br/>
+1 if the vale of the attributes is the same, 0 if no one have same value<br/>
+ex. class 1 and class 3 and class 6 are same<br/>
+class label value is 1<br/>
+can i use ensemble techniques to get this results ?</p>
+<div class="reply">
+<a aria-label="Reply to Mohammad" class="comment-reply-link" href="#comment-425176" onclick='return addComment.moveForm( "comment-425176", "425176", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-425235">
+<div class="comment-container" id="li-comment-425235">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 31, 2017 at 5:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-425235" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t follow, perhaps can you explain your question a different way?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-425235" onclick='return addComment.moveForm( "comment-425235", "425235", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-434289">
+<div class="comment-container" id="li-comment-434289">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/83d92a1685b4505c7f022907f7447575?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/83d92a1685b4505c7f022907f7447575?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Haebi</span>
+<span class="date">April 6, 2018 at 12:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-434289" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, shouldn’t the terror be -1 or 1? Since in the update rule, (W = W * exp(stage * y_i * h_t)). if the y_i is -1, and h_t is -1 (thus correct classification), their multiplication would yield +1, while an incorrect classification would lead to -1? </p>
+<p>This article seems to suggest the same (<a href="https://towardsdatascience.com/boosting-algorithm-adaboost-b6737a9ee60c" rel="nofollow">https://towardsdatascience.com/boosting-algorithm-adaboost-b6737a9ee60c</a>), when it says: “If a misclassified case is from a positive weighted classifier, the “exp” term in the numerator would be always larger than 1 (y*f is always -1, theta_m is positive).”</p>
+<p>In manual calculation, setting terror to 0 for correct classification instead of 1 would lower the total exp/euler’s value, while setting terror to 1 for incorrect classification instead of -1 would conversely raise the total euler’s value, which is not what we want. Am I missing something here?</p>
+<div class="reply">
+<a aria-label="Reply to Haebi" class="comment-reply-link" href="#comment-434289" onclick='return addComment.moveForm( "comment-434289", "434289", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-434449">
+<div class="comment-container" id="li-comment-434449">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/50e146f4e756802f92a1eb05ac21f401?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/50e146f4e756802f92a1eb05ac21f401?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Brenda</span>
+<span class="date">April 8, 2018 at 10:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-434449" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hey Jason, have you an example for AdaBoost M1?, and thank you for your article in my research for AdaBoost this is my favorite 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Brenda" class="comment-reply-link" href="#comment-434449" onclick='return addComment.moveForm( "comment-434449", "434449", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-434486">
+<div class="comment-container" id="li-comment-434486">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 9, 2018 at 6:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-434486" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks. I don’t recall sorry.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-434486" onclick='return addComment.moveForm( "comment-434486", "434486", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-434703">
+<div class="comment-container" id="li-comment-434703">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/84430f19f56621b11bd935b3e2c6cf79?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/84430f19f56621b11bd935b3e2c6cf79?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Arun Athavale</span>
+<span class="date">April 11, 2018 at 9:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-434703" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I am competing in challenge for binary classification problem. Data is 250k for training. I need to produce probabilities. I find every time I run probabilities change. That makes it problematic as I cannot have results that I reproduce. Any thoughts</p>
+<div class="reply">
+<a aria-label="Reply to Arun Athavale" class="comment-reply-link" href="#comment-434703" onclick='return addComment.moveForm( "comment-434703", "434703", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-434724">
+<div class="comment-container" id="li-comment-434724">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 11, 2018 at 4:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-434724" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, this is a feature of machine learning algorithms. Learn more about this here:<br/>
+<a href="https://machinelearningmastery.com/randomness-in-machine-learning/" rel="nofollow">https://machinelearningmastery.com/randomness-in-machine-learning/</a></p>
+<p>Here is one approach to effectively evaluate a stochastic model:<br/>
+<a href="https://machinelearningmastery.com/evaluate-skill-deep-learning-models/" rel="nofollow">https://machinelearningmastery.com/evaluate-skill-deep-learning-models/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-434724" onclick='return addComment.moveForm( "comment-434724", "434724", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-435142">
+<div class="comment-container" id="li-comment-435142">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1843b2302c8a18959052d359851ddfdb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1843b2302c8a18959052d359851ddfdb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">reys</span>
+<span class="date">April 16, 2018 at 5:40 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-435142" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Can u suggest how we can implement adaboost on SVR predicted model?</p>
+<div class="reply">
+<a aria-label="Reply to reys" class="comment-reply-link" href="#comment-435142" onclick='return addComment.moveForm( "comment-435142", "435142", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-435143">
+<div class="comment-container" id="li-comment-435143">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1843b2302c8a18959052d359851ddfdb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1843b2302c8a18959052d359851ddfdb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">reys</span>
+<span class="date">April 16, 2018 at 5:42 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-435143" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>ValueError                                Traceback (most recent call last)<br/>
+ in ()<br/>
+      9 print(X_test)<br/>
+     10 #print(y_test)<br/>
+—&gt; 11 er_tree = generic_clf(y_train, X_train, y_test, X_test, clf_tree)</p>
+<p> in generic_clf(y_train, X_train_scaled, y_test, X_test_scaled, clf)<br/>
+      9     print(pred_train)<br/>
+     10     print(pred_test)<br/>
+—&gt; 11     clf.fit(X_train_scaled,y_train)<br/>
+     12     pred_train = clf.predict(X_train_scaled)<br/>
+     13     pred_test = clf.predict(X_test_scaled)</p>
+<p>~/anaconda3/lib/python3.6/site-packages/sklearn/tree/tree.py in fit(self, X, y, sample_weight, check_input, X_idx_sorted)<br/>
+    788             sample_weight=sample_weight,<br/>
+    789             check_input=check_input,<br/>
+–&gt; 790             X_idx_sorted=X_idx_sorted)<br/>
+    791         return self<br/>
+    792 </p>
+<p>~/anaconda3/lib/python3.6/site-packages/sklearn/tree/tree.py in fit(self, X, y, sample_weight, check_input, X_idx_sorted)<br/>
+    138<br/>
+    139         if is_classification:<br/>
+–&gt; 140             check_classification_targets(y)<br/>
+    141             y = np.copy(y)<br/>
+    142 </p>
+<p>~/anaconda3/lib/python3.6/site-packages/sklearn/utils/multiclass.py in check_classification_targets(y)<br/>
+    170     if y_type not in [‘binary’, ‘multiclass’, ‘multiclass-multioutput’,<br/>
+    171                       ‘multilabel-indicator’, ‘multilabel-sequences’]:<br/>
+–&gt; 172         raise ValueError(“Unknown label type: %r” % y_type)<br/>
+    173<br/>
+    174 </p>
+<p>ValueError: Unknown label type: ‘continuous’</p>
+<p>my code showing error like this……..</p>
+<div class="reply">
+<a aria-label="Reply to reys" class="comment-reply-link" href="#comment-435143" onclick='return addComment.moveForm( "comment-435143", "435143", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-435184">
+<div class="comment-container" id="li-comment-435184">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 17, 2018 at 5:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-435184" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m sorry to hear that.</p>
+<p>What code are you trying to run?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435184" onclick='return addComment.moveForm( "comment-435184", "435184", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-435183">
+<div class="comment-container" id="li-comment-435183">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 17, 2018 at 5:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-435183" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not off hand, sorry, some careful development would be required. Also, I don’t think SVR would be a good fit as a weak model in adaboost.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435183" onclick='return addComment.moveForm( "comment-435183", "435183", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-439463">
+<div class="comment-container" id="li-comment-439463">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/648e0314dbbcbc0138e6e5d3253094d4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/648e0314dbbcbc0138e6e5d3253094d4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tonoy Biswas</span>
+<span class="date">June 2, 2018 at 5:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-439463" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It is very helpful Jason for my masters thesis write up. Thanks for your contribution.</p>
+<div class="reply">
+<a aria-label="Reply to Tonoy Biswas" class="comment-reply-link" href="#comment-439463" onclick='return addComment.moveForm( "comment-439463", "439463", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-439487">
+<div class="comment-container" id="li-comment-439487">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 2, 2018 at 6:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-439487" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Glad to hear that!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439487" onclick='return addComment.moveForm( "comment-439487", "439487", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-444726">
+<div class="comment-container" id="li-comment-444726">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c6473695fa95a67b504a05984e195e98?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c6473695fa95a67b504a05984e195e98?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://kl%20university" rel="external nofollow">sana</a></span>
+<span class="date">July 30, 2018 at 4:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-444726" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>sir please provide code for adaboost and random forest ensemble classfiiers</p>
+<div class="reply">
+<a aria-label="Reply to sana" class="comment-reply-link" href="#comment-444726" onclick='return addComment.moveForm( "comment-444726", "444726", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-444750">
+<div class="comment-container" id="li-comment-444750">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 30, 2018 at 5:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-444750" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I believe I do, try searching the blog.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-444750" onclick='return addComment.moveForm( "comment-444750", "444750", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-447103">
+<div class="comment-container" id="li-comment-447103">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ntate Ndaba</span>
+<span class="date">August 28, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447103" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason. I’m back to this question after almost 2 years. I was wondering, how do you ‘select’ an instance to be part of the training set using their weights (probabilities). Do you sort the instances based on their weights and then only take those with higher weight as part of your next training set (for the next classifier) ?.</p>
+<div class="reply">
+<a aria-label="Reply to Ntate Ndaba" class="comment-reply-link" href="#comment-447103" onclick='return addComment.moveForm( "comment-447103", "447103", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-447104">
+<div class="comment-container" id="li-comment-447104">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/37b7e3f577b8dec7157230f097b4b3ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ntate Ndaba</span>
+<span class="date">August 28, 2018 at 7:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447104" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Ok. I verified if the answer I had was correct. I used a simple technique for weighted random number generator without replacement.</p>
+<div class="reply">
+<a aria-label="Reply to Ntate Ndaba" class="comment-reply-link" href="#comment-447104" onclick='return addComment.moveForm( "comment-447104", "447104", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-447112">
+<div class="comment-container" id="li-comment-447112">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 28, 2018 at 11:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447112" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No problem.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-447112" onclick='return addComment.moveForm( "comment-447112", "447112", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-447154">
+<div class="comment-container" id="li-comment-447154">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/60653cc18f6d313e6b0849815f4abdc2?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/60653cc18f6d313e6b0849815f4abdc2?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kamohelo</span>
+<span class="date">August 29, 2018 at 12:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447154" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason </p>
+<p>How do you decide to split the training set when you select examples with high probability. Do you make the selected sample from the training set be of the same size as the training set by putting back to the training set each example that has a higher probability? or you only take a subset of the training set (e.g. take only the top 70% examples for training) then classify the whole training set afterwards to get the training error  and update their weights ?.</p>
+<div class="reply">
+<a aria-label="Reply to Kamohelo" class="comment-reply-link" href="#comment-447154" onclick='return addComment.moveForm( "comment-447154", "447154", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-447187">
+<div class="comment-container" id="li-comment-447187">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 29, 2018 at 8:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447187" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It really depends on the problem.</p>
+<p>Your goal is to have a train and test set that are representative of the broader dataset.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-447187" onclick='return addComment.moveForm( "comment-447187", "447187", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-447157">
+<div class="comment-container" id="li-comment-447157">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/60653cc18f6d313e6b0849815f4abdc2?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/60653cc18f6d313e6b0849815f4abdc2?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kamohelo</span>
+<span class="date">August 29, 2018 at 1:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447157" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Just to update my question: </p>
+<p>The algorithm states that the instances in the training set are weighted each time they are correctly classified or misclassified to ensure that subsequent learners focus on instances that are hard to classify. My question is, how many of those hard to classify instances from the training set are selected to train a weak classifier. Do you take 70%/50%/30%, etc. of those hard to classify instances and use them to train the weak learner in the next iteration? or do you use the entire weighted training set. If the answer is the latter, how does the weak learner utilize instance weights so that it can focus on those that have a bigger weight value ?.</p>
+<div class="reply">
+<a aria-label="Reply to Kamohelo" class="comment-reply-link" href="#comment-447157" onclick='return addComment.moveForm( "comment-447157", "447157", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-447190">
+<div class="comment-container" id="li-comment-447190">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 29, 2018 at 8:13 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-447190" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It is all based on the training dataset.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-447190" onclick='return addComment.moveForm( "comment-447190", "447190", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-448349">
+<div class="comment-container" id="li-comment-448349">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/29d5f73592d1e4e87702eeebda4a2e75?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/29d5f73592d1e4e87702eeebda4a2e75?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sree</span>
+<span class="date">September 11, 2018 at 5:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-448349" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason should not there be a 0.5 multiplied to the stage value? I find the same formula with 0.5 multiplied with the log value</p>
+<div class="reply">
+<a aria-label="Reply to Sree" class="comment-reply-link" href="#comment-448349" onclick='return addComment.moveForm( "comment-448349", "448349", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-448367">
+<div class="comment-container" id="li-comment-448367">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 11, 2018 at 6:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-448367" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps it would be a bad idea to mix and match formula. Pick one approach.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-448367" onclick='return addComment.moveForm( "comment-448367", "448367", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-451796">
+<div class="comment-container" id="li-comment-451796">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/41d36f5a62a807a8503f4b68924f9c12?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/41d36f5a62a807a8503f4b68924f9c12?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ankita Tulshyan</span>
+<span class="date">October 16, 2018 at 9:40 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-451796" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Thanks a lot for the explanation with such simplicity.</p>
+<p>I have a question,<br/>
+1) In terms of the stability of the predictions of the model, how would you compare AdaBoost with XGBoost and random forest, I understand these are different implementations of decision tree, please correct me if I’m wrong.</p>
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Ankita Tulshyan" class="comment-reply-link" href="#comment-451796" onclick='return addComment.moveForm( "comment-451796", "451796", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451843">
+<div class="comment-container" id="li-comment-451843">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 17, 2018 at 6:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-451843" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>They are all ensemble methods and use decision trees.</p>
+<p>Comparison depends on the data you have available. Perhaps repeated cross validation would be a good start?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451843" onclick='return addComment.moveForm( "comment-451843", "451843", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-454865">
+<div class="comment-container" id="li-comment-454865">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/41d36f5a62a807a8503f4b68924f9c12?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/41d36f5a62a807a8503f4b68924f9c12?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ankita Tulshyan</span>
+<span class="date">November 15, 2018 at 5:58 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/boosting-and-adaboost-for-machine-learning/#comment-454865" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks, will try that.</p>
+<div class="reply">
+<a aria-label="Reply to Ankita Tulshyan" class="comment-reply-link" href="#comment-454865" onclick='return addComment.moveForm( "comment-454865", "454865", "respond", "2394" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/boosting-and-adaboost-for-machine-learning/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="2394"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="e3efc7334b"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="46"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-9"> <div class="textwidget"><p></p><center><br/>
+<strong>Understand How Algorithms Work</strong><br/>
+No theory, just clear descriptions. 
+<p><a href="/master-machine-learning-algorithms/">Click to Get Started Now!</a><br/>
+<a href="/master-machine-learning-algorithms/"><img alt="Master Machine Learning Algorithms" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/MasterMachineLearningAlgorithms-small.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

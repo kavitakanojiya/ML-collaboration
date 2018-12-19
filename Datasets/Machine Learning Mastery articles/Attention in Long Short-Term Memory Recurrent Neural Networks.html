@@ -1,0 +1,922 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Attention in Long Short-Term Memory Recurrent Neural Networks</title>
+<link href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Attention in Long Short-Term Memory Recurrent Neural Networks" property="og:title"/>
+<meta content="The Encoder-Decoder architecture is popular because it has demonstrated state-of-the-art results across a range of domains. A limitation of the architecture is that it encodes the input sequence to a fixed length internal representation. This imposes limits on the length of input sequences that can be reasonably learned and results in worse performance for very …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Long Short-Term Memory Networks" property="article:section"/>
+<meta content="2017-06-29T19:00:14+00:00" property="article:published_time"/>
+<meta content="2017-07-19T22:49:11+00:00" property="article:modified_time"/>
+<meta content="2017-07-19T22:49:11+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Words-in-the-Input-Document-to-the-Output-Summary.png" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Words-in-the-Input-Document-to-the-Output-Summary.png" property="og:image:secure_url"/>
+<meta content="454" property="og:image:width"/>
+<meta content="434" property="og:image:height"/>
+<meta content="Attentional Interpretation of Words in the Input Document to the Output Summary" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/feed/" rel="alternate" title="Machine Learning Mastery » Attention in Long Short-Term Memory Recurrent Neural Networks Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4101" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fattention-long-short-term-memory-recurrent-neural-networks%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fattention-long-short-term-memory-recurrent-neural-networks%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4101 single-format-standard safari alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-31"> <div class="textwidget"><p>Want help with LSTMs? <a href="https://machinelearningmastery.lpages.co/lnwp-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4101 post type-post status-publish format-standard has-post-thumbnail hentry category-lstm">
+<header>
+<h1 class="title entry-title">Attention in Long Short-Term Memory Recurrent Neural Networks</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-06-30T05:00:14+1100">June 30, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/lstm/" title="View all items in Long Short-Term Memory Networks">Long Short-Term Memory Networks</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4101 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Attention+in+Long+Short-Term+Memory+Recurrent+Neural+Networks&amp;url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>The Encoder-Decoder architecture is popular because it has demonstrated state-of-the-art results across a range of domains.</p>
+<p>A limitation of the architecture is that it encodes the input sequence to a fixed length internal representation. This imposes limits on the length of input sequences that can be reasonably learned and results in worse performance for very long input sequences.</p>
+<p>In this post, you will discover the attention mechanism for recurrent neural networks that seeks to overcome this limitation.</p>
+<p>After reading this post, you will know:</p>
+<ul>
+<li>The limitation of the encode-decoder architecture and the fixed-length internal representation.</li>
+<li>The attention mechanism to overcome the limitation that allows the network to learn where to pay attention in the input sequence for each item in the output sequence.</li>
+<li>5 applications of the attention mechanism with recurrent neural networks in domains such as text translation, speech recognition, and more.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4108" style="width: 650px"><img alt="Attention in Long Short-Term Memory Recurrent Neural Networks" class="size-full wp-image-4108" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/Attention-in-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/Attention-in-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/Attention-in-Long-Short-Term-Memory-Recurrent-Neural-Networks-300x200.jpg 300w" width="640"/><p class="wp-caption-text">Attention in Long Short-Term Memory Recurrent Neural Networks<br/>Photo by <a href="https://www.flickr.com/photos/jonasschleske/11457906754/">Jonas Schleske</a>, some rights reserved.</p></div>
+<h2>Problem With Long Sequences</h2>
+<p>The encoder-decoder recurrent neural network is an architecture where one set of LSTMs learn to encode input sequences into a fixed-length internal representation, and second set of LSTMs read the internal representation and decode it into an output sequence.</p>
+<p>This architecture has shown state-of-the-art results on difficult sequence prediction problems like text translation and quickly became the dominant approach.</p>
+<p>For example, see:</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1409.3215">Sequence to Sequence Learning with Neural Networks</a>, 2014</li>
+<li><a href="https://arxiv.org/abs/1406.1078">Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation</a>, 2014</li>
+</ul>
+<p>The encoder-decoder architecture still achieves excellent results on a wide range of problems. Nevertheless, it suffers from the constraint that all input sequences are forced to be encoded to a fixed length internal vector.</p>
+<p>This is believed to limit the performance of these networks, especially when considering long input sequences, such as very long sentences in text translation problems.</p>
+<blockquote><p>A potential issue with this encoder–decoder approach is that a neural network needs to be able to compress all the necessary information of a source sentence into a fixed-length vector. This may make it difficult for the neural network to cope with long sentences, especially those that are longer than the sentences in the training corpus.</p></blockquote>
+<p>— Dzmitry Bahdanau, et al., <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>, 2015</p>
+<div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with LSTMs for Sequence Prediction?</h3>
+<p>Take my free 7-day email course and discover 6 different LSTM architectures (with code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" rel="noopener" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="1403a9373f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" src="https://machinelearningmastery.lpages.co/leadbox-1500400021.js" type="text/javascript"></script></p>
+</center>
+<div class="woo-sc-hr"></div>
+<h2>Attention within Sequences</h2>
+<p>Attention is the idea of freeing the encoder-decoder architecture from the fixed-length internal representation.</p>
+<p>This is achieved by keeping the intermediate outputs from the encoder LSTM from each step of the input sequence and training the model to learn to pay selective attention to these inputs and relate them to items in the output sequence.</p>
+<p>Put another way, each item in the output sequence is conditional on selective items in the input sequence.</p>
+<blockquote><p>Each time the proposed model generates a word in a translation, it (soft-)searches for a set of positions in a source sentence where the most relevant information is concentrated. The model then predicts a target word based on the context vectors associated with these source positions and all the previous generated target words.</p>
+<p>… it encodes the input sentence into a sequence of vectors and chooses a subset of these vectors adaptively while decoding the translation. This frees a neural translation model from having to squash all the information of a source sentence, regardless of its length, into a fixed-length vector.</p></blockquote>
+<p>— Dzmitry Bahdanau, et al., <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>, 2015</p>
+<p>This increases the computational burden of the model, but results in a more targeted and better-performing model.</p>
+<p>In addition, the model is also able to show how attention is paid to the input sequence when predicting the output sequence. This can help in understanding and diagnosing exactly what the model is considering and to what degree for specific input-output pairs.</p>
+<blockquote><p>The proposed approach provides an intuitive way to inspect the (soft-)alignment between the words in a generated translation and those in a source sentence. This is done by visualizing the annotation weights… Each row of a matrix in each plot indicates the weights associated with the annotations. From this we see which positions in the source sentence were considered more important when generating the target word.</p></blockquote>
+<p>— Dzmitry Bahdanau, et al., <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>, 2015</p>
+<h2>Problem with Large Images</h2>
+<p>Convolutional neural networks applied to computer vision problems also suffer from similar limitations, where it can be difficult to learn models on very large images.</p>
+<p>As a result, a series of glimpses can be taken of a large image to formulate an approximate impression of the image before making a prediction.</p>
+<blockquote><p>One important property of human perception is that one does not tend to process a whole scene in its entirety at once. Instead humans focus attention selectively on parts of the visual space to acquire information when and where it is needed, and combine information from different fixations over time to build up an internal representation of the scene, guiding future eye movements and decision making.</p></blockquote>
+<p>— <a href="https://arxiv.org/abs/1406.6247">Recurrent Models of Visual Attention</a>, 2014</p>
+<p>These glimpse-based modifications may also be considered attention, but are not considered in this post.</p>
+<p>See the papers.</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1406.6247">Recurrent Models of Visual Attention</a>, 2014</li>
+<li><a href="https://arxiv.org/abs/1502.04623">DRAW: A Recurrent Neural Network For Image Generation</a>, 2014</li>
+<li><a href="https://arxiv.org/abs/1412.7755">Multiple Object Recognition with Visual Attention</a>, 2014</li>
+</ul>
+<h2>5 Examples of Attention in Sequence Prediction</h2>
+<p>This section provides some specific examples of how attention is used for sequence prediction with recurrent neural networks.</p>
+<h3>1. Attention in Text Translation</h3>
+<p>The motivating example mentioned above is text translation.</p>
+<p>Given an input sequence of a sentence in French, translate and output a sentence in English. Attention is used to pay attention to specific words in the input sequence for each word in the output sequence.</p>
+<blockquote><p>We extended the basic encoder–decoder by letting a model (soft-)search for a set of input words, or their annotations computed by an encoder, when generating each target word. This frees the model from having to encode a whole source sentence into a fixed-length vector, and also lets the model focus only on information relevant to the generation of the next target word.</p></blockquote>
+<p>— Dzmitry Bahdanau, et al., <a href="https://arxiv.org/abs/1409.0473">Neural machine translation by jointly learning to align and translate</a>, 2015</p>
+<div class="wp-caption aligncenter" id="attachment_4102" style="width: 829px"><img alt="Attentional Interpretation of French to English Translation" class="size-full wp-image-4102" height="901" sizes="(max-width: 819px) 100vw, 819px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-French-to-English-Translation.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-French-to-English-Translation.png 819w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-French-to-English-Translation-273x300.png 273w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-French-to-English-Translation-768x845.png 768w" width="819"/><p class="wp-caption-text">Attentional Interpretation of French to English Translation<br/>Taken from Dzmitry Bahdanau, et al., Neural machine translation by jointly learning to align and translate, 2015</p></div>
+<h3>2. Attention in Image Descriptions</h3>
+<p>Different from the glimpse approach, the sequence-based attentional mechanism can be applied to computer vision problems to help get an idea of how to best use the convolutional neural network to pay attention to images when outputting a sequence, such as a caption.</p>
+<p>Given an input of an image, output an English description of the image. Attention is used to pay focus on different parts of the image for each word in the output sequence.</p>
+<blockquote><p>We propose an attention based approach that gives state of the art performance on three benchmark datasets … We also show how the learned attention can be exploited to give more interpretability into the models generation process, and demonstrate that the learned alignments correspond very well to human intuition.</p></blockquote>
+<div class="wp-caption aligncenter" id="attachment_4103" style="width: 700px"><img alt="Attentional Interpretation of Output Words to Specific Regions on the Input Images" class="size-full wp-image-4103" height="318" sizes="(max-width: 690px) 100vw, 690px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Words-to-Specific-Regions-on-the-Input-Images.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Words-to-Specific-Regions-on-the-Input-Images.png 690w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Words-to-Specific-Regions-on-the-Input-Images-300x138.png 300w" width="690"/><p class="wp-caption-text">Attentional Interpretation of Output Words to Specific Regions on the Input Images<br/>Taken from Show, Attend and Tell: Neural Image Caption Generation with Visual Attention, 2016</p></div>
+<p>— <a href="https://arxiv.org/abs/1502.03044">Show, Attend and Tell: Neural Image Caption Generation with Visual Attention</a>, 2016</p>
+<h3>3. Attention in Entailment</h3>
+<p>Given a premise scenario and a hypothesis about the scenario in English, output whether the premise contradicts, is not related, or entails the hypothesis.</p>
+<p>For example:</p>
+<ul>
+<li>premise: “<em>A wedding party taking pictures</em>“</li>
+<li>hypothesis: “<em>Someone got married</em>“</li>
+</ul>
+<p>Attention is used to relate each word in the hypothesis to words in the premise, and vise-versa.</p>
+<blockquote><p>We present a neural model based on LSTMs that reads two sentences in one go to determine entailment, as opposed to mapping each sentence independently into a semantic space. We extend this model with a neural word-by-word attention mechanism to encourage reasoning over entailments of pairs of words and phrases. … An extension with word-by-word neural attention surpasses this strong benchmark LSTM result by 2.6 percentage points, setting a new state-of-the-art accuracy…</p></blockquote>
+<p>— <a href="https://arxiv.org/abs/1509.06664">Reasoning about Entailment with Neural Attention</a>, 2016</p>
+<div class="wp-caption aligncenter" id="attachment_4104" style="width: 860px"><img alt="Attentional Interpretation of Premise Words to Hypothesis Words" class="wp-image-4104 size-full" height="461" sizes="(max-width: 850px) 100vw, 850px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Premise-Words-to-Hypothesis-Words.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Premise-Words-to-Hypothesis-Words.png 850w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Premise-Words-to-Hypothesis-Words-300x163.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Premise-Words-to-Hypothesis-Words-768x417.png 768w" width="850"/><p class="wp-caption-text">Attentional Interpretation of Premise Words to Hypothesis Words <br/>Taken from Reasoning about Entailment with Neural Attention, 2016</p></div>
+<h3>4. Attention in Speech Recognition</h3>
+<p>Given an input sequence of English speech snippets, output a sequence of phonemes.</p>
+<p>Attention is used to relate each phoneme in the output sequence to specific frames of audio in the input sequence.</p>
+<blockquote><p>… a novel end-to-end trainable speech recognition architecture based on a hybrid attention mechanism which combines both content and location information in order to select the next position in the input sequence for decoding. One desirable property of the proposed model is that it can recognize utterances much longer than the ones it was trained on.</p></blockquote>
+<p>— <a href="https://arxiv.org/abs/1506.07503">Attention-Based Models for Speech Recognition</a>, 2015.</p>
+<div class="wp-caption aligncenter" id="attachment_4105" style="width: 821px"><img alt="Attentional Interpretation of Output Phoneme Location to Input Frames of Audio" class="size-full wp-image-4105" height="213" sizes="(max-width: 811px) 100vw, 811px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Phoneme-Location-to-Input-Frames-of-Audio.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Phoneme-Location-to-Input-Frames-of-Audio.png 811w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Phoneme-Location-to-Input-Frames-of-Audio-300x79.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Output-Phoneme-Location-to-Input-Frames-of-Audio-768x202.png 768w" width="811"/><p class="wp-caption-text">Attentional Interpretation of Output Phoneme Location to Input Frames of Audio<br/>Taken from Attention-Based Models for Speech Recognition, 2015</p></div>
+<h3>5. Attention in Text Summarization</h3>
+<p>Given an input sequence of an English article, output a sequence of English words that summarize the input.</p>
+<p>Attention is used to relate each word in the output summary to specific words in the input document.</p>
+<blockquote><p>… a neural attention-based model for abstractive summarization, based on recent developments in neural machine translation. We combine this probabilistic model with a generation algorithm which produces accurate abstractive summaries.</p></blockquote>
+<p>— <a href="https://arxiv.org/abs/1509.00685">A Neural Attention Model for Abstractive Sentence Summarization</a>, 2015</p>
+<div class="wp-caption aligncenter" id="attachment_4106" style="width: 464px"><img alt="Attentional Interpretation of Words in the Input Document to the Output Summary" class="size-full wp-image-4106" height="434" sizes="(max-width: 454px) 100vw, 454px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Words-in-the-Input-Document-to-the-Output-Summary.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Words-in-the-Input-Document-to-the-Output-Summary.png 454w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Attentional-Interpretation-of-Words-in-the-Input-Document-to-the-Output-Summary-300x287.png 300w" width="454"/><p class="wp-caption-text">Attentional Interpretation of Words in the Input Document to the Output Summary<br/>Taken from A Neural Attention Model for Abstractive Sentence Summarization, 2015.</p></div>
+<h2>Further Reading</h2>
+<p>This section provides additional resources if you would like to learn more about adding attention to LSTMs.</p>
+<ul>
+<li><a href="http://www.wildml.com/2016/01/attention-and-memory-in-deep-learning-and-nlp/">Attention and memory in deep learning and NLP</a></li>
+<li><a href="https://blog.heuritech.com/2016/01/20/attention-mechanism/">Attention Mechanism</a></li>
+<li><a href="http://yanran.li/peppypapers/2015/10/07/survey-attention-model-1.html">Survey on Attention-based Models Applied in NLP</a></li>
+<li><a href="https://www.quora.com/What-is-exactly-the-attention-mechanism-introduced-to-RNN-recurrent-neural-network-It-would-be-nice-if-you-could-make-it-easy-to-understand">What is exactly the attention mechanism introduced to RNN?</a> on Quora.</li>
+<li><a href="https://www.quora.com/What-is-Attention-Mechanism-in-Neural-Networks">What is Attention Mechanism in Neural Networks?</a></li>
+</ul>
+<p>Keras does not offer attention out of the box at the time of writing, but there are few third-party implementations. See:</p>
+<ul>
+<li><a href="http://ben.bolte.cc/blog/2016/language.html">Deep Language Modeling for Question Answering using Keras</a></li>
+<li><a href="https://github.com/fchollet/keras/issues/2067">Attention Model Available!</a></li>
+<li><a href="https://github.com/philipperemy/keras-attention-mechanism">Keras Attention Mechanism</a></li>
+<li><a href="http://distill.pub/2016/augmented-rnns/">Attention and Augmented Recurrent Neural Networks</a></li>
+<li><a href="https://github.com/fchollet/keras/issues/4962">How to add Attention on top of a Recurrent Layer (Text Classification)</a></li>
+<li><a href="https://github.com/fchollet/keras/issues/1472">Attention Mechanism Implementation Issue</a></li>
+<li><a href="https://github.com/fchollet/keras/issues/2612">Implementing simple neural attention model (for padded inputs)</a></li>
+<li><a href="https://github.com/fchollet/keras/issues/1094">Attention layer requires another PR</a></li>
+<li><a href="https://github.com/farizrahman4u/seq2seq">seq2seq library</a></li>
+</ul>
+<p>Do you know of some good resources on attention in recurrent neural networks?<br/>
+Let me know in the comments.</p>
+<h2>Summary</h2>
+<p>In this post, you discovered the attention mechanism for sequence prediction problems with LSTM recurrent neural networks.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>That the encoder-decoder architecture for recurrent neural networks uses a fixed-length internal representation that imposes a constraint that limits learning very long sequences.</li>
+<li>That attention overcomes the limitation in the encode-decoder architecture by allowing the network to learn where to pay attention to the input for each item in the output sequence.</li>
+<li>That the approach has been used across different types sequence prediction problems include text translation, speech recognition, and more.</li>
+</ul>
+<p>Do you have any questions about attention in recurrent neural networks?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-30"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<p></p><center>
+<h2>Develop LSTMs for Sequence Prediction Today!</h2>
+<p><a href="/lstms-with-python/"><img align="left" alt="Long Short-Term Memory Networks with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own LSTM models in Minutes</h4>
+<p>…with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/lstms-with-python/">Long Short-Term Memory Networks with Python</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>CNN LSTMs, Encoder-Decoder LSTMs, generative models, data preparation, making predictions</em> and much more…</p>
+<h4>Finally Bring LSTM Recurrent Neural Networks to<br/>
+Your Sequence Predictions Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/lstms-with-python/">Click to learn more</a>.<br/>
+</p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4101 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Attention+in+Long+Short-Term+Memory+Recurrent+Neural+Networks&amp;url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/truncated-backpropagation-through-time-in-keras/" rel="prev"><i class="fa fa-angle-left"></i> How to Prepare Sequence Prediction for Truncated Backpropagation Through Time in Keras</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/" rel="next">Gentle Introduction to the Adam Optimization Algorithm for Deep Learning <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">18 Responses to <em>Attention in Long Short-Term Memory Recurrent Neural Networks</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-404336">
+<div class="comment-container" id="li-comment-404336">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/87393ac8db44b4f93393d51de251374d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/87393ac8db44b4f93393d51de251374d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Abbey</span>
+<span class="date">June 30, 2017 at 3:34 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-404336" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you so much, Dr. Jason, for this write-up and literature reference. Will appreciate, if sample code on how to use attention model on top of LSTM layer can be upload for text and image analysis. </p>
+<p>Looking forward to it.<br/>
+Warm Regards<br/>
+Abbey</p>
+<div class="reply">
+<a aria-label="Reply to Abbey" class="comment-reply-link" href="#comment-404336" onclick='return addComment.moveForm( "comment-404336", "404336", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-404406">
+<div class="comment-container" id="li-comment-404406">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 1, 2017 at 6:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-404406" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad it helped.</p>
+<p>As far as I can tell, implementing simple attention correctly requires a new custom layer. I hope to prepare an exmaple and post it in the future. The examples I’ve seen out there mostly do not appear to be implemented correctly.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404406" onclick='return addComment.moveForm( "comment-404406", "404406", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-415200">
+<div class="comment-container" id="li-comment-415200">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pranav Goel</span>
+<span class="date">September 30, 2017 at 6:07 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-415200" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This write-up is indeed a good way to get started with the Attention mechanism. I really look forward to a post on applying attention in Tensorflow/Keras!<br/>
+Thanks again for all the help in implementing the truncated backprop through time in Keras (around end of June).</p>
+<div class="reply">
+<a aria-label="Reply to Pranav Goel" class="comment-reply-link" href="#comment-415200" onclick='return addComment.moveForm( "comment-415200", "415200", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-415252">
+<div class="comment-container" id="li-comment-415252">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 1, 2017 at 9:07 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-415252" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad it helped. I have post on how to calculate attention step by step scheduled for mid Oct 2017.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-415252" onclick='return addComment.moveForm( "comment-415252", "415252", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-405200">
+<div class="comment-container" id="li-comment-405200">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/567f511351a57eb671beb3783aa0801e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/567f511351a57eb671beb3783aa0801e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Liam</span>
+<span class="date">July 9, 2017 at 6:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-405200" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>There are several seq2seq with attention mechanism implementation in Tensorflow contrib:<br/>
+<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/legacy_seq2seq/python/ops/seq2seq.py" rel="nofollow">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/legacy_seq2seq/python/ops/seq2seq.py</a><br/>
+<a href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/seq2seq/python/ops" rel="nofollow">https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/seq2seq/python/ops</a></p>
+<div class="reply">
+<a aria-label="Reply to Liam" class="comment-reply-link" href="#comment-405200" onclick='return addComment.moveForm( "comment-405200", "405200", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-405272">
+<div class="comment-container" id="li-comment-405272">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 9, 2017 at 10:57 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-405272" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Liam.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405272" onclick='return addComment.moveForm( "comment-405272", "405272", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-414820">
+<div class="comment-container" id="li-comment-414820">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8d11209843ea8ed0912b1e91b3a6e33b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8d11209843ea8ed0912b1e91b3a6e33b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Karma String</span>
+<span class="date">September 26, 2017 at 6:58 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-414820" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The sample image showed in “2. Attention in Image Descriptions” is Figs. 5 in the original paper which is used to illustrate the mistakes of the model. It might be better to show Figs. 4 in the original paper.</p>
+<div class="reply">
+<a aria-label="Reply to Karma String" class="comment-reply-link" href="#comment-414820" onclick='return addComment.moveForm( "comment-414820", "414820", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-414844">
+<div class="comment-container" id="li-comment-414844">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 26, 2017 at 3:00 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-414844" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the suggestion.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-414844" onclick='return addComment.moveForm( "comment-414844", "414844", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-419851">
+<div class="comment-container" id="li-comment-419851">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a1ce7c523cab50efad58a20b510b33cf?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a1ce7c523cab50efad58a20b510b33cf?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">xiaodan Li</span>
+<span class="date">November 13, 2017 at 4:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-419851" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>can we use the attention mechanism when doing text classification?</p>
+<div class="reply">
+<a aria-label="Reply to xiaodan Li" class="comment-reply-link" href="#comment-419851" onclick='return addComment.moveForm( "comment-419851", "419851", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-419880">
+<div class="comment-container" id="li-comment-419880">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 13, 2017 at 10:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-419880" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-419880" onclick='return addComment.moveForm( "comment-419880", "419880", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-427714">
+<div class="comment-container" id="li-comment-427714">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/767f2345f7c2c374314684faeda6eb74?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/767f2345f7c2c374314684faeda6eb74?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jianhua Ma</span>
+<span class="date">January 27, 2018 at 8:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-427714" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, Jason</p>
+<p>Have you add the attention mechanism in your LSTM book with keras code?</p>
+<div class="reply">
+<a aria-label="Reply to Jianhua Ma" class="comment-reply-link" href="#comment-427714" onclick='return addComment.moveForm( "comment-427714", "427714", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-427715">
+<div class="comment-container" id="li-comment-427715">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 27, 2018 at 9:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-427715" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not at this stage, I will add attention to the book once Keras finalizes its implementation.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427715" onclick='return addComment.moveForm( "comment-427715", "427715", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-432696">
+<div class="comment-container" id="li-comment-432696">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a6f60ec2d97cfe1acf7f1f5f4b4db158?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a6f60ec2d97cfe1acf7f1f5f4b4db158?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">David</span>
+<span class="date">March 20, 2018 at 1:34 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-432696" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Dr. Jason Brownlee,</p>
+<p>We are training attention sequence to sequence model. Two sides are all long documents, so one of the problems using attention model is that the doc-product matrix becomes extremely big and often cause out-of-memory. Do you have any recommendation to solve this problem?</p>
+<p>thanks,</p>
+<div class="reply">
+<a aria-label="Reply to David" class="comment-reply-link" href="#comment-432696" onclick='return addComment.moveForm( "comment-432696", "432696", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-432704">
+<div class="comment-container" id="li-comment-432704">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 20, 2018 at 2:43 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-432704" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not really off the top of my head beyond use shorter sequences or get more RAM.</p>
+<p>Perhaps a careful redesign of the model specific to your problem is required David.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-432704" onclick='return addComment.moveForm( "comment-432704", "432704", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-434707">
+<div class="comment-container" id="li-comment-434707">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/17a4c82009d2edef7b24ad9471789256?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/17a4c82009d2edef7b24ad9471789256?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Nick</span>
+<span class="date">April 11, 2018 at 10:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-434707" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Your post is hlepful to me. Thanks.<br/>
+Butt I have a question. As I know attention layer has  own trainable own matrix. What information will be tarined into this matrix? And hidden states of decoders are not important anymore with attention mrchanism? I don’t understand exactly in this points.</p>
+<div class="reply">
+<a aria-label="Reply to Nick" class="comment-reply-link" href="#comment-434707" onclick='return addComment.moveForm( "comment-434707", "434707", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-434725">
+<div class="comment-container" id="li-comment-434725">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 11, 2018 at 4:17 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-434725" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Here is a walk through of the equations that should make it clearer:<br/>
+<a href="https://machinelearningmastery.com/how-does-attention-work-in-encoder-decoder-recurrent-neural-networks/" rel="nofollow">https://machinelearningmastery.com/how-does-attention-work-in-encoder-decoder-recurrent-neural-networks/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-434725" onclick='return addComment.moveForm( "comment-434725", "434725", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-441946">
+<div class="comment-container" id="li-comment-441946">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/278eaf8293cad2f3ca71082bb8d446c9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/278eaf8293cad2f3ca71082bb8d446c9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Smith</span>
+<span class="date">June 25, 2018 at 7:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-441946" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello </p>
+<p>Do you think attention will make a difference in a straightforward problem such as next word prediction?</p>
+<div class="reply">
+<a aria-label="Reply to Smith" class="comment-reply-link" href="#comment-441946" onclick='return addComment.moveForm( "comment-441946", "441946", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-441971">
+<div class="comment-container" id="li-comment-441971">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 25, 2018 at 2:34 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/attention-long-short-term-memory-recurrent-neural-networks/#comment-441971" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It may.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-441971" onclick='return addComment.moveForm( "comment-441971", "441971", "respond", "4101" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/attention-long-short-term-memory-recurrent-neural-networks/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4101"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="8deb605f1a"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="181"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-29"> <div class="textwidget"><p></p><center><br/>
+<strong>Long Short-Term Memory Networks</strong><br/>
+Develop sequence prediction models in Keras.
+<p><a href="/lstms-with-python/">Click to Get Started Now!</a><br/>
+<a href="/lstms-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

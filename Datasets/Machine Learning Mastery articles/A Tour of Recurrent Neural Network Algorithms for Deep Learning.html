@@ -1,0 +1,850 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>A Tour of Recurrent Neural Network Algorithms for Deep Learning</title>
+<link href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="A Tour of Recurrent Neural Network Algorithms for Deep Learning" property="og:title"/>
+<meta content="Recurrent neural networks, or RNNs, are a type of artificial neural network that add additional weights to the network to create cycles in the network graph in an effort to maintain an internal state. The promise of adding state to neural networks is that they will be able to explicitly learn and exploit context in …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Long Short-Term Memory Networks" property="article:section"/>
+<meta content="2017-07-04T19:00:55+00:00" property="article:published_time"/>
+<meta content="2017-07-19T22:48:56+00:00" property="article:modified_time"/>
+<meta content="2017-07-19T22:48:56+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/A-Tour-of-Recurrent-Neural-Network-Algorithms-for-Deep-Learning.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/A-Tour-of-Recurrent-Neural-Network-Algorithms-for-Deep-Learning.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="388" property="og:image:height"/>
+<meta content="A Tour of Recurrent Neural Network Algorithms for Deep Learning" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/feed/" rel="alternate" title="Machine Learning Mastery » A Tour of Recurrent Neural Network Algorithms for Deep Learning Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4113" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Frecurrent-neural-network-algorithms-for-deep-learning%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Frecurrent-neural-network-algorithms-for-deep-learning%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4113 single-format-standard unknown alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-31"> <div class="textwidget"><p>Want help with LSTMs? <a href="https://machinelearningmastery.lpages.co/lnwp-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4113 post type-post status-publish format-standard has-post-thumbnail hentry category-lstm">
+<header>
+<h1 class="title entry-title">A Tour of Recurrent Neural Network Algorithms for Deep Learning</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-07-05T05:00:55+1100">July 5, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/lstm/" title="View all items in Long Short-Term Memory Networks">Long Short-Term Memory Networks</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4113 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Tour+of+Recurrent+Neural+Network+Algorithms+for+Deep+Learning&amp;url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Recurrent neural networks, or RNNs, are a type of artificial neural network that add additional weights to the network to create cycles in the network graph in an effort to maintain an internal state.</p>
+<p>The promise of adding state to neural networks is that they will be able to explicitly learn and exploit context in sequence prediction problems, such as problems with an order or temporal component.</p>
+<p>In this post, you are going take a tour of recurrent neural networks used for deep learning.</p>
+<p>After reading this post, you will know:</p>
+<ul>
+<li>How top recurrent neural networks used for deep learning work, such as LSTMs, GRUs, and NTMs.</li>
+<li>How top RNNs relate to the broader study of recurrence in artificial neural networks.</li>
+<li>How research in RNNs has led to state-of-the-art performance on a range of challenging problems.</li>
+</ul>
+<p>Note, we’re not going to cover every possible recurrent neural network. Instead, we will focus on recurrent neural networks used for deep learning (LSTMs, GRUs and NTMs) and the context needed to understand them.</p>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4117" style="width: 650px"><img alt="A Tour of Recurrent Neural Network Algorithms for Deep Learning" class="size-full wp-image-4117" height="388" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/A-Tour-of-Recurrent-Neural-Network-Algorithms-for-Deep-Learning.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/A-Tour-of-Recurrent-Neural-Network-Algorithms-for-Deep-Learning.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/A-Tour-of-Recurrent-Neural-Network-Algorithms-for-Deep-Learning-300x182.jpg 300w" width="640"/><p class="wp-caption-text">A Tour of Recurrent Neural Network Algorithms for Deep Learning<br/>Photo by <a href="https://www.flickr.com/photos/fotos_medem/3398311871/">Santiago Medem</a>, some rights reserved.</p></div>
+<h2>Overview</h2>
+<p>We will start off by setting the scene for the field of recurrent neural networks.</p>
+<p>Next, we will take a closer look at LSTMs, GRUs, and NTM used for deep learning.</p>
+<p>We will then spend some time on advanced topics related to using RNNs for deep learning.</p>
+<ul>
+<li>Recurrent Neural Networks
+<ul>
+<li>Fully Recurrent Networks</li>
+<li>Recursive Neural Networks</li>
+<li>Neural History Compressor</li>
+</ul>
+</li>
+<li>Long Short-Term Memory Networks</li>
+<li>Gated Recurrent Unit Neural Networks</li>
+<li>Neural Turing Machines</li>
+</ul>
+<h2>Recurrent Neural Networks</h2>
+<p>Let’s set the scene.</p>
+<p>Popular belief suggests that recurrence imparts a memory to the network topology.</p>
+<p>A better way to consider this is the training set contains examples with a set of inputs for the current training example. This is “conventional, e.g. a traditional multilayered Perceptron.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca442a7730880179426" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+X(i) -&gt; y(i)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca442a7730880179426-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca442a7730880179426-1">X(i) -&gt; y(i)</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>But the training example is supplemented with a set of inputs from the previous example. This is “unconventional,” e.g. a <a href="https://en.wikipedia.org/wiki/Recurrent_neural_network">recurrent neural network</a>.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca442a7739045499871" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+[X(i-1), X(i)] -&gt; y(i)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca442a7739045499871-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca442a7739045499871-1">[X(i-1), X(i)] -&gt; y(i)</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>As with all feed forward network paradigms, the issues are how to connect the input layer to the output layer, include feedback activations, and then train the construct to converge.</p>
+<p>Let’s now take a tour of the different types of recurrent neural networks, starting with very simple conceptions.</p>
+<h3>Fully Recurrent Networks</h3>
+<p>The layered topology of a multilayer Perceptron is preserved, but every element has a weighted connection to every other element in the architecture and has a single feedback connection to itself.</p>
+<p>Not all connections are trained and the extreme non-linearity of the error derivatives means conventional Backpropagation will not work, and so <a href="https://en.wikipedia.org/wiki/Backpropagation_through_time">Backpropagation Through Time</a> approaches or Stochastic Gradient Descent is employed.</p>
+<p>Also, see Bill Wilson’s <a href="http://www.cse.unsw.edu.au/~billw/cs9444/tensor-stuff/tensor-intro-04.html">Tensor Product Networks</a> (1991).</p>
+<h3>Recursive Neural Networks</h3>
+<p>Recurrent neural networks are linear architectural variant of <a href="https://en.wikipedia.org/wiki/Recursive_neural_network">recursive networks</a>.</p>
+<p>Recursion promotes branching in hierarchical feature spaces and the resulting network architecture mimics this as training proceeds.</p>
+<p>Training is achieved with Gradient Descent by sub-gradient methods.</p>
+<p>This is described in detail in R. Socher, et al., <a href="http://machinelearning.wustl.edu/mlpapers/paper_files/ICML2011Socher_125.pdf">Parsing Natural Scenes and Natural Language with Recursive Neural Networks</a>, 2011.</p>
+<h3>Neural History Compressor</h3>
+<p>Schmidhuber reported a very deep learner, first in 1991, that was able to perform credit assignment over hundreds of neural layers by unsupervised pre-training for a hierarchy of RNNs.</p>
+<p>Each RNN is trained unsupervised to predict the next input. Then only inputs generating an error are fed forward, conveying new information to the next RNN in the hierarchy, which then processes at a slower, self-organizing time scale.</p>
+<p>It was shown that no information is lost, just compressed. The RNN stack is a “deep generative model” of the data. The data can be reconstructed from the compressed form.</p>
+<p>See J. Schmidhuber, et al., <a href="http://www2.econ.iastate.edu/tesfatsi/DeepLearningInNeuralNetworksOverview.JSchmidhuber2015.pdf">Deep Learning in Neural Networks: An Overview</a>, 2014.</p>
+<p>Backpropagation fails as the calculation of extremity of non-linear derivatives increases as the error is propagated backwards through large topologies, making credit assignment difficult, if not impossible.</p>
+<div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with LSTMs for Sequence Prediction?</h3>
+<p>Take my free 7-day email course and discover 6 different LSTM architectures (with code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" rel="noopener" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="1403a9373f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" src="https://machinelearningmastery.lpages.co/leadbox-1500400021.js" type="text/javascript"></script></p>
+</center>
+<div class="woo-sc-hr"></div>
+<h2>Long Short-Term Memory Networks</h2>
+<p>With conventional Back-Propagation Through Time (BPTT) or Real Time Recurrent Learning (RTTL), error signals flowing backward in time tend to either explode or vanish.</p>
+<p>The temporal evolution of the back-propagated error exponentially depends on the size of the weights. Weight explosion may lead to oscillating weights, while in vanishing causes learning to bridge long time lags and takes a prohibitive amount of time, or does not work at all.</p>
+<ul>
+<li>LSTM is a novel recurrent network architecture training with an appropriate gradient-based learning algorithm.</li>
+<li>LSTM is designed to overcome error back-flow problems. It can learn to bridge time intervals in excess of 1000 steps.</li>
+<li>This true in presence of noisy, incompressible input sequences, without loss of short time lag capabilities.</li>
+</ul>
+<p>Error back-flow problems are overcome by an efficient, gradient-based algorithm for an architecture enforcing constant (thus neither exploding nor vanishing) error flow through internal states of special units. These units reduce the effects of the “Input Weight Conflict” and the “Output Weight Conflict.”</p>
+<p><strong>The Input Weight Conflict</strong>: Provided the input is non-zero, the same incoming weight has to be used for both storing certain inputs and ignoring others, then will often receive conflicting weight update signals.</p>
+<p>These signals will attempt to make the weight participate in storing the input and protecting the input. This conflict makes learning difficult and calls for a more context-sensitive mechanism for controlling “write operations” through input weights.</p>
+<p><strong>The Output Weight Conflict</strong>: As long as the output of a unit is non-zero, the weight on the output connection from this unit will attract conflicting weight update signals generated during sequence processing.</p>
+<p>These signals will attempt to make the outgoing weight participate in accessing the information stored in the processing unit and, at different times, protect the subsequent unit from being perturbed by the output of the unit being fed forward.</p>
+<p>These conflicts are not specific to long-term lags and can equally impinge on short-term lags. Of note though is that as lag increases, stored information must be protected from perturbation, especially in the advanced stages of learning.</p>
+<p><strong>Network Architecture</strong>: Different types of units may convey useful information about the current state of the network. For instance, an input gate (output gate) may use inputs from other memory cells to decide whether to store (access) certain information in its memory cell.</p>
+<p>Memory cells contain gates. Gates are specific to the connection they mediate. Input gates work to remedy the Input Weight Conflict while Output Gates work to eliminate the Output Weight Conflict.</p>
+<p><strong>Gates</strong>: Specifically, to alleviate the input and output weight conflicts and perturbations, a multiplicative input gate unit is introduced to protect the memory contents stored from perturbation by irrelevant inputs and a multiplicative output gate unit protects other units from perturbation by currently irrelevant memory contents stored.</p>
+<div class="wp-caption aligncenter" id="attachment_4114" style="width: 682px"><img alt="Example of LSTM Architecture" class="size-full wp-image-4114" height="429" sizes="(max-width: 672px) 100vw, 672px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Example-of-LSTM-Architecture.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Example-of-LSTM-Architecture.png 672w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Example-of-LSTM-Architecture-300x192.png 300w" width="672"/><p class="wp-caption-text">Example of an LSTM net with 8 input units, 4 output units, and 2 memory cell blocks of size 2. in1 marks the input gate, out1 marks the output gate, and cell1 = block1 marks the first memory cell of block 1.<br/>Taken from Long Short-Term Memory, 1997.</p></div>
+<p>Connectivity in LSTM is complicated compared to the multilayer Perceptron because of the diversity of processing elements and the inclusion of feedback connections.</p>
+<p><strong>Memory cell blocks</strong>: Memory cells sharing the same input gate and the same output gate form a structure called a “memory cell block”.</p>
+<p>Memory cell blocks facilitate information storage; as with conventional neural nets, it is not so easy to code a distributed input within a single cell. A memory cell block of size 1 is just a simple memory cell.</p>
+<p><strong>Learning</strong>: A variant of Real Time Recurrent Learning (RTRL) that takes into account the altered, multiplicative dynamics caused by input and output gates is used to ensure non-decaying error back propagated through internal states of memory cells errors arriving at “memory cell net inputs” do not get propagated back further in time.</p>
+<p><strong>Guessing</strong>: This stochastic approach can outperform many term lag algorithms. It has been established that many long-time lag tasks used in previous work can be solved more quickly by simple random weight guessing than by the proposed algorithms.</p>
+<p>See S. Hochreiter and J. Schmidhuber, <a href="http://dl.acm.org/citation.cfm?id=1246450">Long-Short Term Memory</a>, 1997.</p>
+<p>The most interesting application of LSTM Recurrent Neural Networks has been the work done with language processing. See the work of Gers for a comprehensive description.</p>
+<ul>
+<li>F. Gers and J. Schmidhuber, <a href="ftp://ftp.idsia.ch/pub/juergen/L-IEEE.pdf">LSTM Recurrent Networks Learn Simple Context Free and Context Sensitive Languages</a>, 2001.</li>
+<li>F. Gers, <a href="http://www.felixgers.de/papers/phd.pdf">Long Short-Term Memory in Recurrent Neural Networks</a>, Ph.D. Thesis, 2001.</li>
+</ul>
+<h3>LSTM Limitations</h3>
+<p>The efficient, truncated version of LSTM will not easily solve problems similar to “strongly delayed XOR.”</p>
+<p>Each memory cell block needs an input gate and an output gate. Not necessary in other recurrent approaches.</p>
+<p>Constant error flow through “Constant Error Carrousels” inside memory cells produces the same effect as a conventional feed-forward architecture being presented with the entire input string at once.</p>
+<p>LSTM is as flawed with the concept of “regency” as other feed-forward approaches. Additional counting mechanisms may be required if fine-precision counting time steps is needed.</p>
+<h3>LSTM Advantages</h3>
+<p>The algorithms ability to bridge long time lags is the result of constant error Backpropagation in the architecture’s memory cells.</p>
+<p>LSTM can approximate noisy problem domains, distributed representations, and continuous values.</p>
+<p>LSTM generalizes well over problem domains considered. This is important given some tasks are intractable for already established recurrent networks.</p>
+<p>Fine tuning of network parameters over the problem domains appears to be unnecessary.</p>
+<p>In terms of update complexity per weight and time steps, LSTM is essentially equivalent to BPTT.</p>
+<p>LSTMs are showing to be powerful, achieving state-of-the-art results in domains like machine translation.</p>
+<h2>Gated Recurrent Unit Neural Networks</h2>
+<p>Gated Recurrent Neural Networks have been successfully applied to sequential or temporal data.</p>
+<p>Most suitable for speech recognition, natural language processing, and machine translation, together with LSTM they have performed well with long sequence problem domains.</p>
+<p>Gating was considered in the LSTM topic and involves a gating network generating signals that act to control how the present input and previous memory work to update the current activation, and thereby the current network state.</p>
+<p>Gates are themselves weighted and are selectively updated according to an algorithm, throughout the learning phase.</p>
+<p>Gate networks introduce added computational expense in the form of increased complexity, and therefore added parameterization.</p>
+<p>The LSTM RNN architecture uses the computation of the simple RNN as an intermediate candidate for the internal memory cell (state). The Gated Recurrent Unit (GRU) RNN reduces the gating signals to two from the LSTM RNN model. The two gates are called an update gate and a reset gate.</p>
+<p>The gating mechanism in the GRU (and LSTM) RNN is a replica of the simple RNN in terms of parameterization. The weights corresponding to these gates are also updated using BPTT stochastic gradient descent as it seeks to minimize a cost function.</p>
+<p>Each parameter update will involve information pertaining to the state of the overall network. This can have detrimental effects.</p>
+<p>The concept of gating is explored further and extended with three new variant gating mechanisms.<br/>
+The three gating variants that have been considered are, GRU1 where each gate is computed using only the previous hidden state and the bias; GRU2, where each gate is computed using only the previous hidden state; and GRU3, where each gate is computed using only the bias. A significant reduction in parameters is observed with GRU3 yielding the smallest number.</p>
+<p>The three variants and the GRU RNN were benchmarked using data from the MNIST Database of handwritten digits and the IMDB movie review dataset.</p>
+<p>Two sequences lengths were generated from the MNIST dataset and one was generated from the IMDB dataset.</p>
+<p>The main driving signal of the gates appears to be the (recurrent) state as it contains essential information about other signals.</p>
+<p>The use of the stochastic gradient descent implicitly carries information about the network state. This may explain the relative success in using the bias alone in the gate signals as its adaptive update carries information about the state of the network.</p>
+<p>Gated variants explore the mechanisms of gating with limited evaluation of topologies.</p>
+<p>For more information see:</p>
+<ul>
+<li>R. Dey and F. M. Salem, <a href="https://arxiv.org/ftp/arxiv/papers/1701/1701.05923.pdf">Gate-Variants of Gated Recurrent Unit (GRU) Neural Networks</a>, 2017.</li>
+<li>J. Chung, et al., <a href="https://pdfs.semanticscholar.org/2d9e/3f53fcdb548b0b3c4d4efb197f164fe0c381.pdf">Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling</a>, 2014.</li>
+</ul>
+<h2>Neural Turing Machines</h2>
+<p>Neural Turing Machines extend the capabilities of neural networks by coupling them to external memory resources, which they can interact with through attention processes.</p>
+<p>The combined system is analogous to a Turing Machine or Von Neumann architecture, but is differentiable end-to-end, allowing it to be efficiently trained with gradient descent.</p>
+<p>Preliminary results demonstrate that Neural Turing Machines can infer simple algorithms, such as copying, sorting, and associative recall from input and output examples.</p>
+<p>RNNs stand out from other machine learning methods for their ability to learn and carry out complicated transformations of data over extended periods of time. Moreover, it is known that RNNs are Turing-Complete and therefore have the capacity to simulate arbitrary procedures, if properly wired.</p>
+<p>The capabilities of standard RNNs are extended to simplify the solution of algorithmic tasks. This enrichment is primarily via a large, addressable memory, so, by analogy to Turing’s enrichment of finite-state machines by an infinite memory tape, and so dubbed “Neural Turing Machine” (NTM).</p>
+<p>Unlike a Turing machine, an NTM is a differentiable computer that can be trained by gradient descent, yielding a practical mechanism for learning programs.</p>
+<div class="wp-caption aligncenter" id="attachment_4115" style="width: 570px"><img alt="Neural Turing Machine Architecture" class="size-full wp-image-4115" height="394" sizes="(max-width: 560px) 100vw, 560px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Neural-Turing-Machine-Architecture.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Neural-Turing-Machine-Architecture.png 560w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Neural-Turing-Machine-Architecture-300x211.png 300w" width="560"/><p class="wp-caption-text">NTM Architecture is generically shown above. During each update cycle, the controller network receives inputs from an external environment and emits outputs in response. It also reads to and writes from a memory matrix via a set of parallel read-and-write heads. The dashed line indicates the division between the NTM circuit and the outside world.<br/>Taken from Neural Turing Machines, 2014.</p></div>
+<p>Crucially, every component of the architecture is differentiable, making it straightforward to train with gradient descent. This was achieved this by defining ‘blurry’ read-and-write operations that interact to a greater or lesser degree with all the elements in memory (rather than addressing a single element, as in a normal Turing machine or digital computer).</p>
+<p>For more information see:</p>
+<ul>
+<li>A. Graves, et al., <a href="https://arxiv.org/pdf/1410.5401.pdf">Neural Turing Machines</a>, 2014.</li>
+<li>R. Greve, et al., <a href="http://sebastianrisi.com/wp-content/uploads/greve_gecco16.pdf">Evolving Neural Turing Machines for Reward-based Learning</a>, 2016.</li>
+</ul>
+<h3>NTM Experiments</h3>
+<p>The copy task tests whether NTM can store and recall a long sequence of arbitrary information. The network is presented with an input sequence of random binary vectors followed by a delimiter flag.</p>
+<p>The networks were trained to copy sequences of eight-bit random vectors where the sequence lengths were randomized between 1 and 20. The target sequence was simply a copy of the input sequence (without the delimiter flag).</p>
+<p>Repeat copy task extends copy by requiring the network to output the copied sequence a specified number of times and then emit an end-of-sequence marker. The main motivation was to see if the NTM could learn a simple nested function.</p>
+<p>The network receives random-length sequences of random binary vectors, followed by a scalar value indicating the desired number of copies, which appears on a separate input channel.</p>
+<p>Associative recall tasks involve organizing data arising from “indirection”, that is when one data item points to another. A list of items is constructed so that querying with one of the items demands that the network returns the subsequent item.</p>
+<p>A sequence of binary vectors that is bounded on the left and right by delimiter symbols is defined. After several items have been propagated to the network, the network is queried by showing a random item, and seeing if the network can produce the next item.</p>
+<p>Dynamic N-Grams task tests if the NTM can adapt quickly to new predictive distributions by using memory as a re-writable table that it could use to keep count of transition statistics, thereby emulating a conventional N-Gram model.</p>
+<p>Consider the set of all possible 6-Gram distributions over binary sequences. Each 6-Gram distribution can be expressed as a table of 32 numbers, specifying the probability that the next bit will be one, given all possible length five binary histories. A particular training sequence was generated by drawing 200 successive bits using the current lookup table. The network observes the sequence one bit at a time and is then asked to predict the next bit.</p>
+<p>Priority sort task tests the NTM’s ability to sort. A sequence of random binary vectors is input to the network along with a scalar priority rating for each vector. The priority is drawn uniformly from the range [-1, 1]. The target sequence contains the binary vectors sorted according to their priorities.</p>
+<p>NTMs have feed-forward architectures to LSTMs as one of their components.</p>
+<h2>Summary</h2>
+<p>In this post, you discovered recurrent neural networks for deep learning.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>How top recurrent neural networks used for deep learning work, such as LSTMs, GRUs, and NTMs.</li>
+<li>How top RNNs relate to the broader study of recurrence in artificial neural networks.</li>
+<li>How research in RNNs has lead to state-of-the-art performance on a range of challenging problems.</li>
+</ul>
+<p>This was a big post.</p>
+<p>Do you have any questions about RNNs for deep learning?<br/>
+Ask your questions in the comments below, and I will do my best to answer them.</p>
+<div class="awac-wrapper"><div class="awac widget text-30"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<p></p><center>
+<h2>Develop LSTMs for Sequence Prediction Today!</h2>
+<p><a href="/lstms-with-python/"><img align="left" alt="Long Short-Term Memory Networks with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own LSTM models in Minutes</h4>
+<p>…with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/lstms-with-python/">Long Short-Term Memory Networks with Python</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>CNN LSTMs, Encoder-Decoder LSTMs, generative models, data preparation, making predictions</em> and much more…</p>
+<h4>Finally Bring LSTM Recurrent Neural Networks to<br/>
+Your Sequence Predictions Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/lstms-with-python/">Click to learn more</a>.<br/>
+</p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4113 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Tour+of+Recurrent+Neural+Network+Algorithms+for+Deep+Learning&amp;url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/" rel="prev"><i class="fa fa-angle-left"></i> Gentle Introduction to the Adam Optimization Algorithm for Deep Learning</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/how-to-scale-data-for-long-short-term-memory-networks-in-python/" rel="next">How to Scale Data for Long Short-Term Memory Networks in Python <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">10 Responses to <em>A Tour of Recurrent Neural Network Algorithms for Deep Learning</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-405009">
+<div class="comment-container" id="li-comment-405009">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ab4ddaa3cbad256f063091723de37cbc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ab4ddaa3cbad256f063091723de37cbc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shah</span>
+<span class="date">July 7, 2017 at 1:29 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-405009" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Jason,<br/>
+Can you recommend the hardware requirements for the recurrent and lstm networks?<br/>
+Do you think lstm will perform satisfactorily on a time series with approximately 3000 data points?</p>
+<p>Last but not the least, please write a blog post giving the sequence in which one should read your lstm blogs. There are many and it’s hard to decide where to start.</p>
+<div class="reply">
+<a aria-label="Reply to Shah" class="comment-reply-link" href="#comment-405009" onclick='return addComment.moveForm( "comment-405009", "405009", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-405244">
+<div class="comment-container" id="li-comment-405244">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 9, 2017 at 10:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-405244" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Modest modern hardware. GPUs don’t help much unless you have very large data. In that case I’d recommend renting on AWS.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405244" onclick='return addComment.moveForm( "comment-405244", "405244", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-405161">
+<div class="comment-container" id="li-comment-405161">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a309c869da076b74a18bb4b3e40fe5ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a309c869da076b74a18bb4b3e40fe5ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">klaas</span>
+<span class="date">July 9, 2017 at 12:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-405161" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Do you consider creating a chatbot with LSTMs?</p>
+<div class="reply">
+<a aria-label="Reply to klaas" class="comment-reply-link" href="#comment-405161" onclick='return addComment.moveForm( "comment-405161", "405161", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-405266">
+<div class="comment-container" id="li-comment-405266">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 9, 2017 at 10:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-405266" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>People do, I have not.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405266" onclick='return addComment.moveForm( "comment-405266", "405266", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-412063">
+<div class="comment-container" id="li-comment-412063">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a36bfb539aea71e7167aa8a1488908fe?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a36bfb539aea71e7167aa8a1488908fe?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">baojia li</span>
+<span class="date">September 1, 2017 at 7:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-412063" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>can the LSTM model  predict random sequence which  follow a poisson distribution ?</p>
+<div class="reply">
+<a aria-label="Reply to baojia li" class="comment-reply-link" href="#comment-412063" onclick='return addComment.moveForm( "comment-412063", "412063", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-412115">
+<div class="comment-container" id="li-comment-412115">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 2, 2017 at 6:07 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-412115" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Generally, neural networks cannot predict a pseudo random series.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-412115" onclick='return addComment.moveForm( "comment-412115", "412115", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-421391">
+<div class="comment-container" id="li-comment-421391">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a216f1294dea2954cb72e9d9c4793b76?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a216f1294dea2954cb72e9d9c4793b76?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yogesh S Modak</span>
+<span class="date">November 28, 2017 at 2:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-421391" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>How far can LSTMs and RNN go in providing a fool proof algorithm for fake news detection?</p>
+<div class="reply">
+<a aria-label="Reply to Yogesh S Modak" class="comment-reply-link" href="#comment-421391" onclick='return addComment.moveForm( "comment-421391", "421391", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-421430">
+<div class="comment-container" id="li-comment-421430">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 28, 2017 at 8:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-421430" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Nothing is foolproof.</p>
+<p>I think with enough data, that a good model could be developed.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421430" onclick='return addComment.moveForm( "comment-421430", "421430", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-436031">
+<div class="comment-container" id="li-comment-436031">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c66ac952a43d19ca8a8b30733e98bed3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c66ac952a43d19ca8a8b30733e98bed3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Charles Aydin</span>
+<span class="date">April 27, 2018 at 12:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-436031" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I’m wondering if you had any experience (or knew of any work done) in implementing LSTMs for classifying byte sequences in mainframe (IBM z/OS) data set records with no delimiters within records (analogous to rows in a data table in which you don’t know where columns start and end, but you DO know where rows start and end). If neither, any quick ideas / recommendations would be appreciated as well!</p>
+<p>Thanks for this great site!</p>
+<p>Charles</p>
+<div class="reply">
+<a aria-label="Reply to Charles Aydin" class="comment-reply-link" href="#comment-436031" onclick='return addComment.moveForm( "comment-436031", "436031", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-436060">
+<div class="comment-container" id="li-comment-436060">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 27, 2018 at 6:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/recurrent-neural-network-algorithms-for-deep-learning/#comment-436060" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This is a very specific case and I have not seen it. </p>
+<p>It sounds straightforward though. You must convert the inputs into a sequence of integers for the LSTM to be able to learn the problem.</p>
+<p>It is similar to mapping words to integers as we do in NLP problems.</p>
+<p>Does that help?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-436060" onclick='return addComment.moveForm( "comment-436060", "436060", "respond", "4113" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/recurrent-neural-network-algorithms-for-deep-learning/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4113"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="8666e8417f"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="163"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-29"> <div class="textwidget"><p></p><center><br/>
+<strong>Long Short-Term Memory Networks</strong><br/>
+Develop sequence prediction models in Keras.
+<p><a href="/lstms-with-python/">Click to Get Started Now!</a><br/>
+<a href="/lstms-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

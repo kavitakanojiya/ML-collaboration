@@ -1,0 +1,1491 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks</title>
+<link href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks" property="og:title"/>
+<meta content="Long Short-Term Memory or LSTM recurrent neural networks are capable of learning and remembering over long sequences of inputs. LSTMs work very well if your problem has one output for every input, like time series forecasting or text translation. But LSTMs can be challenging to use when you have very long input sequences and only …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Long Short-Term Memory Networks" property="article:section"/>
+<meta content="2017-06-25T19:00:51+00:00" property="article:published_time"/>
+<meta content="2017-07-19T22:50:01+00:00" property="article:modified_time"/>
+<meta content="2017-07-19T22:50:01+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Handle-Very-Long-Sequences-with-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Handle-Very-Long-Sequences-with-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="428" property="og:image:height"/>
+<meta content="How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/feed/" rel="alternate" title="Machine Learning Mastery » How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4095" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fhandle-long-sequences-long-short-term-memory-recurrent-neural-networks%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fhandle-long-sequences-long-short-term-memory-recurrent-neural-networks%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4095 single-format-standard gecko alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-31"> <div class="textwidget"><p>Want help with LSTMs? <a href="https://machinelearningmastery.lpages.co/lnwp-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4095 post type-post status-publish format-standard has-post-thumbnail hentry category-lstm">
+<header>
+<h1 class="title entry-title">How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-06-26T05:00:51+1100">June 26, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/lstm/" title="View all items in Long Short-Term Memory Networks">Long Short-Term Memory Networks</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4095 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Handle+Very+Long+Sequences+with+Long+Short-Term+Memory+Recurrent+Neural+Networks&amp;url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Long Short-Term Memory or LSTM recurrent neural networks are capable of learning and remembering over long sequences of inputs.</p>
+<p>LSTMs work very well if your problem has one output for every input, like time series forecasting or text translation. But LSTMs can be challenging to use when you have very long input sequences and only one or a handful of outputs.</p>
+<p>This is often called sequence labeling, or sequence classification.</p>
+<p>Some examples include:</p>
+<ul>
+<li>Classification of sentiment in documents containing thousands of words (natural language processing).</li>
+<li>Classification of an EEG trace of thousands of time steps (medicine).</li>
+<li>Classification of coding or non-coding genes for sequences of thousands of DNA base pairs (bioinformatics).</li>
+</ul>
+<p>These so-called sequence classification tasks require special handling when using recurrent neural networks, like LSTMs.</p>
+<p>In this post, you will discover 6 ways to handle very long sequences for sequence classification problems.</p>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4097" style="width: 650px"><img alt="How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks" class="size-full wp-image-4097" height="428" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Handle-Very-Long-Sequences-with-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Handle-Very-Long-Sequences-with-Long-Short-Term-Memory-Recurrent-Neural-Networks.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Handle-Very-Long-Sequences-with-Long-Short-Term-Memory-Recurrent-Neural-Networks-300x201.jpg 300w" width="640"/><p class="wp-caption-text">How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks<br/>Photo by <a href="https://www.flickr.com/photos/justinjensen/8883963633/">Justin Jensen</a>, some rights reserved.</p></div>
+<h2>1. Use Sequences As-Is</h2>
+<p>The starting point is to use the long sequence data as-is without change.</p>
+<p>This may result in the problem of very long training times.</p>
+<p>More troubling, attempting to back-propagate across very long input sequences may result in vanishing gradients, and in turn, an unlearnable model.</p>
+<p>A reasonable limit of 250-500 time steps is often used in practice with large LSTM models.</p>
+<h2>2. Truncate Sequences</h2>
+<p>A common technique for handling very long sequences is to simply truncate them.</p>
+<p>This can be done by selectively removing time steps from the beginning or the end of input sequences.</p>
+<p>This will allow you to force the sequences to a manageable length at the cost of losing data.</p>
+<p>The risk of truncating input sequences is that data that is valuable to the model in order to make accurate predictions is being lost.</p>
+<h2>3. Summarize Sequences</h2>
+<p>In some problem domains, it may be possible to summarize the input sequences.</p>
+<p>For example, in the case where input sequences are words, it may be possible to remove all words from input sequences that are above a specified word frequency (e.g. “and”, “the”, etc.).</p>
+<p>This could be framed as only keep the observations where their ranked frequency in the entire training dataset is above some fixed value.</p>
+<p>Summarization may result in both focusing the problem on the most salient parts of the input sequences and sufficiently reducing the length of input sequences.</p>
+<h2>4. Random Sampling</h2>
+<p>A less systematic approach may be to summarize a sequence using random sampling.</p>
+<p>Random time steps may be selected and removed from the sequence in order to reduce them to a specific length.</p>
+<p>Alternately, random contiguous subsequences may be selected to construct a new sampled sequence over the desired length, care to handle overlap or non-overlap as required by the domain.</p>
+<p>This approach may be suitable in cases where there is no obvious way to systematically reduce the sequence length.</p>
+<p>This approach may also be used as a type of data augmentation scheme in order to create many possible different input sequences from each input sequence. Such methods can improve the robustness of models when available training data is limited.</p>
+<h2>5. Use Truncated Backpropagation Through Time</h2>
+<p>Rather than updating the model based on the entire sequence, the gradient can be estimated from a subset of the last time steps.</p>
+<p>This is called <a href="http://machinelearningmastery.com/gentle-introduction-backpropagation-time/">Truncated Backpropagation Through Time</a>, or TBPTT for short. It can dramatically speed up the learning process of recurrent neural networks like LSTMs on long sequences.</p>
+<p>This would allow all sequences to be provided as input and execute the forward pass, but only the last tens or hundreds of time steps would be used to estimate the gradients and used in weight updates.</p>
+<p>Some modern implementations of LSTMs permit you to specify the number of time steps to use for updates, separate for the time steps used as input sequences. For example:</p>
+<ul>
+<li><a href="http://deeplearning.net/software/theano/library/scan.html">The “truncate_gradient” argument in Theano</a>.</li>
+</ul>
+<h2>6. Use an Encoder-Decoder Architecture</h2>
+<p>You can use an autoencoder to learn a new representation length for long sequences, then a decoder network to interpret the encoded representation into the desired output.</p>
+<p>This may involve an unsupervised autoencoder as a pre-processing pass on sequences, or the more recent <a href="http://machinelearningmastery.com/learn-add-numbers-seq2seq-recurrent-neural-networks/">encoder-decoder LSTM style networks</a> used for natural language translation.</p>
+<p>Again, there may still be difficulties in learning from very long sequences, but the more sophisticated architecture may offer additional leverage or skill, especially if combined with one or more of the techniques above.</p>
+<div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with LSTMs for Sequence Prediction?</h3>
+<p>Take my free 7-day email course and discover 6 different LSTM architectures (with code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" rel="noopener" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="1403a9373f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" src="https://machinelearningmastery.lpages.co/leadbox-1500400021.js" type="text/javascript"></script></p>
+</center>
+<div class="woo-sc-hr"></div>
+<h2>Honorable Mentions and Crazy Ideas</h2>
+<p>This section lists some additional ideas that are not fully thought through.</p>
+<ul>
+<li>Explore splitting the input sequence into multiple fixed-length subsequences and train a model with each subsequence as a separate feature (e.g. parallel input sequences).</li>
+<li>Explore a Bidirectional LSTM where each LSTM in the pair is fit on half of the input sequence and the outcomes of each layer are merged. Scale from 2 to more to suitably reduce the length of the subsequences.</li>
+<li>Explore using sequence-aware encoding schemes, projection methods, and even hashing in order to reduce the number of time steps in less domain-specific ways.</li>
+</ul>
+<p>Do you have any crazy ideas of your own?<br/>
+Let me know in the comments.</p>
+<h2>Further Reading</h2>
+<p>This section lists some resources for further reading on sequence classification problems:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Sequence_labeling">Sequence labeling</a> on Wikipedia.</li>
+<li><a href="http://dl.acm.org/citation.cfm?id=1882478">A Brief Survey on Sequence Classification</a>, 2010</li>
+</ul>
+<h2>Summary</h2>
+<p>In this post, you discovered how you can handle very long sequences when training recurrent neural networks like LSTMs.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>How to reduce sequence length using truncation, summarization, and random sampling.</li>
+<li>How to adjust learning to use Truncated Backpropagation Through Time.</li>
+<li>How to adjust the network architecture to use an encoder-decoder structure.</li>
+</ul>
+<p>Do you have any questions?<br/>
+Ask your questions in the comments and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-30"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<p></p><center>
+<h2>Develop LSTMs for Sequence Prediction Today!</h2>
+<p><a href="/lstms-with-python/"><img align="left" alt="Long Short-Term Memory Networks with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own LSTM models in Minutes</h4>
+<p>…with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/lstms-with-python/">Long Short-Term Memory Networks with Python</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>CNN LSTMs, Encoder-Decoder LSTMs, generative models, data preparation, making predictions</em> and much more…</p>
+<h4>Finally Bring LSTM Recurrent Neural Networks to<br/>
+Your Sequence Predictions Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/lstms-with-python/">Click to learn more</a>.<br/>
+</p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4095 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Handle+Very+Long+Sequences+with+Long+Short-Term+Memory+Recurrent+Neural+Networks&amp;url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/gentle-introduction-backpropagation-time/" rel="prev"><i class="fa fa-angle-left"></i> A Gentle Introduction to Backpropagation Through Time</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/truncated-backpropagation-through-time-in-keras/" rel="next">How to Prepare Sequence Prediction for Truncated Backpropagation Through Time in Keras <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">48 Responses to <em>How to Handle Very Long Sequences with Long Short-Term Memory Recurrent Neural Networks</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-403896">
+<div class="comment-container" id="li-comment-403896">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pranav Goel</span>
+<span class="date">June 27, 2017 at 1:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-403896" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,</p>
+<p>Thank you for this blog post! I thing TBPTT is probably a very suitable method. Do you know if there is something equivalent to ‘truncate_gradient’ parameter in theano available for keras?</p>
+<p>Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Pranav Goel" class="comment-reply-link" href="#comment-403896" onclick='return addComment.moveForm( "comment-403896", "403896", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-403945">
+<div class="comment-container" id="li-comment-403945">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 27, 2017 at 8:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-403945" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>There used to be, but no longer sadly.</p>
+<p>I have a post scheduled to address this, giving you a suite of workarounds.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-403945" onclick='return addComment.moveForm( "comment-403945", "403945", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-404009">
+<div class="comment-container" id="li-comment-404009">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pranav Goel</span>
+<span class="date">June 27, 2017 at 10:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404009" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,</p>
+<p>Thanks for the response! Looking forward to that post. Any idea of when we can expect it?<br/>
+Once again, thank you for all the amazing work. Your posts are helping me a lot!</p>
+<div class="reply">
+<a aria-label="Reply to Pranav Goel" class="comment-reply-link" href="#comment-404009" onclick='return addComment.moveForm( "comment-404009", "404009", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-404050">
+<div class="comment-container" id="li-comment-404050">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 28, 2017 at 6:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404050" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>See here:<br/>
+<a href="http://machinelearningmastery.com/truncated-backpropagation-through-time-in-keras/" rel="nofollow">http://machinelearningmastery.com/truncated-backpropagation-through-time-in-keras/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404050" onclick='return addComment.moveForm( "comment-404050", "404050", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-5" id="comment-404064">
+<div class="comment-container" id="li-comment-404064">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/73e65b3d9162dc6e33272c74b248d94d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pranav Goel</span>
+<span class="date">June 28, 2017 at 7:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404064" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Oh wow, thank you so much!</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-5" id="comment-404162">
+<div class="comment-container" id="li-comment-404162">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 29, 2017 at 6:26 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404162" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No problem.</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-403919">
+<div class="comment-container" id="li-comment-403919">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/44cf2ac7913e4a0ad8f853833b08315f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/44cf2ac7913e4a0ad8f853833b08315f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Owen</span>
+<span class="date">June 27, 2017 at 5:03 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-403919" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>“For example, in the case where input sequences are words, it may be possible to remove all words from input sequences that are below a specified word frequency.”</p>
+<p>I think it may be the opposite. Words with extremely low frequencies may be the core of the sentence, and the ones with high frequencies might just be meaningless. For example, ‘the’ is no doubt the most frequent word, but it can’t tell you anything. However, words like ‘covfefe’ might be important.</p>
+<div class="reply">
+<a aria-label="Reply to Owen" class="comment-reply-link" href="#comment-403919" onclick='return addComment.moveForm( "comment-403919", "403919", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-403950">
+<div class="comment-container" id="li-comment-403950">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 27, 2017 at 8:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-403950" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I agree that was an error, fixed. Thanks Owen!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-403950" onclick='return addComment.moveForm( "comment-403950", "403950", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-404656">
+<div class="comment-container" id="li-comment-404656">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d541b0d2e3837f334c847d634621490?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d541b0d2e3837f334c847d634621490?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Michel Lemay</span>
+<span class="date">July 4, 2017 at 1:09 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404656" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>In practice, both ends of the frequency distribution needs to be truncated.  Common sense dictate that very high frequency words tends to be stopwords.  However, meaningful words starts to appear early on in this list.  So one should take care when defining what would be a good threshold in the top terms.  At the opposite end, in the longtail, most of the lower frequency terms fall into categories like misspelled words, obscure jargon words, unique ids or product numbers, etc..  Here, we use several approaches to cleanup the list: compare local IDF to generic english IDF and select words that have significant divergence, use an unsupervised algorithm to test the usefulness of a word on a given task by removing it, etc.</p>
+<div class="reply">
+<a aria-label="Reply to Michel Lemay" class="comment-reply-link" href="#comment-404656" onclick='return addComment.moveForm( "comment-404656", "404656", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-404872">
+<div class="comment-container" id="li-comment-404872">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 6, 2017 at 10:03 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404872" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Excellent points!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404872" onclick='return addComment.moveForm( "comment-404872", "404872", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-404293">
+<div class="comment-container" id="li-comment-404293">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/017795889cc5f0d7fe5d8b4ad1341615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/017795889cc5f0d7fe5d8b4ad1341615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ben</span>
+<span class="date">June 30, 2017 at 5:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404293" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason<br/>
+Thanks for the web site<br/>
+Do you have an example on symbolic sequences prediction using LSTM?<br/>
+Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Ben" class="comment-reply-link" href="#comment-404293" onclick='return addComment.moveForm( "comment-404293", "404293", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-404315">
+<div class="comment-container" id="li-comment-404315">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 30, 2017 at 8:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404315" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What do you mean exactly, can you give an example?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404315" onclick='return addComment.moveForm( "comment-404315", "404315", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-404350">
+<div class="comment-container" id="li-comment-404350">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/017795889cc5f0d7fe5d8b4ad1341615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/017795889cc5f0d7fe5d8b4ad1341615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ben</span>
+<span class="date">June 30, 2017 at 6:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404350" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for your reply.<br/>
+For example, having this sequence:<br/>
+1,2,2,3,1,6,4,5,7,1,3,2,2<br/>
+What symbol can we expect in a future ?</p>
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Ben" class="comment-reply-link" href="#comment-404350" onclick='return addComment.moveForm( "comment-404350", "404350", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-404412">
+<div class="comment-container" id="li-comment-404412">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 1, 2017 at 6:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-404412" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, I would recommend encoding the integers with a one hot encoding as long as you know the scope of input/output.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404412" onclick='return addComment.moveForm( "comment-404412", "404412", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-408536">
+<div class="comment-container" id="li-comment-408536">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/bb81109d7c2d856615c414875e7ab5f9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/bb81109d7c2d856615c414875e7ab5f9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">buzznizz</span>
+<span class="date">August 4, 2017 at 9:39 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-408536" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason</p>
+<p>Do you have experience in transforming timeseries to the time, frequency domain using wavelets and using that as inputs instead?</p>
+<p>BR</p>
+<div class="reply">
+<a aria-label="Reply to buzznizz" class="comment-reply-link" href="#comment-408536" onclick='return addComment.moveForm( "comment-408536", "408536", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-408571">
+<div class="comment-container" id="li-comment-408571">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 5, 2017 at 5:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-408571" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not with LSTMs, sorry. Thanks for the suggestion.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-408571" onclick='return addComment.moveForm( "comment-408571", "408571", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-420752">
+<div class="comment-container" id="li-comment-420752">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/0bc7e5a4946b654e84621de542e49951?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/0bc7e5a4946b654e84621de542e49951?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">allonbrooks</span>
+<span class="date">November 21, 2017 at 8:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420752" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If i have  a sentence with a length of more than 2000，i want to train sentiment analysis mode with lstm，how  i do with this   situation？</p>
+<div class="reply">
+<a aria-label="Reply to allonbrooks" class="comment-reply-link" href="#comment-420752" onclick='return addComment.moveForm( "comment-420752", "420752", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-420817">
+<div class="comment-container" id="li-comment-420817">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 22, 2017 at 11:11 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420817" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Try each method in this post and see what results in models with the best skill.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-420817" onclick='return addComment.moveForm( "comment-420817", "420817", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-420837">
+<div class="comment-container" id="li-comment-420837">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c2426178ccd97086d66f429655ef11ca?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c2426178ccd97086d66f429655ef11ca?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Saeid</span>
+<span class="date">November 22, 2017 at 2:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420837" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I have a question about timesteps. In all of my samples, the sequence are in form of:</p>
+<p>X1 Y1 Z1 X2 Y2 Z2 X3 Y3 Z3 …   … … X100 Y100 Z100</p>
+<p>Then in my input shape,I assume the timesteps would be 100 and features=3 . Is that right or timestep is 300 in this case?</p>
+<div class="reply">
+<a aria-label="Reply to Saeid" class="comment-reply-link" href="#comment-420837" onclick='return addComment.moveForm( "comment-420837", "420837", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-420938">
+<div class="comment-container" id="li-comment-420938">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 23, 2017 at 10:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420938" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not sure I follow, what do you want to predict, what are the inputs and outputs you want to model?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-420938" onclick='return addComment.moveForm( "comment-420938", "420938", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-421217">
+<div class="comment-container" id="li-comment-421217">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c2426178ccd97086d66f429655ef11ca?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c2426178ccd97086d66f429655ef11ca?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Saeid</span>
+<span class="date">November 26, 2017 at 11:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-421217" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>So I have a classification problem. My  labeled data features are x-y coordinates and direction angle(theta) of trajectories of some people walking in a room. The data are time series and there are 2000 people(examples). Labels are 0 and 1 meaning whether a person has a specific intention or not. In other words, the tabular representation of the data would be:</p>
+<p>                       X1, Y1, theta1, X2 ,  Y2 , theta2 , … ,X100,Y100,Theta100, Label<br/>
+Person1           1     -1    3        1.1  -1.1    3.1    …..    10      -10 ,   3.9            0</p>
+<p>Person2           5     9     -2       5.1   9.1    -2.1    ….    15       19 ,   -2.6           1<br/>
+   ….                  …      ….          …      …      …        …     …       ….       …            0<br/>
+  …..                 ….       ….         …      …      ….         …   …      …         …            1</p>
+<p>Person2000     ….      ….         …       …       …         …    …      …        ….            0                                </p>
+<p>Since there are three features and I have a history of these features for each example, I am trying to model this problem in LSTM. So far I have implemented one LSTM layer and one Dense layer with sigmoid activation. But my major concern is whether I am reshaping my input correctly or not. So my input shape, let’s say for the table above is (2000,100,3) but I was thinking maybe timestep is 100*3?</p>
+<p>I hope I could explain well and would be grateful to know your idea about the input shape and if you have any suggestions for me in general.</p>
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Saeid" class="comment-reply-link" href="#comment-421217" onclick='return addComment.moveForm( "comment-421217", "421217", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-421280">
+<div class="comment-container" id="li-comment-421280">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 27, 2017 at 5:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-421280" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m not sure I follow the problem description sorry.</p>
+<p>Perhaps this post will help better explain how to reshape input data:<br/>
+<a href="https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/" rel="nofollow">https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421280" onclick='return addComment.moveForm( "comment-421280", "421280", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-420949">
+<div class="comment-container" id="li-comment-420949">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2b65281e32ef8b87e8278fdcdca6850f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2b65281e32ef8b87e8278fdcdca6850f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">JJ</span>
+<span class="date">November 23, 2017 at 10:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420949" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I’ve been following your blog for a while, and find it very helpful. I have some confusion regarding LSTMs and all the different sources available do not really address it, and i’m hoping that you could given your very clear explanations.</p>
+<p>My confusion is related to the ‘memory’ of an LSTM and how the data is fed into it with real-world examples. So let’s say i’m classifying a one channel EEG of a person (N people in total). Let’s say we have 100 time-points (to keep it simple) for each person and a label which says whether the person is attentive or not during those 100 time-points. For a new set of time-points I want say whether the person is attentive or not.</p>
+<p>If i take an LSTM of 20 time-steps. Then what is the memory based on? does it mean it can only remember what happened within those 20 time-steps?  Or would it keep the memory of a previous chunk of time-steps fed into it? And do training examples now simply become 20-time-step chunks and the LSTM can re-call think from previous chunks? Because to me when people talk about say the prediction of the next word from the end of the Document after passing the whole document through an LSTM, they mention that LSTMs are good as they can even remember words at the beginning of the text to make such a prediction. so it seems to me it has memory from previous time-step chunks. </p>
+<p>The confusion comes here for me, if that is the case, then if we get back to our EEG example, then the LSTM may use memory from the EEG of a totally different person for it’s prediction ? As is there any discrimination to the LSTM that the individuals providing the time-series data are different?</p>
+<p>Thank you</p>
+<div class="reply">
+<a aria-label="Reply to JJ" class="comment-reply-link" href="#comment-420949" onclick='return addComment.moveForm( "comment-420949", "420949", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-420958">
+<div class="comment-container" id="li-comment-420958">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 23, 2017 at 10:46 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-420958" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Key to LSTMs is that they learn what to remember. This post may help understand the memory aspect:<br/>
+<a href="https://machinelearningmastery.com/memory-in-a-long-short-term-memory-network/" rel="nofollow">https://machinelearningmastery.com/memory-in-a-long-short-term-memory-network/</a></p>
+<p>Another aspect of the time steps is the learning algorithm BPTT, this post will help understand this aspect:<br/>
+<a href="https://machinelearningmastery.com/gentle-introduction-backpropagation-time/" rel="nofollow">https://machinelearningmastery.com/gentle-introduction-backpropagation-time/</a></p>
+<p>Does that help?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-420958" onclick='return addComment.moveForm( "comment-420958", "420958", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-422609">
+<div class="comment-container" id="li-comment-422609">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f24c4f547a137f887f8b3c0d25310277?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f24c4f547a137f887f8b3c0d25310277?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tseo</span>
+<span class="date">December 9, 2017 at 9:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-422609" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello! Thanks for your posts! Love them!</p>
+<p>I have a question: I want to predict n last steps in different sequences..  I have trained the network with<br/>
+Input steps: X(t-n).. X(t-1), X(t)<br/>
+Output steps: X(t-n+1).. X(t), X(t+1)</p>
+<p>The loss is almost zero in training and validation but the next steps t+2,t+3..t+n are really bad..</p>
+<p>Maybe I have to use other method? I believe that the network is memorizing the sequences..</p>
+<p>Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Tseo" class="comment-reply-link" href="#comment-422609" onclick='return addComment.moveForm( "comment-422609", "422609", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-422629">
+<div class="comment-container" id="li-comment-422629">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 10, 2017 at 5:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-422629" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps try an MLP?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-422629" onclick='return addComment.moveForm( "comment-422629", "422629", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-424234">
+<div class="comment-container" id="li-comment-424234">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1f41d9f9cb92c9e5027c0fd70ec35115?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1f41d9f9cb92c9e5027c0fd70ec35115?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rui</span>
+<span class="date">December 21, 2017 at 3:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-424234" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Nice set of ideias ! I have read one of your texts about combining conv nets with lstm. In that example I understand conv operations where applied to each time sample (in case of multivarable or images sequences)… I was wandering if it is possible to apply conv operations in the sequence steps ? </p>
+<p>Thanks in advance (also for all quality information givem so far☺)</p>
+<div class="reply">
+<a aria-label="Reply to Rui" class="comment-reply-link" href="#comment-424234" onclick='return addComment.moveForm( "comment-424234", "424234", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-424256">
+<div class="comment-container" id="li-comment-424256">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 21, 2017 at 5:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-424256" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sure. You could pass a batch of time steps through a CNN and the CNN can provide the features from the chunks to an LSTM. Perhaps batched by hour or day. I don’t think it would be effective though. Try it and see.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-424256" onclick='return addComment.moveForm( "comment-424256", "424256", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-426943">
+<div class="comment-container" id="li-comment-426943">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2d9272f9a28e08196e254a96811e4815?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2d9272f9a28e08196e254a96811e4815?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rahul</span>
+<span class="date">January 20, 2018 at 1:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-426943" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’ve where long sequence of text where all the characters have been changed (in a specific manner). Hence it is not possible for me to use any standard embeddings. As the text is around 1000 characters, it is time consuming to  use LSTM. I’ve tried using CNN of varying kernel size and then passing it to the LSTM(still it takes a lot of time). What would be a better approach(I like the random sampling approach; I would split my data into 4 parts and increase my samples)</p>
+<div class="reply">
+<a aria-label="Reply to Rahul" class="comment-reply-link" href="#comment-426943" onclick='return addComment.moveForm( "comment-426943", "426943", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-426989">
+<div class="comment-container" id="li-comment-426989">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 20, 2018 at 8:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-426989" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not sure I have enough info or can get involved deep enough to give you good advice. Sorry.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-426989" onclick='return addComment.moveForm( "comment-426989", "426989", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-428032">
+<div class="comment-container" id="li-comment-428032">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6145aa151c7e2b1fe76b9a02dc4eab56?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6145aa151c7e2b1fe76b9a02dc4eab56?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Daniel</span>
+<span class="date">January 31, 2018 at 2:27 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-428032" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Im having a really hard time trying to understand how i need to prepare my data to feed the LSTM. In my case, i have a set of texts, each one with one or more labels. To make things easier, lets suppose i have only three texts:</p>
+<p>1) “i have a green car at my house” (8 words)<br/>
+2) “bananas are yellow and apples are green or red” (9 words)<br/>
+3) “my name is bond, james bond. thanks for asking my friend” (11 words)</p>
+<p>What i am currently doing is create a 3D array with shape ( 3 for samples, 11 for timesteps, which is the number of words in the largest document, 26 for number of features, which is the number of unique words in all documents). </p>
+<p>The words are tokenized, so each feature will be a 26D array with a “1” indicating the current word. </p>
+<p>The sentences are also tokenized, making each one a 11D array where each row contains one word vector.</p>
+<p>My goal is to feed this 3D array to the model and try to predict labels from other texts.</p>
+<p>The thing is… i have no idea if this is the right way to convert the documents/words. Most examples of LSTMs use preprocessed text data, so i cant tell what they do with the raw documents. It doesn’t seem like im using the timesteps parameter correctly…</p>
+<p>Can you shine a light on this? </p>
+<p>Thank you so much! Really enjoy all your posts!</p>
+<div class="reply">
+<a aria-label="Reply to Daniel" class="comment-reply-link" href="#comment-428032" onclick='return addComment.moveForm( "comment-428032", "428032", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-428077">
+<div class="comment-container" id="li-comment-428077">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 1, 2018 at 7:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-428077" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Words will need to be mapped to integers. Then padded to the same length. Then mapped to a 3D shape perhaps with some encoding (one hot or word embeddding).</p>
+<p>I have many examples on the blog of preparing text for LSTMs, perhaps try the search.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-428077" onclick='return addComment.moveForm( "comment-428077", "428077", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-430841">
+<div class="comment-container" id="li-comment-430841">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/b850fdbb6a8dccb6fcf3e50c28911c14?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/b850fdbb6a8dccb6fcf3e50c28911c14?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://www.autonomia.io" rel="external nofollow">Marco Graziano</a></span>
+<span class="date">March 2, 2018 at 2:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-430841" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Has anyone tried 1D convolutions as a preliminary step to reduce very long sequences? Are there examples around to look at?</p>
+<div class="reply">
+<a aria-label="Reply to Marco Graziano" class="comment-reply-link" href="#comment-430841" onclick='return addComment.moveForm( "comment-430841", "430841", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-430860">
+<div class="comment-container" id="li-comment-430860">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 2, 2018 at 5:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-430860" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Interesting idea.</p>
+<p>Also an autoencoder could be used for the same purposes.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-430860" onclick='return addComment.moveForm( "comment-430860", "430860", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-436174">
+<div class="comment-container" id="li-comment-436174">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/29618a523266b944dfbef7aad888e15e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/29618a523266b944dfbef7aad888e15e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">DanielDeng</span>
+<span class="date">April 28, 2018 at 1:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-436174" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I tried this method at the first time, it works but its performce is not better than use totally conv layers in net. So what would be the meaning of use RNN on the top of CNN?</p>
+<div class="reply">
+<a aria-label="Reply to DanielDeng" class="comment-reply-link" href="#comment-436174" onclick='return addComment.moveForm( "comment-436174", "436174", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-431565">
+<div class="comment-container" id="li-comment-431565">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/be304c559bff531e29c7ebaea1aec57e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/be304c559bff531e29c7ebaea1aec57e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rg</span>
+<span class="date">March 8, 2018 at 8:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-431565" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Can we train time series with LSTM that are each observation has different size of timesteps ? </p>
+<p>For example:</p>
+<p>First observation: 50 inputs<br/>
+Second observation: 60 inputs<br/>
+Third observation: 30 inputs<br/>
+and so on. The input channels are the same in all of them.</p>
+<div class="reply">
+<a aria-label="Reply to Rg" class="comment-reply-link" href="#comment-431565" onclick='return addComment.moveForm( "comment-431565", "431565", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-431566">
+<div class="comment-container" id="li-comment-431566">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/be304c559bff531e29c7ebaea1aec57e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/be304c559bff531e29c7ebaea1aec57e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rg</span>
+<span class="date">March 8, 2018 at 8:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-431566" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry silly question I can just use a batch size of 1, I guess. Right?</p>
+<div class="reply">
+<a aria-label="Reply to Rg" class="comment-reply-link" href="#comment-431566" onclick='return addComment.moveForm( "comment-431566", "431566", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-431584">
+<div class="comment-container" id="li-comment-431584">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 8, 2018 at 2:54 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-431584" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-431584" onclick='return addComment.moveForm( "comment-431584", "431584", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-431583">
+<div class="comment-container" id="li-comment-431583">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 8, 2018 at 2:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-431583" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, but you must pad all samples to the same length and use a masking layer to ignore the zero values.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-431583" onclick='return addComment.moveForm( "comment-431583", "431583", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-443902">
+<div class="comment-container" id="li-comment-443902">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/575e2acfd416a0732292e8632f8b0c48?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/575e2acfd416a0732292e8632f8b0c48?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Andrew Medlin</span>
+<span class="date">July 19, 2018 at 6:12 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-443902" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have read several posts like this one about training an LSTM on multivariate time series data, and have a kinda working LSTM implementation, but none of the articles have quite addressed my questions on the training strategy for my kind of data.</p>
+<p>My data is medical ECG data for a large number of people (over 1000). For each person, I have a time series of several thousand measurements, each sample consisting of 12 variables (features). The measurements are taken at a constant sampling rate, so in my input I can drop the time value.</p>
+<p>Each ECG sample length is different. For some people we might have 1000 time steps in the series, for another person we might have 1500, etc.. Each series is a different length.</p>
+<p>The expected output (label) data provided for the training consists of a probability distribution representing a classification for each time step. For now, I simply have two classes, so my label is one-hot encoded as either [0 1] or [1 0].  One of these classes is much more predominant in the labels than the other.</p>
+<p>I reckon a time window of between 25 to 30 samples should be sufficient to capture the temporal correlations within a given series, so this is the number of time_steps in my LSTM input. My number of samples, &gt; 1000, is too large to train on all at once, so I choose a batch size of 256.  My shaped LSTM input is therefore is shape (256, 25, 12).</p>
+<p>My question is about how to properly subsample these time series for training. Since my series are of variable length, I can’t uniformly shape each sequence. For now, I have been taking random 25 time_steps (sequential) from 256 random people and using that as one training batch, and repeating until the loss is “low enough”.</p>
+<p>Should I instead be using a sliding window on each sample series and train on those? Or should I be subsampling each series and lining up the subsamples (sequential or otherwise) as rows? I feel like I don’t want to have one training batch have only data from one person, for fear that the network may overlearn for that person and then the loss will jump back up when the person changes.</p>
+<div class="reply">
+<a aria-label="Reply to Andrew Medlin" class="comment-reply-link" href="#comment-443902" onclick='return addComment.moveForm( "comment-443902", "443902", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-443932">
+<div class="comment-container" id="li-comment-443932">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 20, 2018 at 5:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-443932" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Andrew,</p>
+<p>The first issue is that the 0th dimension of the shape is not the batch size, but the total number of samples. The batch size is only used to specify to the model during training, not to reshape the data. The input data must have the shape [samples, timesteps, features].</p>
+<p>A total of 25 time steps seems short for a sequence that has 1500 steps. Perhaps try 200 or 400 as well?</p>
+<p>You can split each sequence into multiple sub-samples, e.g. 1500 steps could be 3 samples of 500 timesteps each.</p>
+<p>As a classification problem, I’d encourage you to try a CNN-LSTM or even a straight CNN or ConvLSTM. I have found them to achieve state of the art results for time series classification and I have posts scheduled on the topic.</p>
+<p>Does that help?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443932" onclick='return addComment.moveForm( "comment-443932", "443932", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-443960">
+<div class="comment-container" id="li-comment-443960">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/575e2acfd416a0732292e8632f8b0c48?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/575e2acfd416a0732292e8632f8b0c48?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Andrew Medlin</span>
+<span class="date">July 20, 2018 at 9:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-443960" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>That definitely helps, thank you. If I have more questions on this application, I’ll follow up in this thread.</p>
+<div class="reply">
+<a aria-label="Reply to Andrew Medlin" class="comment-reply-link" href="#comment-443960" onclick='return addComment.moveForm( "comment-443960", "443960", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-447828">
+<div class="comment-container" id="li-comment-447828">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4815ad19b1e85eaef4c921c7b5bb1ea4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4815ad19b1e85eaef4c921c7b5bb1ea4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Nick</span>
+<span class="date">September 4, 2018 at 10:42 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-447828" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you for this blog post Jason! </p>
+<p>Just wanted to ask if you have seen an example code for “Classification of sentiment in documents containing thousands of words (natural language processing)”. </p>
+<p>My Idea is to classify long-text(news) to predict an Event(Binary classification) with the help of sequential models in Keras. I haven’t found any works about that and I am wondering if it makes sense from a technical/statistically point of view?</p>
+<div class="reply">
+<a aria-label="Reply to Nick" class="comment-reply-link" href="#comment-447828" onclick='return addComment.moveForm( "comment-447828", "447828", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-447880">
+<div class="comment-container" id="li-comment-447880">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 5, 2018 at 6:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-447880" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sure, although every effort is often used to reduce the size of the input to make the model faster to train.</p>
+<p>CNNs are fast and perform well, even state of the art.</p>
+<p>I have many tutorials, search the blog.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-447880" onclick='return addComment.moveForm( "comment-447880", "447880", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-451006">
+<div class="comment-container" id="li-comment-451006">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2785f6ae18d09e71c92c0e0dafb5414e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2785f6ae18d09e71c92c0e0dafb5414e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">October 8, 2018 at 9:23 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-451006" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey I am using health data for classification using deep learning techniques. Which hybrid model can  I used as time series data I have , Can I used CNN LSTM but my data will be not labeled so which Hybrid deep learning technique can be used to classify the time series unlabeled data.</p>
+<div class="reply">
+<a aria-label="Reply to Faisal" class="comment-reply-link" href="#comment-451006" onclick='return addComment.moveForm( "comment-451006", "451006", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451055">
+<div class="comment-container" id="li-comment-451055">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 9, 2018 at 8:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-451055" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I recommend testing a suite of methods in order to discover what works best for your specific dataset.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451055" onclick='return addComment.moveForm( "comment-451055", "451055", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-452027">
+<div class="comment-container" id="li-comment-452027">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/188feb4d0444d988cef39de23c313cac?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/188feb4d0444d988cef39de23c313cac?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Renan Cunha</span>
+<span class="date">October 18, 2018 at 10:36 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-452027" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>A time step of 600 in a seq2seq task would be a feasible task for a LSTM?</p>
+<div class="reply">
+<a aria-label="Reply to Renan Cunha" class="comment-reply-link" href="#comment-452027" onclick='return addComment.moveForm( "comment-452027", "452027", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-452064">
+<div class="comment-container" id="li-comment-452064">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 19, 2018 at 6:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#comment-452064" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps try it and see.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-452064" onclick='return addComment.moveForm( "comment-452064", "452064", "respond", "4095" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4095"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="67cdcef765"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="3"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-29"> <div class="textwidget"><p></p><center><br/>
+<strong>Long Short-Term Memory Networks</strong><br/>
+Develop sequence prediction models in Keras.
+<p><a href="/lstms-with-python/">Click to Get Started Now!</a><br/>
+<a href="/lstms-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+<script type="text/javascript">		var ssb_admin_ajax = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+		var ssb_post_id = 4095 ;
+		var ssb_post_url = 'https://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/';
+		var ssb_alternate_post_url = 'http://machinelearningmastery.com/handle-long-sequences-long-short-term-memory-recurrent-neural-networks/';
+		jQuery( document ).ready(function(){
+		var is_ssb_used = jQuery('.simplesocialbuttons');
+		if( is_ssb_used ) {
+
+			var data = {
+			'action': 'ssb_fetch_data',
+			'postID': ssb_post_id
+		};
+			jQuery.post(ssb_admin_ajax, data, function(data, textStatus, xhr) {
+				var array = JSON.parse(data);
+
+				jQuery.each( array, function( index, value ){
+
+					if( index == 'total' ){
+						jQuery('.ssb_'+ index +'_counter').html(value + '<span>Shares</span>');
+					}else{
+						jQuery('.ssb_'+ index +'_counter').html(value);
+					}
+				});
+
+			});
+		}
+		})
+
+		document.addEventListener("DOMContentLoaded", function() {
+			var if_ssb_exist = document.getElementsByClassName( "simplesocialbuttons" ).length > 0;
+			if (if_ssb_exist) {
+				ssbPlugin.fetchFacebookShares();
+			}
+		});;
+		</script></body>
+</html>

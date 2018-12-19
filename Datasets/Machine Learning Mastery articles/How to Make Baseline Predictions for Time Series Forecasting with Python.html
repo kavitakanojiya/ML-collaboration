@@ -1,0 +1,1543 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Make Baseline Predictions for Time Series Forecasting with Python</title>
+<link href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Make Baseline Predictions for Time Series Forecasting with Python" property="og:title"/>
+<meta content="Establishing a baseline is essential on any time series forecasting problem. A baseline in performance gives you an idea of how well all other models will actually perform on your problem. In this tutorial, you will discover how to develop a persistence forecast that you can use to calculate a baseline level of performance on …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Time Series" property="article:section"/>
+<meta content="2016-12-25T18:00:44+00:00" property="article:published_time"/>
+<meta content="2017-02-21T05:50:57+00:00" property="article:modified_time"/>
+<meta content="2017-02-21T05:50:57+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/How-to-Make-Baseline-Predictions-for-Time-Series-Forecasting-with-Python.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/How-to-Make-Baseline-Predictions-for-Time-Series-Forecasting-with-Python.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="442" property="og:image:height"/>
+<meta content="How to Make Baseline Predictions for Time Series Forecasting with Python" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/feed/" rel="alternate" title="Machine Learning Mastery » How to Make Baseline Predictions for Time Series Forecasting with Python Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=3545" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpersistence-time-series-forecasting-with-python%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpersistence-time-series-forecasting-with-python%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-3545 single-format-standard gecko alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-55"> <div class="textwidget"><p>Want help with time series? <a href="https://machinelearningmastery.lpages.co/tsfwp-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-3545 post type-post status-publish format-standard has-post-thumbnail hentry category-time-series">
+<header>
+<h1 class="title entry-title">How to Make Baseline Predictions for Time Series Forecasting with Python</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-12-26T05:00:44+1100">December 26, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/time-series/" title="View all items in Time Series">Time Series</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3545 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Make+Baseline+Predictions+for+Time+Series+Forecasting+with+Python&amp;url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Establishing a baseline is essential on any time series forecasting problem.</p>
+<p>A baseline in performance gives you an idea of how well all other models will actually perform on your problem.</p>
+<p>In this tutorial, you will discover how to develop a persistence forecast that you can use to calculate a baseline level of performance on a time series dataset with Python.</p>
+<p>After completing this tutorial, you will know:</p>
+<ul>
+<li>The importance of calculating a baseline of performance on time series forecast problems.</li>
+<li>How to develop a persistence model from scratch in Python.</li>
+<li>How to evaluate the forecast from a persistence model and use it to establish a baseline in performance.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_3549" style="width: 650px"><img alt="How to Make Baseline Predictions for Time Series Forecasting with Python" class="size-full wp-image-3549" height="442" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/How-to-Make-Baseline-Predictions-for-Time-Series-Forecasting-with-Python.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/How-to-Make-Baseline-Predictions-for-Time-Series-Forecasting-with-Python.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/How-to-Make-Baseline-Predictions-for-Time-Series-Forecasting-with-Python-300x207.jpg 300w" width="640"/><p class="wp-caption-text">How to Make Baseline Predictions for Time Series Forecasting with Python<br/>Photo by <a href="https://www.flickr.com/photos/volvob12b/9573901572/">Bernard Spragg. NZ</a>, some rights reserved.</p></div>
+<h2>Forecast Performance Baseline</h2>
+<p>A baseline in forecast performance provides a point of comparison.</p>
+<p>It is a point of reference for all other modeling techniques on your problem. If a model achieves performance at or below the baseline, the technique should be fixed or abandoned.</p>
+<p>The technique used to generate a forecast to calculate the baseline performance must be easy to implement and naive of problem-specific details.</p>
+<p>Before you can establish a performance baseline on your forecast problem, you must develop a test harness. This is comprised of:</p>
+<ol>
+<li>The <strong>dataset</strong> you intend to use to train and evaluate models.</li>
+<li>The <strong>resampling</strong> technique you intend to use to estimate the performance of the technique (e.g. train/test split).</li>
+<li>The <strong>performance measure</strong> you intend to use to evaluate forecasts (e.g. mean squared error).</li>
+</ol>
+<p>Once prepared, you then need to select a naive technique that you can use to make a forecast and calculate the baseline performance.</p>
+<p>The goal is to get a baseline performance on your time series forecast problem as quickly as possible so that you can get to work better understanding the dataset and developing more advanced models.</p>
+<p>Three properties of a good technique for making a baseline forecast are:</p>
+<ul>
+<li><strong>Simple</strong>: A method that requires little or no training or intelligence.</li>
+<li><strong>Fast</strong>: A method that is fast to implement and computationally trivial to make a prediction.</li>
+<li><strong>Repeatable</strong>: A method that is deterministic, meaning that it produces an expected output given the same input.</li>
+</ul>
+<p>A common algorithm used in establishing a baseline performance is the persistence algorithm.</p>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Stop learning Time Series Forecasting the <em>slow way</em>!</h3>
+<p>Take my free 7-day email course and discover how to get started (with sample code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/14158d173f72a2%3A164f8be4f346dc/5760744339537920/" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="14158d173f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/14158d173f72a2%3A164f8be4f346dc/5760744339537920/" src="https://machinelearningmastery.leadpages.co/leadbox-1487347410.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Persistence Algorithm (the “naive” forecast)</h2>
+<p>The most common baseline method for supervised machine learning is the <a href="http://machinelearningmastery.com/implement-baseline-machine-learning-algorithms-scratch-python/">Zero Rule</a> algorithm.</p>
+<p>This algorithm predicts the majority class in the case of classification, or the average outcome in the case of regression. This could be used for time series, but does not respect the serial correlation structure in time series datasets.</p>
+<p>The equivalent technique for use with time series dataset is the persistence algorithm.</p>
+<p>The persistence algorithm uses the value at the previous time step (t-1) to predict the expected outcome at the next time step (t+1).</p>
+<p>This satisfies the three above conditions for a baseline forecast.</p>
+<p>To make this concrete, we will look at how to develop a persistence model and use it to establish a baseline performance for a simple univariate time series problem. First, let’s review the Shampoo Sales dataset.</p>
+<h2>Shampoo Sales Dataset</h2>
+<p>This dataset describes the monthly number of shampoo sales over a 3 year period.</p>
+<p>The units are a sales count and there are 36 observations. The original dataset is credited to Makridakis, Wheelwright, and Hyndman (1998).</p>
+<p>Below is a sample of the first 5 rows of data, including the header row.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71d9802009689" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+"Month","Sales"
+"1-01",266.0
+"1-02",145.9
+"1-03",183.1
+"1-04",119.3
+"1-05",180.3</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71d9802009689-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71d9802009689-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71d9802009689-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71d9802009689-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71d9802009689-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71d9802009689-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71d9802009689-1">"Month","Sales"</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71d9802009689-2">"1-01",266.0</div><div class="crayon-line" id="crayon-5c0ca954d71d9802009689-3">"1-02",145.9</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71d9802009689-4">"1-03",183.1</div><div class="crayon-line" id="crayon-5c0ca954d71d9802009689-5">"1-04",119.3</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71d9802009689-6">"1-05",180.3</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>Below is a plot of the entire dataset taken from <a href="https://datamarket.com/data/set/22r0/sales-of-shampoo-over-a-three-year-period">Data Market</a> where you can download the dataset and learn more about it.</p>
+<div class="wp-caption aligncenter" id="attachment_3485" style="width: 734px"><img alt="Shampoo Sales Dataset" class="size-full wp-image-3485" height="387" sizes="(max-width: 724px) 100vw, 724px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/11/Shampoo-Sales-Dataset.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/11/Shampoo-Sales-Dataset.png 724w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/11/Shampoo-Sales-Dataset-300x160.png 300w" width="724"/><p class="wp-caption-text">Shampoo Sales Dataset</p></div>
+<p>The dataset shows an increasing trend, and possibly some seasonal component.</p>
+<p>Download the dataset and place it in the current working directory with the filename “<em>shampoo-sales.csv</em>“.</p>
+<p>The following snippet of code will load the Shampoo Sales dataset and plot the time series.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71e3724741542" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import read_csv
+from pandas import datetime
+from matplotlib import pyplot
+
+def parser(x):
+	return datetime.strptime('190'+x, '%Y-%m')
+
+series = read_csv('shampoo-sales.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
+series.plot()
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71e3724741542-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e3724741542-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71e3724741542-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e3724741542-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71e3724741542-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e3724741542-6">6</div><div class="crayon-num" data-line="crayon-5c0ca954d71e3724741542-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e3724741542-8">8</div><div class="crayon-num" data-line="crayon-5c0ca954d71e3724741542-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e3724741542-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71e3724741542-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e3724741542-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">datetime</span></div><div class="crayon-line" id="crayon-5c0ca954d71e3724741542-3"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e3724741542-4"> </div><div class="crayon-line" id="crayon-5c0ca954d71e3724741542-5"><span class="crayon-e">def </span><span class="crayon-e">parser</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e3724741542-6"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">datetime</span><span class="crayon-sy">.</span><span class="crayon-e">strptime</span><span class="crayon-sy">(</span><span class="crayon-s">'190'</span><span class="crayon-o">+</span><span class="crayon-v">x</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'%Y-%m'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71e3724741542-7"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e3724741542-8"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'shampoo-sales.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">parse_dates</span><span class="crayon-o">=</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">index_col</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">squeeze</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">date_parser</span><span class="crayon-o">=</span><span class="crayon-v">parser</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71e3724741542-9"><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e3724741542-10"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>Running the example plots the time series, as follows:</p>
+<div class="wp-caption aligncenter" id="attachment_3546" style="width: 810px"><img alt="Shampoo Sales Dataset Plot" class="size-full wp-image-3546" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Dataset-Plot-1.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Dataset-Plot-1.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Dataset-Plot-1-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Dataset-Plot-1-768x576.png 768w" width="800"/><p class="wp-caption-text">Shampoo Sales Dataset Plot</p></div>
+<h2>Persistence Algorithm</h2>
+<p>A persistence model can be implemented easily in Python.</p>
+<p>We will break this section down into 4 steps:</p>
+<ol>
+<li>Transform the univariate dataset into a supervised learning problem.</li>
+<li>Establish the train and test datasets for the test harness.</li>
+<li>Define the persistence model.</li>
+<li>Make a forecast and establish a baseline performance.</li>
+<li>Review the complete example and plot the output.</li>
+</ol>
+<p>Let’s dive in.</p>
+<h3>Step 1: Define the Supervised Learning Problem</h3>
+<p>The first step is to load the dataset and create a lagged representation. That is, given the observation at t-1, predict the observation at t+1.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71e5798665258" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# Create lagged dataset
+values = DataFrame(series.values)
+dataframe = concat([values.shift(1), values], axis=1)
+dataframe.columns = ['t-1', 't+1']
+print(dataframe.head(5))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71e5798665258-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e5798665258-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71e5798665258-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e5798665258-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71e5798665258-5">5</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71e5798665258-1"><span class="crayon-p"># Create lagged dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e5798665258-2"><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71e5798665258-3"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">concat</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-v">values</span><span class="crayon-sy">.</span><span class="crayon-e">shift</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">axis</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e5798665258-4"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'t-1'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'t+1'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca954d71e5798665258-5"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-e">head</span><span class="crayon-sy">(</span><span class="crayon-cn">5</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0004 seconds] -->
+<p>This snippet creates the dataset and prints the first 5 rows of the new dataset.</p>
+<p>We can see that the first row (index 0) will have to be discarded as there was no observation prior to the first observation to use to make the prediction.</p>
+<p>From a supervised learning perspective, the t-1 column is the input variable, or X, and the t+1 column is the output variable, or y.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71e8292200381" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+     t-1    t+1
+0    NaN  266.0
+1  266.0  145.9
+2  145.9  183.1
+3  183.1  119.3
+4  119.3  180.3</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71e8292200381-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e8292200381-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71e8292200381-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e8292200381-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71e8292200381-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e8292200381-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71e8292200381-1">     t-1    t+1</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e8292200381-2">0    NaN  266.0</div><div class="crayon-line" id="crayon-5c0ca954d71e8292200381-3">1  266.0  145.9</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e8292200381-4">2  145.9  183.1</div><div class="crayon-line" id="crayon-5c0ca954d71e8292200381-5">3  183.1  119.3</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e8292200381-6">4  119.3  180.3</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p></p>
+<h3>Step 2: Train and Test Sets</h3>
+<p>The next step is to separate the dataset into train and test sets.</p>
+<p>We will keep the first 66% of the observations for “training” and the remaining 34% for evaluation. During the split, we are careful to exclude the first row of data with the NaN value.</p>
+<p>No training is required in this case; it’s just habit. Each of the train and test sets are then split into the input and output variables.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71e9481625411" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# split into train and test sets
+X = dataframe.values
+train_size = int(len(X) * 0.66)
+train, test = X[1:train_size], X[train_size:]
+train_X, train_y = train[:,0], train[:,1]
+test_X, test_y = test[:,0], test[:,1]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71e9481625411-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e9481625411-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71e9481625411-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e9481625411-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71e9481625411-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71e9481625411-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71e9481625411-1"><span class="crayon-p"># split into train and test sets</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e9481625411-2"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line" id="crayon-5c0ca954d71e9481625411-3"><span class="crayon-v">train_size</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">int</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-cn">0.66</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e9481625411-4"><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-o">:</span><span class="crayon-v">train_size</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">[</span><span class="crayon-v">train_size</span><span class="crayon-o">:</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca954d71e9481625411-5"><span class="crayon-v">train_X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">train_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71e9481625411-6"><span class="crayon-v">test_X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p></p>
+<h3>Step 3: Persistence Algorithm</h3>
+<p>We can define our persistence model as a function that returns the value provided as input.</p>
+<p>For example, if the t-1 value of 266.0 was provided, then this is returned as the prediction, whereas the actual real or expected value happens to be 145.9 (taken from the first usable row in our lagged dataset).</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71eb786284440" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# persistence model
+def model_persistence(x):
+	return x</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71eb786284440-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71eb786284440-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71eb786284440-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71eb786284440-1"><span class="crayon-p"># persistence model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71eb786284440-2"><span class="crayon-e">def </span><span class="crayon-e">model_persistence</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca954d71eb786284440-3"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">x</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p></p>
+<h3>Step 4: Make and Evaluate Forecast</h3>
+<p>Now we can evaluate this model on the test dataset.</p>
+<p>We do this using the walk-forward validation method.</p>
+<p>No model training or retraining is required, so in essence, we step through the test dataset time step by time step and get predictions.</p>
+<p>Once predictions are made for each time step in the training dataset, they are compared to the expected values and a Mean Squared Error (MSE) score is calculated.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71ed107750715" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# walk-forward validation
+predictions = list()
+for x in test_X:
+	yhat = model_persistence(x)
+	predictions.append(yhat)
+test_score = mean_squared_error(test_y, predictions)
+print('Test MSE: %.3f' % test_score)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71ed107750715-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71ed107750715-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71ed107750715-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71ed107750715-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71ed107750715-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71ed107750715-6">6</div><div class="crayon-num" data-line="crayon-5c0ca954d71ed107750715-7">7</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71ed107750715-1"><span class="crayon-p"># walk-forward validation</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71ed107750715-2"><span class="crayon-v">predictions</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">list</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71ed107750715-3"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">test_X</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71ed107750715-4"><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">model_persistence</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71ed107750715-5"><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71ed107750715-6"><span class="crayon-v">test_score</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">test_y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71ed107750715-7"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Test MSE: %.3f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-v">test_score</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0004 seconds] -->
+<p>In this case, the error is more than 17,730 over the test dataset.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71ef843683283" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Test MSE: 17730.518</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71ef843683283-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71ef843683283-1">Test MSE: 17730.518</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p></p>
+<h3>Step 5: Complete Example</h3>
+<p>Finally, a plot is made to show the training dataset and the diverging predictions from the expected values from the test dataset.</p>
+<p>From the plot of the persistence model predictions, it is clear that the model is 1-step behind reality. There is a rising trend and month-to-month noise in the sales figures, which highlights the limitations of the persistence technique.</p>
+<div class="wp-caption aligncenter" id="attachment_3547" style="width: 810px"><img alt="Shampoo Sales Persistence Model" class="size-full wp-image-3547" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Persistence-Model.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Persistence-Model.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Persistence-Model-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/12/Shampoo-Sales-Persistence-Model-768x576.png 768w" width="800"/><p class="wp-caption-text">Shampoo Sales Persistence Model</p></div>
+<p>The complete example is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca954d71f0187686752" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import read_csv
+from pandas import datetime
+from pandas import DataFrame
+from pandas import concat
+from matplotlib import pyplot
+from sklearn.metrics import mean_squared_error
+
+def parser(x):
+	return datetime.strptime('190'+x, '%Y-%m')
+
+series = read_csv('shampoo-sales.csv', header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)
+# Create lagged dataset
+values = DataFrame(series.values)
+dataframe = concat([values.shift(1), values], axis=1)
+dataframe.columns = ['t-1', 't+1']
+print(dataframe.head(5))
+
+# split into train and test sets
+X = dataframe.values
+train_size = int(len(X) * 0.66)
+train, test = X[1:train_size], X[train_size:]
+train_X, train_y = train[:,0], train[:,1]
+test_X, test_y = test[:,0], test[:,1]
+
+# persistence model
+def model_persistence(x):
+	return x
+
+# walk-forward validation
+predictions = list()
+for x in test_X:
+	yhat = model_persistence(x)
+	predictions.append(yhat)
+test_score = mean_squared_error(test_y, predictions)
+print('Test MSE: %.3f' % test_score)
+
+# plot predictions and expected results
+pyplot.plot(train_y)
+pyplot.plot([None for i in train_y] + [x for x in test_y])
+pyplot.plot([None for i in train_y] + [x for x in predictions])
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-2">2</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-4">4</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-6">6</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-8">8</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-10">10</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-12">12</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-14">14</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-16">16</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-18">18</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-20">20</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-22">22</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-24">24</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-26">26</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-28">28</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-30">30</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-32">32</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-34">34</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-36">36</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-37">37</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-38">38</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-39">39</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca954d71f0187686752-40">40</div><div class="crayon-num" data-line="crayon-5c0ca954d71f0187686752-41">41</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">datetime</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-3"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-4"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">concat</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-5"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-6"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">metrics </span><span class="crayon-e">import </span><span class="crayon-e">mean_squared_error</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-7"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-8"><span class="crayon-e">def </span><span class="crayon-e">parser</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-9"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">datetime</span><span class="crayon-sy">.</span><span class="crayon-e">strptime</span><span class="crayon-sy">(</span><span class="crayon-s">'190'</span><span class="crayon-o">+</span><span class="crayon-v">x</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'%Y-%m'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-10"> </div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-11"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'shampoo-sales.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">parse_dates</span><span class="crayon-o">=</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">index_col</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">squeeze</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">date_parser</span><span class="crayon-o">=</span><span class="crayon-v">parser</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-12"><span class="crayon-p"># Create lagged dataset</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-13"><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-14"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">concat</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-v">values</span><span class="crayon-sy">.</span><span class="crayon-e">shift</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">axis</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-15"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'t-1'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'t+1'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-16"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-e">head</span><span class="crayon-sy">(</span><span class="crayon-cn">5</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-17"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-18"><span class="crayon-p"># split into train and test sets</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-19"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-20"><span class="crayon-v">train_size</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">int</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">*</span><span class="crayon-h"> </span><span class="crayon-cn">0.66</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-21"><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-o">:</span><span class="crayon-v">train_size</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">[</span><span class="crayon-v">train_size</span><span class="crayon-o">:</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-22"><span class="crayon-v">train_X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">train_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-23"><span class="crayon-v">test_X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-24"> </div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-25"><span class="crayon-p"># persistence model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-26"><span class="crayon-e">def </span><span class="crayon-e">model_persistence</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-27"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">x</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-28"> </div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-29"><span class="crayon-p"># walk-forward validation</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-30"><span class="crayon-v">predictions</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">list</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-31"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">test_X</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-32"><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">model_persistence</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-33"><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-34"><span class="crayon-v">test_score</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">test_y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-35"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Test MSE: %.3f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-v">test_score</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-36"> </div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-37"><span class="crayon-p"># plot predictions and expected results</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-38"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">train_y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-39"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-e">None </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">train_y</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">test_y</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca954d71f0187686752-40"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-e">None </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">train_y</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">x</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca954d71f0187686752-41"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0022 seconds] -->
+<p>We have seen an example of the persistence model developed from scratch for the Shampoo Sales problem.</p>
+<p>The persistence algorithm is naive. It is often called the <em>naive forecast</em>.</p>
+<p>It assumes nothing about the specifics of the time series problem to which it is applied. This is what makes it so easy to understand and so quick to implement and evaluate.</p>
+<p>As a machine learning practitioner, it can also spark a large number of improvements.</p>
+<p>Write them down.</p>
+<p>This is useful because these ideas can become input features in a feature engineering effort or simple models that may be combined in an ensembling effort later.</p>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered how to establish a baseline performance on time series forecast problems with Python.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>The importance of establishing a baseline and the persistence algorithm that you can use.</li>
+<li>How to implement the persistence algorithm in Python from scratch.</li>
+<li>How to evaluate the forecasts of the persistence algorithm and use them as a baseline.</li>
+</ul>
+<p>Do you have any questions about baseline performance, or about this tutorial?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-26"> <div class="textwidget"><p></p><center>
+<div class="woo-sc-hr"></div>
+<h2>Want to Develop Time Series Forecasts with Python?</h2>
+<p><a href="/introduction-to-time-series-forecasting-with-python/"><img align="left" alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Forecasts in Minutes</h4>
+<p>...with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/introduction-to-time-series-forecasting-with-python/">Introduction to Time Series Forecasting With Python</a></p>
+<p>It covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> on topics like:<br/>
+<em>Loading data, visualization, modeling, algorithm tuning,</em> and much more...</p>
+<h4>Finally Bring Time Series Forecasting to<br/>
+Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to learn more</a>.</p>
+<div class="woo-sc-hr"></div>
+<p></p></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3545 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Make+Baseline+Predictions+for+Time+Series+Forecasting+with+Python&amp;url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/time-series-seasonality-with-python/" rel="prev"><i class="fa fa-angle-left"></i> How to Identify and Remove Seasonality from Time Series Data with Python</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/moving-average-smoothing-for-time-series-forecasting-python/" rel="next">Moving Average Smoothing for Data Preparation, Feature Engineering, and Time Series Forecasting with Python <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">34 Responses to <em>How to Make Baseline Predictions for Time Series Forecasting with Python</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-377741">
+<div class="comment-container" id="li-comment-377741">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6d42af385785af95148d0111187aba0d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6d42af385785af95148d0111187aba0d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kevin</span>
+<span class="date">December 26, 2016 at 3:56 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-377741" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great post. However, I think instead of (t-1) and (t+1), it should be (t) and (t+1). The former indicates a lag of 2 time steps; the persistence model only requires a 1 step look-back.</p>
+<div class="reply">
+<a aria-label="Reply to Kevin" class="comment-reply-link" href="#comment-377741" onclick='return addComment.moveForm( "comment-377741", "377741", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-377851">
+<div class="comment-container" id="li-comment-377851">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 27, 2016 at 5:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-377851" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>That would be clearer, thanks Kevin.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-377851" onclick='return addComment.moveForm( "comment-377851", "377851", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-397682">
+<div class="comment-container" id="li-comment-397682">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 26, 2017 at 7:05 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397682" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Any suggestion how to implement this?</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397682" onclick='return addComment.moveForm( "comment-397682", "397682", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-397779">
+<div class="comment-container" id="li-comment-397779">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 27, 2017 at 6:17 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397779" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Is it only a question of column declarations?</p>
+<p>dataframe.columns = [‘t-1’, ‘t+1’] vs. dataframe.columns = [‘t’, ‘t+1’]</p>
+<p>…or do I have to change some more code logic?</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397779" onclick='return addComment.moveForm( "comment-397779", "397779", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-377880">
+<div class="comment-container" id="li-comment-377880">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/26f610044b5f3661e4af44c069ea46c3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/26f610044b5f3661e4af44c069ea46c3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ansh Gandhi</span>
+<span class="date">December 27, 2016 at 9:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-377880" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great post!</p>
+<div class="reply">
+<a aria-label="Reply to Ansh Gandhi" class="comment-reply-link" href="#comment-377880" onclick='return addComment.moveForm( "comment-377880", "377880", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-378032">
+<div class="comment-container" id="li-comment-378032">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 28, 2016 at 7:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-378032" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Ansh.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-378032" onclick='return addComment.moveForm( "comment-378032", "378032", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-378058">
+<div class="comment-container" id="li-comment-378058">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/140c4161d34f327b8e95df9fdd1daded?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/140c4161d34f327b8e95df9fdd1daded?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://electricscootershq.org" rel="external nofollow">electricscootershq.org</a></span>
+<span class="date">December 28, 2016 at 9:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-378058" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Creating a forecast for a baseline. The hard part of baselines is, of course, the future. How good are economists or meteorologists at predicting the stock market or weather? Uncertainty is an unavoidable part of this part of the work.</p>
+<div class="reply">
+<a aria-label="Reply to electricscootershq.org" class="comment-reply-link" href="#comment-378058" onclick='return addComment.moveForm( "comment-378058", "378058", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-378279">
+<div class="comment-container" id="li-comment-378279">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 29, 2016 at 7:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-378279" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, not sure I follow. Perhaps you could restate your point?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-378279" onclick='return addComment.moveForm( "comment-378279", "378279", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-397676">
+<div class="comment-container" id="li-comment-397676">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 26, 2017 at 6:37 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397676" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello, I have a question.</p>
+<p>Quote: “If a model achieves performance at or below the baseline,<br/>
+..the technique should be fixed or abandoned”</p>
+<p>Where is the baseline in the plot?</p>
+<p>What does it mean at or below the baseline in regard of the example plots?</p>
+<p>What does the red and the green line describe?</p>
+<p>I assume:</p>
+<p>blue line = training data<br/>
+green line = test data<br/>
+red line = prediction</p>
+<p>Am I right?</p>
+<p>I’m not afraid to ask stupid questions. I’ve studied a lot and know no one knows everything :-).</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397676" onclick='return addComment.moveForm( "comment-397676", "397676", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-397734">
+<div class="comment-container" id="li-comment-397734">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 27, 2017 at 8:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397734" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Here, baseline is the model you have chosen to be the baseline. E.g. a persistence forecast.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397734" onclick='return addComment.moveForm( "comment-397734", "397734", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-397777">
+<div class="comment-container" id="li-comment-397777">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 27, 2017 at 6:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397777" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>So then I have to compare the MSE-values of the baseline model and a chosen model<br/>
+to decide whether my chosen model is the right model to predict something.</p>
+<p>The performance of the baseline model is:</p>
+<p>Test Score: 17730.518 MSE</p>
+<p>I have feeded the shampoo-data into your Multilayer Perceptron-example.</p>
+<p>Test A)</p>
+<p>The performance of the Multilayer Perceptron Model on the shampoo-data is:</p>
+<p>Train Score: 6623.57 MSE</p>
+<p>Test Score: 19589.78 MSE</p>
+<p>Test Score mlp model: 19589.78 MSE &gt; Test Score baseline model: 17730.518 MSE</p>
+<p>Conclusion: </p>
+<p>The choosen mlp model predicts something, because its MSE is higher then<br/>
+the MSE of the baseline model while using the same raw data.<br/>
+‘There is some significance’.</p>
+<p>Is this right so far?<br/>
+Actually I would expect I higher error rate as bad sign.</p>
+<p>Test B)<br/>
+Airline LSTM Example (feeded with shampoo data):</p>
+<p>testScoreMyTest = mean_squared_error(testY[0], testPredict[:,0])<br/>
+print(‘testScoreMyTest: %.2f MSE’ % (testScoreMyTest))</p>
+<p>Test Score Airline LSTM: 20288.20 MSE &gt; Test Score baseline model: 17730.518 MSE</p>
+<p>Conclusion:</p>
+<p>Airline LSTM Example predicts something on shampoo data.<br/>
+Here I have a problem. I wanted to see if user Wollner is right.<br/>
+<a href="http://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/#comment-383708" rel="nofollow">http://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/#comment-383708</a></p>
+<p>Does the baseline test shows that he isn’t right???</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397777" onclick='return addComment.moveForm( "comment-397777", "397777", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-4" id="comment-397782">
+<div class="comment-container" id="li-comment-397782">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 27, 2017 at 6:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397782" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I also try it with RMSE</p>
+<p>testScore = math.sqrt(mean_squared_error(test_y, predictions))<br/>
+print(‘Test Score: %.2f RMSE’ % (testScore))</p>
+<p>The smaller the value of the RMSE, the better is the predictive accuracy of the model.</p>
+<p><a href="http://docs.aws.amazon.com/machine-learning/latest/dg/regression-model-insights.html" rel="nofollow">http://docs.aws.amazon.com/machine-learning/latest/dg/regression-model-insights.html</a></p>
+<p>The performance of the baseline model is:</p>
+<p>testScore = math.sqrt(mean_squared_error(test_y, predictions))<br/>
+print(‘Test Score: %.2f RMSE’ % (testScore))</p>
+<p>Test Score: 133.16 RMSE</p>
+<p>I have feeded the shampoo-data into your Multilayer Perceptron-example.</p>
+<p>Test A)<br/>
+The performance of the Multilayer Perceptron Model on the shampoo-data is:</p>
+<p>Test Score: 139.96 RMSE &gt; 133.16 RMSE</p>
+<p>Test B)<br/>
+Airline LSTM Example (feeded with shampoo data):</p>
+<p>Test Score: 142.43 RMSE &gt; 133.16 RMSE</p>
+<p>Conclusion:</p>
+<p>Actually in regard to the Amazon documentation, I would say both models<br/>
+perform bad compared to the baseline model and therefore they<br/>
+are NOT professionally qualified to solve the ‘shampoo problem’.</p>
+<p>Do I have a misconception here?</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397782" onclick='return addComment.moveForm( "comment-397782", "397782", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-397843">
+<div class="comment-container" id="li-comment-397843">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 28, 2017 at 7:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397843" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The idea is to compare the performance of the baseline model to all other models that you evaluate on your problem.</p>
+<p>Regarding MSE, the goal is to minimize the error, so smaller values are better.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397843" onclick='return addComment.moveForm( "comment-397843", "397843", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-397677">
+<div class="comment-container" id="li-comment-397677">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2ab114b86e9463e9ffc3431264b55beb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hans</span>
+<span class="date">April 26, 2017 at 6:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397677" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I try to use labels in the plot according to <a href="http://matplotlib.org/users/legend_guide.html" rel="nofollow">http://matplotlib.org/users/legend_guide.html</a></p>
+<p>Example:</p>
+<p>pyplot.plot(train_y, label=’Training Data’) </p>
+<p>But every time I have to go to options in the plot window and check auto generate labels to view my declarations.</p>
+<p>Is this behavior normal?</p>
+<div class="reply">
+<a aria-label="Reply to Hans" class="comment-reply-link" href="#comment-397677" onclick='return addComment.moveForm( "comment-397677", "397677", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-397735">
+<div class="comment-container" id="li-comment-397735">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 27, 2017 at 8:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-397735" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I am not an expert in matplotlib sorry, but you can style everything about your plots programmatically.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397735" onclick='return addComment.moveForm( "comment-397735", "397735", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-422616">
+<div class="comment-container" id="li-comment-422616">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/55e280de71e1f01b4069e811c784a337?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/55e280de71e1f01b4069e811c784a337?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Vlad</span>
+<span class="date">December 10, 2017 at 2:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-422616" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>great post, read the whole mini course and i’m now trying to implement it. </p>
+<p>any tips on modifying the code to accept multivariate inputs?</p>
+<div class="reply">
+<a aria-label="Reply to Vlad" class="comment-reply-link" href="#comment-422616" onclick='return addComment.moveForm( "comment-422616", "422616", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-422630">
+<div class="comment-container" id="li-comment-422630">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 10, 2017 at 5:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-422630" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<p>I hope to cover multivariate cases in more detail in the future.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-422630" onclick='return addComment.moveForm( "comment-422630", "422630", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-422853">
+<div class="comment-container" id="li-comment-422853">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ab08875b2e508ba7d6166664ff58aabe?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ab08875b2e508ba7d6166664ff58aabe?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Howell</span>
+<span class="date">December 12, 2017 at 10:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-422853" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Why is there a gap in the persistence model graph in step 5?  how to close that gap in graph?</p>
+<div class="reply">
+<a aria-label="Reply to Howell" class="comment-reply-link" href="#comment-422853" onclick='return addComment.moveForm( "comment-422853", "422853", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-422875">
+<div class="comment-container" id="li-comment-422875">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 12, 2017 at 4:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-422875" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not sure I follow? </p>
+<p>We are plotting different series so they start and end at different places and have different colors. </p>
+<p>I guess you can plot whatever you like, such as concatenate the history with the predictions?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-422875" onclick='return addComment.moveForm( "comment-422875", "422875", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-435340">
+<div class="comment-container" id="li-comment-435340">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c086667ec944e1bec82468cdc64e1d88?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c086667ec944e1bec82468cdc64e1d88?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Aditya Sharma</span>
+<span class="date">April 18, 2018 at 9:05 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-435340" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey Jason<br/>
+Can you tell how can we get the next month’s forecasted value?<br/>
+lets say i have a data of n months then how t predict what will be its value in n+1 month?</p>
+<div class="reply">
+<a aria-label="Reply to Aditya Sharma" class="comment-reply-link" href="#comment-435340" onclick='return addComment.moveForm( "comment-435340", "435340", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-435391">
+<div class="comment-container" id="li-comment-435391">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 19, 2018 at 6:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-435391" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, see this post:<br/>
+<a href="https://machinelearningmastery.com/make-sample-forecasts-arima-python/" rel="nofollow">https://machinelearningmastery.com/make-sample-forecasts-arima-python/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435391" onclick='return addComment.moveForm( "comment-435391", "435391", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-438128">
+<div class="comment-container" id="li-comment-438128">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ef2919741006a5c82bd810f210ee6a36?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ef2919741006a5c82bd810f210ee6a36?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ankit Tripathi</span>
+<span class="date">May 21, 2018 at 5:30 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-438128" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey Jason,</p>
+<p>Is there a way so set cap and floor while forecasting through ARIMA? It would be useful to avoid erroneous values for a business data.</p>
+<div class="reply">
+<a aria-label="Reply to Ankit Tripathi" class="comment-reply-link" href="#comment-438128" onclick='return addComment.moveForm( "comment-438128", "438128", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-438196">
+<div class="comment-container" id="li-comment-438196">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 22, 2018 at 6:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-438196" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can post-process the forecast prior to evaluation.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438196" onclick='return addComment.moveForm( "comment-438196", "438196", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-438268">
+<div class="comment-container" id="li-comment-438268">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ef2919741006a5c82bd810f210ee6a36?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ef2919741006a5c82bd810f210ee6a36?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ankit Tripathi</span>
+<span class="date">May 23, 2018 at 3:26 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-438268" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yeah I did that. I thought, may be there is a way to pass the bounds as parameters like its possible in Prophet in R. Anyway, thanks Jason 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Ankit Tripathi" class="comment-reply-link" href="#comment-438268" onclick='return addComment.moveForm( "comment-438268", "438268", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-441548">
+<div class="comment-container" id="li-comment-441548">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d48a0ca33e18f2146aaeb07fc76a3a82?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d48a0ca33e18f2146aaeb07fc76a3a82?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Andrea</span>
+<span class="date">June 21, 2018 at 5:41 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-441548" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, Thank you for your good posting! 😀</p>
+<p>I read a lot of your articles. I have question, though.</p>
+<p>Making predictions, using LSTM, on random walk process(= like stock price) results in baseline prediction.</p>
+<p>How can I evade this?</p>
+<p>Any suggestions would helpful. Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to Andrea" class="comment-reply-link" href="#comment-441548" onclick='return addComment.moveForm( "comment-441548", "441548", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-441596">
+<div class="comment-container" id="li-comment-441596">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 22, 2018 at 6:02 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-441596" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Some problems are not predictable, e.g. those that are a random walk.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-441596" onclick='return addComment.moveForm( "comment-441596", "441596", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-443471">
+<div class="comment-container" id="li-comment-443471">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1fd181d62084968bd485754dbbe5111c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1fd181d62084968bd485754dbbe5111c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">KR Ju</span>
+<span class="date">July 14, 2018 at 7:04 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-443471" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>thanks for your blog, Jason.<br/>
+even after readied this article, I don’t understand it fully.<br/>
+according to you, persistence model is not forecasting. the word “prediction” could be not suitable in this topic, isn’t it?</p>
+<p>Could you tell; when I obtained a fully matched persistence plot with the raw data plot, what does mean that?<br/>
+Ju</p>
+<div class="reply">
+<a aria-label="Reply to KR Ju" class="comment-reply-link" href="#comment-443471" onclick='return addComment.moveForm( "comment-443471", "443471", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-443514">
+<div class="comment-container" id="li-comment-443514">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 15, 2018 at 6:10 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-443514" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It is a prediction, just a naive prediction.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443514" onclick='return addComment.moveForm( "comment-443514", "443514", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-443472">
+<div class="comment-container" id="li-comment-443472">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1fd181d62084968bd485754dbbe5111c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1fd181d62084968bd485754dbbe5111c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">KR Ju</span>
+<span class="date">July 14, 2018 at 7:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-443472" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Jason, furthermore in this blog,</p>
+<p>if I got the completely matched baseline with the raw data plot, I don’t need to apply other models for solving the targeted problem?</p>
+<p>Ju</p>
+<div class="reply">
+<a aria-label="Reply to KR Ju" class="comment-reply-link" href="#comment-443472" onclick='return addComment.moveForm( "comment-443472", "443472", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-443515">
+<div class="comment-container" id="li-comment-443515">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 15, 2018 at 6:11 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-443515" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If the persistence model gives zero error, it means your time series is a flat straight line (e.g. has no information).</p>
+<p>Otherwise, perhaps you have a bug?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443515" onclick='return addComment.moveForm( "comment-443515", "443515", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-445404">
+<div class="comment-container" id="li-comment-445404">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1f7f1a7edba57184458f74bea171b4c7?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1f7f1a7edba57184458f74bea171b4c7?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Brian Stephans</span>
+<span class="date">August 7, 2018 at 4:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-445404" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Dr,</p>
+<p>I am having to problem with loading the data, It seems I always have issues with data with datetime but cant seem to figure out the issue, I am new to python.  hopefully you can help me out as I am loving your website. It seems that the error is in line 6</p>
+<p>/usr/local/bin/python3.7 /Users/Brian/PycharmProjects/MachineLearningMasteryTimeSeries1/baselinezerorule.py<br/>
+Traceback (most recent call last):<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 3021, in converter<br/>
+    date_parser(*date_cols), errors=’ignore’)<br/>
+  File “/Users/Brian/PycharmProjects/MachineLearningMasteryTimeSeries1/baselinezerorule.py”, line 6, in parser<br/>
+    return datetime.strptime(‘190 ‘ +x, ‘%Y-%m’)<br/>
+TypeError: strptime() argument 1 must be str, not numpy.ndarray</p>
+<p>During handling of the above exception, another exception occurred:</p>
+<p>Traceback (most recent call last):<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 3030, in converter<br/>
+    dayfirst=dayfirst),<br/>
+  File “pandas/_libs/tslibs/parsing.pyx”, line 434, in pandas._libs.tslibs.parsing.try_parse_dates<br/>
+  File “pandas/_libs/tslibs/parsing.pyx”, line 431, in pandas._libs.tslibs.parsing.try_parse_dates<br/>
+  File “/Users/Brian/PycharmProjects/MachineLearningMasteryTimeSeries1/baselinezerorule.py”, line 6, in parser<br/>
+    return datetime.strptime(‘190 ‘ +x, ‘%Y-%m’)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/_strptime.py”, line 577, in _strptime_datetime<br/>
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/_strptime.py”, line 359, in _strptime<br/>
+    (data_string, format))<br/>
+ValueError: time data ‘190 1-01’ does not match format ‘%Y-%m’</p>
+<p>During handling of the above exception, another exception occurred:</p>
+<p>Traceback (most recent call last):<br/>
+  File “/Users/Brian/PycharmProjects/MachineLearningMasteryTimeSeries1/baselinezerorule.py”, line 8, in<br/>
+    series = read_csv(‘shampoo-sales.csv’, header=0, parse_dates=[0], index_col=0, squeeze=True, date_parser=parser)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 678, in parser_f<br/>
+    return _read(filepath_or_buffer, kwds)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 446, in _read<br/>
+    data = parser.read(nrows)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 1036, in read<br/>
+    ret = self._engine.read(nrows)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 1922, in read<br/>
+    index, names = self._make_index(data, alldata, names)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 1426, in _make_index<br/>
+    index = self._agg_index(index)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 1504, in _agg_index<br/>
+    arr = self._date_conv(arr)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/parsers.py”, line 3033, in converter<br/>
+    return generic_parser(date_parser, *date_cols)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pandas/io/date_converters.py”, line 39, in generic_parser<br/>
+    results[i] = parse_func(*args)<br/>
+  File “/Users/Brian/PycharmProjects/MachineLearningMasteryTimeSeries1/baselinezerorule.py”, line 6, in parser<br/>
+    return datetime.strptime(‘190 ‘ +x, ‘%Y-%m’)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/_strptime.py”, line 577, in _strptime_datetime<br/>
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)<br/>
+  File “/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/_strptime.py”, line 359, in _strptime<br/>
+    (data_string, format))<br/>
+ValueError: time data ‘190 1-01’ does not match format ‘%Y-%m’</p>
+<p>Process finished with exit code 1</p>
+<div class="reply">
+<a aria-label="Reply to Brian Stephans" class="comment-reply-link" href="#comment-445404" onclick='return addComment.moveForm( "comment-445404", "445404", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-445424">
+<div class="comment-container" id="li-comment-445424">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 7, 2018 at 6:34 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-445424" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It may be the version of the dataset that you have downloaded.</p>
+<p>I have a copy of the datasets ready to use here:<br/>
+<a href="https://github.com/jbrownlee/Datasets" rel="nofollow">https://github.com/jbrownlee/Datasets</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-445424" onclick='return addComment.moveForm( "comment-445424", "445424", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-451020">
+<div class="comment-container" id="li-comment-451020">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/be01b8c86b811015adabd2f00bdda765?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/be01b8c86b811015adabd2f00bdda765?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">András Novoszáth</span>
+<span class="date">October 9, 2018 at 1:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-451020" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, great post, I was just wondering why do we need the for loop for calculating <code>predictions</code>  and then the error rate, when it seems to me that we could simply use the following line:</p>
+<p><code></code><code><br/>
+test_score = mean_squared_error(test_y, test_X)<br/>
+</code><code></code></p>
+<p>Do I miss something?</p>
+<div class="reply">
+<a aria-label="Reply to András Novoszáth" class="comment-reply-link" href="#comment-451020" onclick='return addComment.moveForm( "comment-451020", "451020", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451059">
+<div class="comment-container" id="li-comment-451059">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 9, 2018 at 8:46 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/persistence-time-series-forecasting-with-python/#comment-451059" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It was more the methodology, you can substitute the persistance forecast for whatever you like.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451059" onclick='return addComment.moveForm( "comment-451059", "451059", "respond", "3545" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/persistence-time-series-forecasting-with-python/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="3545"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="c569e72aa0"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="59"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-27"> <div class="textwidget"><p></p><center><br/>
+<strong>Time Series Forecasting with Python</strong><br/>
+Explore time series data and predict the future.
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to Get Started Now!</a><br/>
+<a href="/introduction-to-time-series-forecasting-with-python/"><img alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

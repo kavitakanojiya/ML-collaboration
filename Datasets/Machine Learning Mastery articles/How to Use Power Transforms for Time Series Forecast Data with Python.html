@@ -1,0 +1,1341 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Use Power Transforms for Time Series Forecast Data with Python</title>
+<link href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Use Power Transforms for Time Series Forecast Data with Python" property="og:title"/>
+<meta content="Data transforms are intended to remove noise and improve the signal in time series forecasting. It can be very difficult to select a good, or even best, transform for a given prediction problem. There are many transforms to choose from and each has a different mathematical intuition. In this tutorial, you will discover how to …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Time Series" property="article:section"/>
+<meta content="2017-01-24T18:00:35+00:00" property="article:published_time"/>
+<meta content="2017-02-21T05:47:48+00:00" property="article:modified_time"/>
+<meta content="2017-02-21T05:47:48+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot.png" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot.png" property="og:image:secure_url"/>
+<meta content="800" property="og:image:width"/>
+<meta content="600" property="og:image:height"/>
+<meta content="Airline Passengers Dataset Plot" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/feed/" rel="alternate" title="Machine Learning Mastery » How to Use Power Transforms for Time Series Forecast Data with Python Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=3657" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpower-transform-time-series-forecast-data-python%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpower-transform-time-series-forecast-data-python%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-3657 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-55"> <div class="textwidget"><p>Want help with time series? <a href="https://machinelearningmastery.lpages.co/tsfwp-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-3657 post type-post status-publish format-standard has-post-thumbnail hentry category-time-series">
+<header>
+<h1 class="title entry-title">How to Use Power Transforms for Time Series Forecast Data with Python</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-01-25T05:00:35+1100">January 25, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/time-series/" title="View all items in Time Series">Time Series</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3657 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Use+Power+Transforms+for+Time+Series+Forecast+Data+with+Python&amp;url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Data transforms are intended to remove noise and improve the signal in time series forecasting.</p>
+<p>It can be very difficult to select a good, or even best, transform for a given prediction problem. There are many transforms to choose from and each has a different mathematical intuition.</p>
+<p>In this tutorial, you will discover how to explore different power-based transforms for time series forecasting with Python.</p>
+<p>After completing this tutorial, you will know:</p>
+<ul>
+<li>How to identify when to use and how to explore a square root transform.</li>
+<li>How to identify when to use and explore a log transform and the expectations on raw data.</li>
+<li>How to use the Box-Cox transform to perform square root, log, and automatically discover the best power transform for your dataset.</li>
+</ul>
+<p>Let’s get started.</p>
+<h2>Airline Passengers Dataset</h2>
+<p>The Airline Passengers dataset describes a total number of airline passengers over time.</p>
+<p>The units are a count of the number of airline passengers in thousands. There are 144 monthly observations from 1949 to 1960.</p>
+<p><a href="https://datamarket.com/data/set/22u3/international-airline-passengers-monthly-totals-in-thousands-jan-49-dec-60">Learn more and download the dataset from Data Market</a>.</p>
+<p>Download the dataset to your current working directory with the filename “<em>airline-passengers.csv</em>“.</p>
+<p>The example below loads the dataset and plots the data.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459b6771690382" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import Series
+from matplotlib import pyplot
+series = Series.from_csv('airline-passengers.csv', header=0)
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(series)
+# histogram
+pyplot.subplot(212)
+pyplot.hist(series)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459b6771690382-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459b6771690382-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459b6771690382-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459b6771690382-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459b6771690382-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459b6771690382-11">11</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459b6771690382-2"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-3"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'airline-passengers.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459b6771690382-4"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-5"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459b6771690382-6"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-7"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459b6771690382-8"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459b6771690382-10"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459b6771690382-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>Running the example creates two plots, the first showing the time series as a line plot and the second showing the observations as a histogram.</p>
+<div class="wp-caption aligncenter" id="attachment_3658" style="width: 810px"><img alt="Airline Passengers Dataset Plot" class="size-full wp-image-3658" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Airline-Passengers-Dataset-Plot-768x576.png 768w" width="800"/><p class="wp-caption-text">Airline Passengers Dataset Plot</p></div>
+<p>The dataset is non-stationary, meaning that the mean and the variance of the observations change over time. This makes it difficult to model by both classical statistical methods, like ARIMA, and more sophisticated machine learning methods, like neural networks.</p>
+<p>This is caused by what appears to be both an increasing trend and a seasonality component.</p>
+<p>In addition, the amount of change, or the variance, is increasing with time. This is clear when you look at the size of the seasonal component and notice that from one cycle to the next, the amplitude (from bottom to top of the cycle) is increasing.</p>
+<p>In this tutorial, we will investigate transforms that we can use on time series datasets that exhibit this property.</p>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Stop learning Time Series Forecasting the <em>slow way</em>!</h3>
+<p>Take my free 7-day email course and discover how to get started (with sample code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/14158d173f72a2%3A164f8be4f346dc/5760744339537920/" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="14158d173f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/14158d173f72a2%3A164f8be4f346dc/5760744339537920/" src="https://machinelearningmastery.leadpages.co/leadbox-1487347410.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Square Root Transform</h2>
+<p>A time series that has a quadratic growth trend can be made linear by taking the square root.</p>
+<p>Let’s demonstrate this with a quick contrived example.</p>
+<p>Consider a series of the numbers 1 to 99 squared. The line plot of this series will show a quadratic growth trend and a histogram of the values will show an exponential distribution with a long trail.</p>
+<p>The snippet of code below creates and graphs this series.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459bf802642858" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from matplotlib import pyplot
+series = [i**2 for i in range(1,100)]
+# line plot
+pyplot.plot(series)
+pyplot.show()
+# histogram
+pyplot.hist(series)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459bf802642858-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459bf802642858-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459bf802642858-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459bf802642858-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459bf802642858-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459bf802642858-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459bf802642858-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459bf802642858-8">8</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459bf802642858-1"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459bf802642858-2"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-e ">i*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c73459bf802642858-3"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459bf802642858-4"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459bf802642858-5"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459bf802642858-6"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459bf802642858-7"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459bf802642858-8"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>Running the example plots the series both as a line plot over time and a histogram of observations.</p>
+<div class="wp-caption aligncenter" id="attachment_3659" style="width: 810px"><img alt="Quadratic Time Series" class="size-full wp-image-3659" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Quadratic-Time-Series.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Quadratic-Time-Series.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Quadratic-Time-Series-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Quadratic-Time-Series-768x576.png 768w" width="800"/><p class="wp-caption-text">Quadratic Time Series</p></div>
+<p>If you see a structure like this in your own time series, you may have a quadratic growth trend. This can be removed or made linear by taking the inverse operation of the squaring procedure, which is the square root.</p>
+<p>Because the example is perfectly quadratic, we would expect the line plot of the transformed data to show a straight line. Because the source of the squared series is linear, we would expect the histogram to show a uniform distribution.</p>
+<p>The example below performs a <em>sqrt()</em> transform on the time series and plots the result.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459c3698072556" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from matplotlib import pyplot
+from numpy import sqrt
+series = [i**2 for i in range(1,100)]
+# sqrt transform
+transform = series = sqrt(series)
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(transform)
+# histogram
+pyplot.subplot(212)
+pyplot.hist(transform)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c3698072556-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459c3698072556-13">13</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-1"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-2"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">sqrt</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-3"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-e ">i*</span><span class="crayon-o">*</span><span class="crayon-cn">2</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-4"><span class="crayon-p"># sqrt transform</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-5"><span class="crayon-v">transform</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-6"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-7"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-8"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">transform</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-10"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c3698072556-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">transform</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c3698072556-13"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>We can see that, as expected, the quadratic trend was made linear.</p>
+<div class="wp-caption aligncenter" id="attachment_3660" style="width: 810px"><img alt="Square Root Transform of Quadratic Time Series" class="size-full wp-image-3660" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Quadratic-Time-Series.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Quadratic-Time-Series.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Quadratic-Time-Series-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Quadratic-Time-Series-768x576.png 768w" width="800"/><p class="wp-caption-text">Square Root Transform of Quadratic Time Series</p></div>
+<p>It is possible that the Airline Passengers dataset shows a quadratic growth. If this is the case, then we could expect a square root transform to reduce the growth trend to be linear and change the distribution of observations to be perhaps nearly Gaussian.</p>
+<p>The example below performs a square root of the dataset and plots the results.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459c5449126951" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import Series
+from pandas import DataFrame
+from numpy import sqrt
+from matplotlib import pyplot
+series = Series.from_csv('airline-passengers.csv', header=0)
+dataframe = DataFrame(series.values)
+dataframe.columns = ['passengers']
+dataframe['passengers'] = sqrt(dataframe['passengers'])
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(dataframe['passengers'])
+# histogram
+pyplot.subplot(212)
+pyplot.hist(dataframe['passengers'])
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c73459c5449126951-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c5449126951-16">16</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-3"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">sqrt</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-4"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-5"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'airline-passengers.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-6"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-7"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-8"><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-10"><span class="crayon-p"># line plot</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-13"><span class="crayon-p"># histogram</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-14"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c5449126951-15"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c5449126951-16"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p>We can see that the trend was reduced, but was not removed.</p>
+<p>The line plot still shows an increasing variance from cycle to cycle. The histogram still shows a long tail to the right of the distribution, suggesting an exponential or long-tail distribution.</p>
+<div class="wp-caption aligncenter" id="attachment_3661" style="width: 810px"><img alt="Square Root Transform of Airline Passengers Dataset Plot" class="size-full wp-image-3661" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Airline-Passengers-Dataset-Plot.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Airline-Passengers-Dataset-Plot.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Airline-Passengers-Dataset-Plot-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Square-Root-Transform-of-Airline-Passengers-Dataset-Plot-768x576.png 768w" width="800"/><p class="wp-caption-text">Square Root Transform of Airline Passengers Dataset Plot</p></div>
+<h2>Log Transform</h2>
+<p>A class of more extreme trends are exponential, often graphed as a hockey stick.</p>
+<p>Time series with an exponential distribution can be made linear by taking the logarithm of the values. This is called a log transform.</p>
+<p>As with the square and square root case above, we can demonstrate this with a quick example.</p>
+<p>The code below creates an exponential distribution by raising the numbers from 1 to 99 to the value <em>e</em>, which is the base of the <a href="https://en.wikipedia.org/wiki/Natural_logarithm">natural logarithms</a> or <a href="https://en.wikipedia.org/wiki/E_(mathematical_constant)">Euler’s number</a> (2.718…).</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459c7954883219" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from matplotlib import pyplot
+from math import exp
+series = [exp(i) for i in range(1,100)]
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(series)
+# histogram
+pyplot.subplot(212)
+pyplot.hist(series)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c7954883219-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c7954883219-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c7954883219-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c7954883219-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c7954883219-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459c7954883219-11">11</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-1"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c7954883219-2"><span class="crayon-e">from </span><span class="crayon-e">math </span><span class="crayon-e">import </span><span class="crayon-e">exp</span></div><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-3"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-e">exp</span><span class="crayon-sy">(</span><span class="crayon-v">i</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c7954883219-4"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-5"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c7954883219-6"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-7"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c7954883219-8"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c7954883219-10"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c7954883219-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>Running the example creates a line plot of the series and a histogram of the distribution of observations.</p>
+<p>We see an extreme increase on the line graph and an equally extreme long tail distribution on the histogram.</p>
+<div class="wp-caption aligncenter" id="attachment_3662" style="width: 810px"><img alt="Exponential Time Series" class="size-full wp-image-3662" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Exponential-Time-Series.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Exponential-Time-Series.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Exponential-Time-Series-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Exponential-Time-Series-768x576.png 768w" width="800"/><p class="wp-caption-text">Exponential Time Series</p></div>
+<p>Again, we can transform this series back to linear by taking the natural logarithm of the values.</p>
+<p>This would make the series linear and the distribution uniform. The example below demonstrates this for completeness.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459c9108978694" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from matplotlib import pyplot
+from math import exp
+from numpy import log
+series = [exp(i) for i in range(1,100)]
+transform = log(series)
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(transform)
+# histogram
+pyplot.subplot(212)
+pyplot.hist(transform)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459c9108978694-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459c9108978694-13">13</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-1"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-2"><span class="crayon-e">from </span><span class="crayon-e">math </span><span class="crayon-e">import </span><span class="crayon-e">exp</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-3"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">log</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-4"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-e">exp</span><span class="crayon-sy">(</span><span class="crayon-v">i</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">100</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-5"><span class="crayon-v">transform</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">log</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-6"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-7"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-8"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">transform</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-10"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459c9108978694-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">transform</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459c9108978694-13"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>Running the example creates plots, showing the expected linear result.</p>
+<div class="wp-caption aligncenter" id="attachment_3663" style="width: 810px"><img alt="Log Transformed Exponential Time Series" class="size-full wp-image-3663" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transformed-Exponential-Time-Series.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transformed-Exponential-Time-Series.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transformed-Exponential-Time-Series-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transformed-Exponential-Time-Series-768x576.png 768w" width="800"/><p class="wp-caption-text">Log Transformed Exponential Time Series</p></div>
+<p>Our Airline Passengers dataset has a distribution of this form, but perhaps not this extreme.</p>
+<p>The example below demonstrates a log transform of the Airline Passengers dataset.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459cb875785728" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import Series
+from pandas import DataFrame
+from numpy import log
+from matplotlib import pyplot
+series = Series.from_csv('airline-passengers.csv', header=0)
+dataframe = DataFrame(series.values)
+dataframe.columns = ['passengers']
+dataframe['passengers'] = log(dataframe['passengers'])
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(dataframe['passengers'])
+# histogram
+pyplot.subplot(212)
+pyplot.hist(dataframe['passengers'])
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c73459cb875785728-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cb875785728-16">16</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-3"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-e">log</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-4"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-5"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'airline-passengers.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-6"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-7"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-8"><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">log</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-10"><span class="crayon-p"># line plot</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-13"><span class="crayon-p"># histogram</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-14"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cb875785728-15"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cb875785728-16"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0007 seconds] -->
+<p>Running the example results in a trend that does look a lot more linear than the square root transform above. The line plot shows a seemingly linear growth and variance.</p>
+<p>The histogram also shows a more uniform or squashed Gaussian-like distribution of observations.</p>
+<div class="wp-caption aligncenter" id="attachment_3664" style="width: 810px"><img alt="Log Transform of Airline Passengers Dataset Plot" class="size-full wp-image-3664" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transform-of-Airline-Passengers-Dataset-Plot.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transform-of-Airline-Passengers-Dataset-Plot.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transform-of-Airline-Passengers-Dataset-Plot-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/Log-Transform-of-Airline-Passengers-Dataset-Plot-768x576.png 768w" width="800"/><p class="wp-caption-text">Log Transform of Airline Passengers Dataset Plot</p></div>
+<p>Log transforms are popular with time series data as they are effective at removing exponential variance.</p>
+<p>It is important to note that this operation assumes values are positive and non-zero. It is common to transform observations by adding a fixed constant to ensure all input values meet this requirement. For example:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459cd250573336" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+transform = log(constant + x)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459cd250573336-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459cd250573336-1">transform = log(constant + x)</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Where <em>transform</em> is the transformed series, <em>constant</em> is a fixed value that lifts all observations above zero, and <em>x</em> is the time series.</p>
+<h2>Box-Cox Transform</h2>
+<p>The square root transform and log transform belong to a class of transforms called power transforms.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Power_transform#Box.E2.80.93Cox_transformation">Box-Cox transform</a> is a configurable data transform method that supports both square root and log transform, as well as a suite of related transforms.</p>
+<p>More than that, it can be configured to evaluate a suite of transforms automatically and select a best fit. It can be thought of as a power tool to iron out power-based change in your time series. The resulting series may be more linear and the resulting distribution more Gaussian or Uniform, depending on the underlying process that generated it.</p>
+<p>The <em>scipy.stats</em> library provides an implementation of the Box-Cox transform. The <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.boxcox.html">boxcox()</a> function takes an argument, called <em>lambda</em>, that controls the type of transform to perform.</p>
+<p>Below are some common values for lambda</p>
+<ul>
+<li><em>lambda</em> = -1. is a reciprocal transform.</li>
+<li><em>lambda</em> = -0.5 is a reciprocal square root transform.</li>
+<li><em>lambda</em> = 0.0 is a log transform.</li>
+<li><em>lambda</em> = 0.5 is a square root transform.</li>
+<li><em>lambda</em> = 1.0 is no transform.</li>
+</ul>
+<p>For example, we can perform a log transform using the <em>boxcox()</em> function as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459cf337124803" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import Series
+from pandas import DataFrame
+from scipy.stats import boxcox
+from matplotlib import pyplot
+series = Series.from_csv('airline-passengers.csv', header=0)
+dataframe = DataFrame(series.values)
+dataframe.columns = ['passengers']
+dataframe['passengers'] = boxcox(dataframe['passengers'], lmbda=0.0)
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(dataframe['passengers'])
+# histogram
+pyplot.subplot(212)
+pyplot.hist(dataframe['passengers'])
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c73459cf337124803-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459cf337124803-16">16</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-3"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-e">boxcox</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-4"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-5"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'airline-passengers.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-6"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-7"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-8"><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">boxcox</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">lmbda</span><span class="crayon-o">=</span><span class="crayon-cn">0.0</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-9"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-10"><span class="crayon-p"># line plot</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-11"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-13"><span class="crayon-p"># histogram</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-14"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459cf337124803-15"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459cf337124803-16"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p>Running the example reproduces the log transform from the previous section.</p>
+<div class="wp-caption aligncenter" id="attachment_3665" style="width: 810px"><img alt="BoxCox Log Transform of Airline Passengers Dataset Plot" class="size-full wp-image-3665" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Log-Transform-of-Airline-Passengers-Dataset-Plot.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Log-Transform-of-Airline-Passengers-Dataset-Plot.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Log-Transform-of-Airline-Passengers-Dataset-Plot-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Log-Transform-of-Airline-Passengers-Dataset-Plot-768x576.png 768w" width="800"/><p class="wp-caption-text">BoxCox Log Transform of Airline Passengers Dataset Plot</p></div>
+<p>We can set the lambda parameter to None (the default) and let the function find a statistically tuned value.</p>
+<p>The following example demonstrates this usage, returning both the transformed dataset and the chosen <em>lambda</em> value.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459d1880372238" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import Series
+from pandas import DataFrame
+from scipy.stats import boxcox
+from matplotlib import pyplot
+series = Series.from_csv('airline-passengers.csv', header=0)
+dataframe = DataFrame(series.values)
+dataframe.columns = ['passengers']
+dataframe['passengers'], lam = boxcox(dataframe['passengers'])
+print('Lambda: %f' % lam)
+pyplot.figure(1)
+# line plot
+pyplot.subplot(211)
+pyplot.plot(dataframe['passengers'])
+# histogram
+pyplot.subplot(212)
+pyplot.hist(dataframe['passengers'])
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c73459d1880372238-16">16</div><div class="crayon-num" data-line="crayon-5c0c9c73459d1880372238-17">17</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-3"><span class="crayon-e">from </span><span class="crayon-v">scipy</span><span class="crayon-sy">.</span><span class="crayon-e">stats </span><span class="crayon-e">import </span><span class="crayon-e">boxcox</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-4"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-5"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'airline-passengers.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-6"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-v">values</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-7"><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">columns</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-8"><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">lam</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">boxcox</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-9"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'Lambda: %f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-v">lam</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-10"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">figure</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-11"><span class="crayon-p"># line plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-12"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">211</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-13"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-14"><span class="crayon-p"># histogram</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-15"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">subplot</span><span class="crayon-sy">(</span><span class="crayon-cn">212</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c73459d1880372238-16"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">hist</span><span class="crayon-sy">(</span><span class="crayon-v">dataframe</span><span class="crayon-sy">[</span><span class="crayon-s">'passengers'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c73459d1880372238-17"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p>Running the example discovers the <em>lambda</em> value of 0.148023.</p>
+<p>We can see that this is very close to a lambda value of 0.0, resulting in a log transform and stronger (less than) than 0.5 for the square root transform.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c73459d3645995025" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Lambda: 0.148023</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c73459d3645995025-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c73459d3645995025-1">Lambda: 0.148023</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>The line and histogram plots are also very similar to those from the log transform.</p>
+<div class="wp-caption aligncenter" id="attachment_3666" style="width: 810px"><img alt="BoxCox Auto Transform of Airline Passengers Dataset Plot" class="size-full wp-image-3666" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Auto-Transform-of-Airline-Passengers-Dataset-Plot.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Auto-Transform-of-Airline-Passengers-Dataset-Plot.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Auto-Transform-of-Airline-Passengers-Dataset-Plot-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/BoxCox-Auto-Transform-of-Airline-Passengers-Dataset-Plot-768x576.png 768w" width="800"/><p class="wp-caption-text">BoxCox Auto Transform of Airline Passengers Dataset Plot</p></div>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered how to identify when to use and how to use different power transforms on time series data with Python.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>How to identify a quadratic change and use the square root transform.</li>
+<li>How to identify an exponential change and how to use the log transform.</li>
+<li>How to use the Box-Cox transform to perform square root and log transforms and automatically optimize the transform for a dataset.</li>
+</ul>
+<p>Do you have any questions about power transforms, or about this tutorial?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-26"> <div class="textwidget"><p></p><center>
+<div class="woo-sc-hr"></div>
+<h2>Want to Develop Time Series Forecasts with Python?</h2>
+<p><a href="/introduction-to-time-series-forecasting-with-python/"><img align="left" alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Forecasts in Minutes</h4>
+<p>...with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/introduction-to-time-series-forecasting-with-python/">Introduction to Time Series Forecasting With Python</a></p>
+<p>It covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> on topics like:<br/>
+<em>Loading data, visualization, modeling, algorithm tuning,</em> and much more...</p>
+<h4>Finally Bring Time Series Forecasting to<br/>
+Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to learn more</a>.</p>
+<div class="woo-sc-hr"></div>
+<p></p></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3657 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Use+Power+Transforms+for+Time+Series+Forecast+Data+with+Python&amp;url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/reframe-time-series-forecasting-problem/" rel="prev"><i class="fa fa-angle-left"></i> How to Reframe Your Time Series Forecasting Problem</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/make-predictions-time-series-forecasting-python/" rel="next">How to Make Predictions for Time Series Forecasting with Python <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">23 Responses to <em>How to Use Power Transforms for Time Series Forecast Data with Python</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-421461">
+<div class="comment-container" id="li-comment-421461">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c9872a157c7d379d67694e3969ea6cc9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c9872a157c7d379d67694e3969ea6cc9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shane Keller</span>
+<span class="date">November 28, 2017 at 2:36 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-421461" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for this article. A lot of people write about log transformations and provide no explanation of when to not do a log transform, and Box-Cox fills in a lot of the gaps. Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Shane Keller" class="comment-reply-link" href="#comment-421461" onclick='return addComment.moveForm( "comment-421461", "421461", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-421465">
+<div class="comment-container" id="li-comment-421465">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c9872a157c7d379d67694e3969ea6cc9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c9872a157c7d379d67694e3969ea6cc9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shane Keller</span>
+<span class="date">November 28, 2017 at 3:03 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-421465" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>A few follow up questions:<br/>
+– Assuming the minimum value of a variable is &gt; 0, are there situations in which you would not try and use Box-Cox? The scipy.stats.boxplot module will also decide when a transformation is unnecessary, so seems like there’s no harm in trying it for every variable. I’d imagine the main cost is loss of interpretability if you’re visualizing model results.<br/>
+– In situations where you shouldn’t use a Box-Cox, what alternative transformations do you recommend?</p>
+<div class="reply">
+<a aria-label="Reply to Shane Keller" class="comment-reply-link" href="#comment-421465" onclick='return addComment.moveForm( "comment-421465", "421465", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-3" id="comment-421538">
+<div class="comment-container" id="li-comment-421538">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 29, 2017 at 8:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-421538" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I agree, try, evaluate and adopt if a transform lifts skill. Often model skill is the goal for a project.</p>
+<p>A “Yeo-Johnson transformation” can be used as an alternative to box-cox:<br/>
+<a href="https://en.wikipedia.org/wiki/Power_transform#Yeo-Johnson_transformation" rel="nofollow">https://en.wikipedia.org/wiki/Power_transform#Yeo-Johnson_transformation</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421538" onclick='return addComment.moveForm( "comment-421538", "421538", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-424240">
+<div class="comment-container" id="li-comment-424240">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9b88cce1954fa47d228d1f43e5776c14?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9b88cce1954fa47d228d1f43e5776c14?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Joachim Hagege</span>
+<span class="date">December 21, 2017 at 4:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-424240" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, thanks much for the tutorial.<br/>
+When taking the square root of the airline, you say we expect the distribution to be Gaussian, while in the previous example with generated quadratic data, you expected a uniform distribution.<br/>
+When will we expect one over the other ?<br/>
+Thanks !</p>
+<div class="reply">
+<a aria-label="Reply to Joachim Hagege" class="comment-reply-link" href="#comment-424240" onclick='return addComment.moveForm( "comment-424240", "424240", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-424259">
+<div class="comment-container" id="li-comment-424259">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 21, 2017 at 5:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-424259" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It really depends on the data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-424259" onclick='return addComment.moveForm( "comment-424259", "424259", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-431057">
+<div class="comment-container" id="li-comment-431057">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3b96badab232ea604969f97f8a86398b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3b96badab232ea604969f97f8a86398b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yasen</span>
+<span class="date">March 4, 2018 at 4:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-431057" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Please, help!<br/>
+after writing the first code line from the first example I have got the following error message: </p>
+<p>&gt;&gt;&gt; from pandas import Series</p>
+<p>Traceback (most recent call last):<br/>
+  File “”, line 1, in<br/>
+    from pandas import Series<br/>
+ImportError: No module named pandas<br/>
+&gt;&gt;&gt;</p>
+<div class="reply">
+<a aria-label="Reply to Yasen" class="comment-reply-link" href="#comment-431057" onclick='return addComment.moveForm( "comment-431057", "431057", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-431080">
+<div class="comment-container" id="li-comment-431080">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 4, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-431080" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You need to install Pandas. This tutorial will help you:<br/>
+<a href="https://machinelearningmastery.com/setup-python-environment-machine-learning-deep-learning-anaconda/" rel="nofollow">https://machinelearningmastery.com/setup-python-environment-machine-learning-deep-learning-anaconda/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-431080" onclick='return addComment.moveForm( "comment-431080", "431080", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-435286">
+<div class="comment-container" id="li-comment-435286">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/0205d42428d970a6be5ff859c461bc1e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/0205d42428d970a6be5ff859c461bc1e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kim</span>
+<span class="date">April 18, 2018 at 6:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-435286" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Dear Jason, I love this tutorial!</p>
+<p>Much of the data I work with contains many zeros and is heavily skewed to the right.  I have sometimes added a small value (like 0.1) to each record in order to perform a log transformation. </p>
+<p>Can the Box-Cox package handle data that contains zeros?</p>
+<p>Thanks again for your great information 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Kim" class="comment-reply-link" href="#comment-435286" onclick='return addComment.moveForm( "comment-435286", "435286", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-435315">
+<div class="comment-container" id="li-comment-435315">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 18, 2018 at 8:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-435315" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Generally, no.</p>
+<p>Nevertheless, try it (with an offset to get all values &gt;0) to see if it has an impact.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435315" onclick='return addComment.moveForm( "comment-435315", "435315", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-442536">
+<div class="comment-container" id="li-comment-442536">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4b28504afd298a50e751ec0d071d35de?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4b28504afd298a50e751ec0d071d35de?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Charles</span>
+<span class="date">July 3, 2018 at 5:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-442536" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>FYI – scipy.stats.boxcox is buggy.  🙁</p>
+<div class="reply">
+<a aria-label="Reply to Charles" class="comment-reply-link" href="#comment-442536" onclick='return addComment.moveForm( "comment-442536", "442536", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-442551">
+<div class="comment-container" id="li-comment-442551">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 3, 2018 at 6:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-442551" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Why do you say that?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442551" onclick='return addComment.moveForm( "comment-442551", "442551", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-443709">
+<div class="comment-container" id="li-comment-443709">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4b28504afd298a50e751ec0d071d35de?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4b28504afd298a50e751ec0d071d35de?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Charles</span>
+<span class="date">July 17, 2018 at 9:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-443709" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This thread shows the problem.  I ran into the problem running your code but on my data. </p>
+<p><a href="https://github.com/scipy/scipy/issues/6873" rel="nofollow">https://github.com/scipy/scipy/issues/6873</a> </p>
+<p>The problem occurs when stats.boxcox calls stats.boxcox_normmax Very annoying.</p>
+<div class="reply">
+<a aria-label="Reply to Charles" class="comment-reply-link" href="#comment-443709" onclick='return addComment.moveForm( "comment-443709", "443709", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-443749">
+<div class="comment-container" id="li-comment-443749">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 18, 2018 at 6:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-443749" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry to hear that.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443749" onclick='return addComment.moveForm( "comment-443749", "443749", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-443565">
+<div class="comment-container" id="li-comment-443565">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/76ba41bd07a3e6eb4b82190346e3317f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/76ba41bd07a3e6eb4b82190346e3317f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sundeep Nayakanti</span>
+<span class="date">July 16, 2018 at 2:02 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-443565" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, thanks for your blog.. It is good as like your other blog posts. However got a questions, if I use to box_cox  to automatically use for transformation for my series, how can I convert it back..i meant transform back to original values..is there a function that does automatically as well?</p>
+<div class="reply">
+<a aria-label="Reply to Sundeep Nayakanti" class="comment-reply-link" href="#comment-443565" onclick='return addComment.moveForm( "comment-443565", "443565", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-443576">
+<div class="comment-container" id="li-comment-443576">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 16, 2018 at 6:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-443576" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can invert the process with a function like the following:</p>
+<p></p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c734693e965288803" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# invert a boxcox transform for one value
+def power_transform_invert_value(value, lam):
+	from math import log
+	from math import exp
+	# log case
+	if lam == 0:
+		return exp(value)
+	# all other cases
+	return exp(log(lam * value + 1) / lam)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c734693e965288803-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c734693e965288803-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c734693e965288803-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c734693e965288803-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c734693e965288803-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c734693e965288803-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c734693e965288803-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c734693e965288803-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c734693e965288803-9">9</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c734693e965288803-1"><span class="crayon-p"># invert a boxcox transform for one value</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c734693e965288803-2"><span class="crayon-e">def </span><span class="crayon-e">power_transform_invert_value</span><span class="crayon-sy">(</span><span class="crayon-v">value</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">lam</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c734693e965288803-3"><span class="crayon-h"> </span><span class="crayon-e">from </span><span class="crayon-e">math </span><span class="crayon-e">import </span><span class="crayon-e">log</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c734693e965288803-4"><span class="crayon-e"> </span><span class="crayon-e">from </span><span class="crayon-e">math </span><span class="crayon-e">import </span><span class="crayon-v">exp</span></div><div class="crayon-line" id="crayon-5c0c9c734693e965288803-5"><span class="crayon-h"> </span><span class="crayon-p"># log case</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c734693e965288803-6"><span class="crayon-h"> </span><span class="crayon-st">if</span><span class="crayon-h"> </span><span class="crayon-v">lam</span><span class="crayon-h"> </span><span class="crayon-o">==</span><span class="crayon-h"> </span><span class="crayon-cn">0</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c734693e965288803-7"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-e">exp</span><span class="crayon-sy">(</span><span class="crayon-v">value</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c734693e965288803-8"><span class="crayon-h"> </span><span class="crayon-p"># all other cases</span></div><div class="crayon-line" id="crayon-5c0c9c734693e965288803-9"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-e">exp</span><span class="crayon-sy">(</span><span class="crayon-e">log</span><span class="crayon-sy">(</span><span class="crayon-e ">lam *</span><span class="crayon-h"> </span><span class="crayon-v">value</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-v">lam</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443576" onclick='return addComment.moveForm( "comment-443576", "443576", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-446930">
+<div class="comment-container" id="li-comment-446930">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/50ce58e92205abba7a4c80412a3aec2d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/50ce58e92205abba7a4c80412a3aec2d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">doug</span>
+<span class="date">August 25, 2018 at 5:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-446930" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>nice one; i was interested in a first-principles explanation of Box-Cox; at university many years ago was the last time had this understanding. I don’t work in python so i didn’t use your code; however, your use of clear shot snippets to explain step-by-step what is B-C, is excellent</p>
+<div class="reply">
+<a aria-label="Reply to doug" class="comment-reply-link" href="#comment-446930" onclick='return addComment.moveForm( "comment-446930", "446930", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-446977">
+<div class="comment-container" id="li-comment-446977">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 26, 2018 at 6:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-446977" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Doug, I’m happy it was useful.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446977" onclick='return addComment.moveForm( "comment-446977", "446977", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-449028">
+<div class="comment-container" id="li-comment-449028">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kingsley Udeh</span>
+<span class="date">September 16, 2018 at 7:31 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-449028" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>How do we inverse the log  transformed data or time series back to the original time series scale?</p>
+<p>Secondly, I used log transform on my time series data that shows exponential growth trends, to make it linear, and I had a histogram plot that is more uniform and Gaussian-like distribution. The log transform lifted model skills tremendously, but in log scale, rather than the original time series scale. In addition, I did not do any further transform on my time series data, even though, they contain zeroes and negative values. Does it really matter?</p>
+<p>Regards,<br/>
+Kingsley</p>
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Kingsley Udeh" class="comment-reply-link" href="#comment-449028" onclick='return addComment.moveForm( "comment-449028", "449028", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-449063">
+<div class="comment-container" id="li-comment-449063">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 17, 2018 at 6:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-449063" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The inverse of log is exp()</p>
+<p>The transforms required really depend on your data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449063" onclick='return addComment.moveForm( "comment-449063", "449063", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-449081">
+<div class="comment-container" id="li-comment-449081">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kingsley Udeh</span>
+<span class="date">September 17, 2018 at 7:59 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-449081" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Kingsley Udeh" class="comment-reply-link" href="#comment-449081" onclick='return addComment.moveForm( "comment-449081", "449081", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-449100">
+<div class="comment-container" id="li-comment-449100">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 17, 2018 at 2:07 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-449100" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m happy that it helped.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449100" onclick='return addComment.moveForm( "comment-449100", "449100", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-454317">
+<div class="comment-container" id="li-comment-454317">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f52c3cea0ab673ce3a5e1ac025eeb855?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f52c3cea0ab673ce3a5e1ac025eeb855?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Santosh</span>
+<span class="date">November 10, 2018 at 8:20 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-454317" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, </p>
+<p>Thanks a lot for the great post. So my question is that, the box-cox algorithm helps to determine if there is any trend or seasonality. How do we remove that trend and make the time series stationary ? Do we need to substract the trend or seasonality factor from the original data set and feed to the ARIMA model to decide the value of p,q and d? If you have any article related to this, please share. </p>
+<p>Also, for an ARIMA model, a stationary time series is mandatory ? I have a data set similar to the air passeneger data set. I have the data set from 2014 to 2017. I want to predict it for 2018. </p>
+<p>Your help will be highly appreciated 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Santosh" class="comment-reply-link" href="#comment-454317" onclick='return addComment.moveForm( "comment-454317", "454317", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-454367">
+<div class="comment-container" id="li-comment-454367">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 11, 2018 at 6:01 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/power-transform-time-series-forecast-data-python/#comment-454367" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No, box-cox shifts a data distribution to be more Gaussian.</p>
+<p>You can remove a trend using a difference transform.</p>
+<p>When using ARIMA, it can perform this differencing for you.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-454367" onclick='return addComment.moveForm( "comment-454367", "454367", "respond", "3657" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/power-transform-time-series-forecast-data-python/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="3657"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="be93d3ddcf"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="39"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-27"> <div class="textwidget"><p></p><center><br/>
+<strong>Time Series Forecasting with Python</strong><br/>
+Explore time series data and predict the future.
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to Get Started Now!</a><br/>
+<a href="/introduction-to-time-series-forecasting-with-python/"><img alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

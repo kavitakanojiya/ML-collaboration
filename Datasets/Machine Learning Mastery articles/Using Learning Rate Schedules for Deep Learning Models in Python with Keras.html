@@ -1,0 +1,1465 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Using Learning Rate Schedules for Deep Learning Models in Python with Keras</title>
+<link href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Using Learning Rate Schedules for Deep Learning Models in Python with Keras" property="og:title"/>
+<meta content="Training a neural network or large deep learning model is a difficult optimization task. The classical algorithm to train neural networks is called stochastic gradient descent. It has been well established that you can achieve increased performance and faster training on some problems by using a learning rate that changes during training. In this post …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Deep Learning" property="article:section"/>
+<meta content="2016-06-21T19:00:40+00:00" property="article:published_time"/>
+<meta content="2017-03-30T21:46:20+00:00" property="article:modified_time"/>
+<meta content="2017-03-30T21:46:20+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Using-Learning-Rate-Schedules-for-Deep-Learning-Models-in-Python-with-Keras.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Using-Learning-Rate-Schedules-for-Deep-Learning-Models-in-Python-with-Keras.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="Using Learning Rate Schedules for Deep Learning Models in Python with Keras" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/feed/" rel="alternate" title="Machine Learning Mastery » Using Learning Rate Schedules for Deep Learning Models in Python with Keras Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=2581" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fusing-learning-rate-schedules-deep-learning-models-python-keras%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fusing-learning-rate-schedules-deep-learning-models-python-keras%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-2581 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-32"> <div class="textwidget"><p>Want help with deep learning? <a href="https://machinelearningmastery.lpages.co/deep-learning-with-python-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-2581 post type-post status-publish format-standard has-post-thumbnail hentry category-deep-learning">
+<header>
+<h1 class="title entry-title">Using Learning Rate Schedules for Deep Learning Models in Python with Keras</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-06-22T05:00:40+1100">June 22, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/deep-learning/" title="View all items in Deep Learning">Deep Learning</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2581 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Using+Learning+Rate+Schedules+for+Deep+Learning+Models+in+Python+with+Keras&amp;url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Training a neural network or large deep learning model is a difficult optimization task.</p>
+<p>The classical algorithm to train neural networks is called <a href="http://machinelearningmastery.com/gradient-descent-for-machine-learning/">stochastic gradient descent</a>. It has been well established that you can achieve increased performance and faster training on some problems by using a learning rate that changes during training.</p>
+<p>In this post you will discover how you can use different learning rate schedules for your neural network models in Python using the Keras deep learning library.</p>
+<p>After reading this post you will know:</p>
+<ul>
+<li>How to configure and evaluate a time-based learning rate schedule.</li>
+<li>How to configure and evaluate a drop-based learning rate schedule.</li>
+</ul>
+<p>Let’s get started.</p>
+<ul>
+<li><strong>Update Mar/2017</strong>: Updated example for Keras 2.0.2, TensorFlow 1.0.1 and Theano 0.9.0.</li>
+</ul>
+<div class="wp-caption aligncenter" id="attachment_2611" style="width: 650px"><img alt="Using Learning Rate Schedules for Deep Learning Models in Python with Keras" class="size-full wp-image-2611" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Using-Learning-Rate-Schedules-for-Deep-Learning-Models-in-Python-with-Keras.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Using-Learning-Rate-Schedules-for-Deep-Learning-Models-in-Python-with-Keras.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Using-Learning-Rate-Schedules-for-Deep-Learning-Models-in-Python-with-Keras-300x200.jpg 300w" width="640"/><p class="wp-caption-text">Using Learning Rate Schedules for Deep Learning Models in Python with Keras<br/>Photo by <a href="https://www.flickr.com/photos/gsapponline/17050523800/">Columbia GSAPP</a>, some rights reserved.</p></div>
+<h2>Learning Rate Schedule For Training Models</h2>
+<p>Adapting the learning rate for your stochastic gradient descent optimization procedure can increase performance and reduce training time.</p>
+<p>Sometimes this is called learning rate annealing or adaptive learning rates. Here we will call this approach a learning rate schedule, were the default schedule is to use a constant learning rate to update network weights for each training epoch.</p>
+<p>The simplest and perhaps most used adaptation of learning rate during training are techniques that reduce the learning rate over time. These have the benefit of making large changes at the beginning of the training procedure when larger learning rate values are used, and decreasing the learning rate such that a smaller rate and therefore smaller training updates are made to weights later in the training procedure.</p>
+<p>This has the effect of quickly learning good weights early and fine tuning them later.</p>
+<p>Two popular and easy to use learning rate schedules are as follows:</p>
+<ul>
+<li>Decrease the learning rate gradually based on the epoch.</li>
+<li>Decrease the learning rate using punctuated large drops at specific epochs.</li>
+</ul>
+<p>Next, we will look at how you can use each of these learning rate schedules in turn with Keras.</p>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with Deep Learning in Python?</h3>
+<p>Take my free 2-week email course and discover MLPs, CNNs and LSTMs (with code).</p>
+<p>Click to sign-up now and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/142d6e873f72a2%3A164f8be4f346dc/5657382461898752/" rel="noopener" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Start Your FREE Mini-Course Now!</a> <script data-config="%7B%7D" data-leadbox="142d6e873f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/142d6e873f72a2%3A164f8be4f346dc/5657382461898752/" src="https://machinelearningmastery.leadpages.co/leadbox-1463166699.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Time-Based Learning Rate Schedule</h2>
+<p>Keras has a time-based learning rate schedule built in.</p>
+<p>The stochastic gradient descent optimization algorithm implementation in the SGD class has an argument called decay. This argument is used in the time-based learning rate decay schedule equation as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d698092242548085" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+LearningRate = LearningRate * 1/(1 + decay * epoch)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d698092242548085-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d698092242548085-1">LearningRate = LearningRate * 1/(1 + decay * epoch)</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>When the decay argument is zero (the default), this has no effect on the learning rate.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d69809a026312198" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+LearningRate = 0.1 * 1/(1 + 0.0 * 1)
+LearningRate = 0.1</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d69809a026312198-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d69809a026312198-2">2</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d69809a026312198-1">LearningRate = 0.1 * 1/(1 + 0.0 * 1)</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d69809a026312198-2">LearningRate = 0.1</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>When the decay argument is specified, it will decrease the learning rate from the previous epoch by the given fixed amount.</p>
+<p>For example, if we use the initial learning rate value of 0.1 and the decay of 0.001, the first 5 epochs will adapt the learning rate as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d69809c447892008" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Epoch	Learning Rate
+1	0.1
+2	0.0999000999
+3	0.0997006985
+4	0.09940249103
+5	0.09900646517</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d69809c447892008-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d69809c447892008-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d69809c447892008-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d69809c447892008-4">4</div><div class="crayon-num" data-line="crayon-5c0ca8d69809c447892008-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d69809c447892008-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d69809c447892008-1">Epoch	Learning Rate</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d69809c447892008-2">1	0.1</div><div class="crayon-line" id="crayon-5c0ca8d69809c447892008-3">2	0.0999000999</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d69809c447892008-4">3	0.0997006985</div><div class="crayon-line" id="crayon-5c0ca8d69809c447892008-5">4	0.09940249103</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d69809c447892008-6">5	0.09900646517</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Extending this out to 100 epochs will produce the following graph of learning rate (y axis) versus epoch (x axis):</p>
+<div class="wp-caption aligncenter" id="attachment_2582" style="width: 365px"><img alt="Time-Based Learning Rate Schedule" class="size-full wp-image-2582" height="282" sizes="(max-width: 355px) 100vw, 355px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Time-Based-Learning-Rate-Schedule.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Time-Based-Learning-Rate-Schedule.png 355w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Time-Based-Learning-Rate-Schedule-300x238.png 300w" width="355"/><p class="wp-caption-text">Time-Based Learning Rate Schedule</p></div>
+<p>You can create a nice default schedule by setting the decay value as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d69809e528558886" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Decay = LearningRate / Epochs
+Decay = 0.1 / 100
+Decay = 0.001</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d69809e528558886-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d69809e528558886-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d69809e528558886-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d69809e528558886-1">Decay = LearningRate / Epochs</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d69809e528558886-2">Decay = 0.1 / 100</div><div class="crayon-line" id="crayon-5c0ca8d69809e528558886-3">Decay = 0.001</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>The example below demonstrates using the time-based learning rate adaptation schedule in Keras.</p>
+<p>It is demonstrated on the <a href="http://archive.ics.uci.edu/ml/datasets/Ionosphere">Ionosphere binary classification problem</a>. This is a small dataset that you can <a href="http://archive.ics.uci.edu/ml/machine-learning-databases/ionosphere/ionosphere.data">download from the UCI Machine Learning repository</a>. Place the data file in your working directory with the filename ionosphere.csv.</p>
+<p>The ionosphere dataset is good for practicing with neural networks because all of the input values are small numerical values of the same scale.</p>
+<p>A small neural network model is constructed with a single hidden layer with 34 neurons and using the rectifier activation function. The output layer has a single neuron and uses the sigmoid activation function in order to output probability-like values.</p>
+<p>The learning rate for stochastic gradient descent has been set to a higher value of 0.1. The model is trained for 50 epochs and the decay argument has been set to 0.002, calculated as 0.1/50. Additionally, it can be a good idea to use momentum when using an adaptive learning rate. In this case we use a momentum value of 0.8.</p>
+<p>The complete example is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d6980a0067437655" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# Time Based Learning Rate Decay
+from pandas import read_csv
+import numpy
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers import SGD
+from sklearn.preprocessing import LabelEncoder
+# fix random seed for reproducibility
+seed = 7
+numpy.random.seed(seed)
+# load dataset
+dataframe = read_csv("ionosphere.csv", header=None)
+dataset = dataframe.values
+# split into input (X) and output (Y) variables
+X = dataset[:,0:34].astype(float)
+Y = dataset[:,34]
+# encode class values as integers
+encoder = LabelEncoder()
+encoder.fit(Y)
+Y = encoder.transform(Y)
+# create model
+model = Sequential()
+model.add(Dense(34, input_dim=34, kernel_initializer='normal', activation='relu'))
+model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
+# Compile model
+epochs = 50
+learning_rate = 0.1
+decay_rate = learning_rate / epochs
+momentum = 0.8
+sgd = SGD(lr=learning_rate, momentum=momentum, decay=decay_rate, nesterov=False)
+model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+# Fit the model
+model.fit(X, Y, validation_split=0.33, epochs=epochs, batch_size=28, verbose=2)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-4">4</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-6">6</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-8">8</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-10">10</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-12">12</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-14">14</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-16">16</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-18">18</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-20">20</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-22">22</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-24">24</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-26">26</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-28">28</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-30">30</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a0067437655-32">32</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a0067437655-33">33</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-1"><span class="crayon-p"># Time Based Learning Rate Decay</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-3"><span class="crayon-e">import </span><span class="crayon-e">numpy</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-4"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-e">Sequential</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-5"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">layers </span><span class="crayon-e">import </span><span class="crayon-e">Dense</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-6"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">optimizers </span><span class="crayon-e">import </span><span class="crayon-e">SGD</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-7"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">preprocessing </span><span class="crayon-e">import </span><span class="crayon-v">LabelEncoder</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-8"><span class="crayon-p"># fix random seed for reproducibility</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-9"><span class="crayon-v">seed</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">7</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-10"><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-v">random</span><span class="crayon-sy">.</span><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-v">seed</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-11"><span class="crayon-p"># load dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-12"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">"ionosphere.csv"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-v">None</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-13"><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-14"><span class="crayon-p"># split into input (X) and output (Y) variables</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-15"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-o">:</span><span class="crayon-cn">34</span><span class="crayon-sy">]</span><span class="crayon-sy">.</span><span class="crayon-e">astype</span><span class="crayon-sy">(</span><span class="crayon-t">float</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-16"><span class="crayon-v">Y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">34</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-17"><span class="crayon-p"># encode class values as integers</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-18"><span class="crayon-v">encoder</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LabelEncoder</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-19"><span class="crayon-v">encoder</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">Y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-20"><span class="crayon-v">Y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">encoder</span><span class="crayon-sy">.</span><span class="crayon-e">transform</span><span class="crayon-sy">(</span><span class="crayon-v">Y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-21"><span class="crayon-p"># create model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-22"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-23"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">34</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">input_dim</span><span class="crayon-o">=</span><span class="crayon-cn">34</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">kernel_initializer</span><span class="crayon-o">=</span><span class="crayon-s">'normal'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">activation</span><span class="crayon-o">=</span><span class="crayon-s">'relu'</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-24"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">kernel_initializer</span><span class="crayon-o">=</span><span class="crayon-s">'normal'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">activation</span><span class="crayon-o">=</span><span class="crayon-s">'sigmoid'</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-25"><span class="crayon-p"># Compile model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-26"><span class="crayon-v">epochs</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">50</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-27"><span class="crayon-v">learning_rate</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.1</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-28"><span class="crayon-v">decay_rate</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">learning_rate</span><span class="crayon-h"> </span><span class="crayon-o">/</span><span class="crayon-h"> </span><span class="crayon-e">epochs</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-29"><span class="crayon-v">momentum</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.8</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-30"><span class="crayon-v">sgd</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">SGD</span><span class="crayon-sy">(</span><span class="crayon-v">lr</span><span class="crayon-o">=</span><span class="crayon-v">learning_rate</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">momentum</span><span class="crayon-o">=</span><span class="crayon-v">momentum</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">decay</span><span class="crayon-o">=</span><span class="crayon-v">decay_rate</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">nesterov</span><span class="crayon-o">=</span><span class="crayon-t">False</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-31"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-v">loss</span><span class="crayon-o">=</span><span class="crayon-s">'binary_crossentropy'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">optimizer</span><span class="crayon-o">=</span><span class="crayon-v">sgd</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">metrics</span><span class="crayon-o">=</span><span class="crayon-sy">[</span><span class="crayon-s">'accuracy'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a0067437655-32"><span class="crayon-p"># Fit the model</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a0067437655-33"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">Y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">validation_split</span><span class="crayon-o">=</span><span class="crayon-cn">0.33</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">epochs</span><span class="crayon-o">=</span><span class="crayon-v">epochs</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">batch_size</span><span class="crayon-o">=</span><span class="crayon-cn">28</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0023 seconds] -->
+<p>The model is trained on 67% of the dataset and evaluated using a 33% validation dataset.</p>
+<p>Running the example shows a classification accuracy of 99.14%. This is higher than the baseline of 95.69% without the learning rate decay or momentum.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d6980a1706712724" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+...
+Epoch 45/50
+0s - loss: 0.0622 - acc: 0.9830 - val_loss: 0.0929 - val_acc: 0.9914
+Epoch 46/50
+0s - loss: 0.0695 - acc: 0.9830 - val_loss: 0.0693 - val_acc: 0.9828
+Epoch 47/50
+0s - loss: 0.0669 - acc: 0.9872 - val_loss: 0.0616 - val_acc: 0.9828
+Epoch 48/50
+0s - loss: 0.0632 - acc: 0.9830 - val_loss: 0.0824 - val_acc: 0.9914
+Epoch 49/50
+0s - loss: 0.0590 - acc: 0.9830 - val_loss: 0.0772 - val_acc: 0.9828
+Epoch 50/50
+0s - loss: 0.0592 - acc: 0.9872 - val_loss: 0.0639 - val_acc: 0.9828</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-4">4</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-6">6</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-8">8</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-10">10</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a1706712724-12">12</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a1706712724-13">13</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-1">...</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-2">Epoch 45/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-3">0s - loss: 0.0622 - acc: 0.9830 - val_loss: 0.0929 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-4">Epoch 46/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-5">0s - loss: 0.0695 - acc: 0.9830 - val_loss: 0.0693 - val_acc: 0.9828</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-6">Epoch 47/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-7">0s - loss: 0.0669 - acc: 0.9872 - val_loss: 0.0616 - val_acc: 0.9828</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-8">Epoch 48/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-9">0s - loss: 0.0632 - acc: 0.9830 - val_loss: 0.0824 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-10">Epoch 49/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-11">0s - loss: 0.0590 - acc: 0.9830 - val_loss: 0.0772 - val_acc: 0.9828</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a1706712724-12">Epoch 50/50</div><div class="crayon-line" id="crayon-5c0ca8d6980a1706712724-13">0s - loss: 0.0592 - acc: 0.9872 - val_loss: 0.0639 - val_acc: 0.9828</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p></p>
+<h2>Drop-Based Learning Rate Schedule</h2>
+<p>Another popular learning rate schedule used with deep learning models is to systematically drop the learning rate at specific times during training.</p>
+<p>Often this method is implemented by dropping the learning rate by half every fixed number of epochs. For example, we may have an initial learning rate of 0.1 and drop it by 0.5 every 10 epochs. The first 10 epochs of training would use a value of 0.1, in the next 10 epochs a learning rate of 0.05 would be used, and so on.</p>
+<p>If we plot out the learning rates for this example out to 100 epochs you get the graph below showing learning rate (y axis) versus epoch (x axis).</p>
+<div class="wp-caption aligncenter" id="attachment_2583" style="width: 365px"><img alt="Drop Based Learning Rate Schedule" class="size-full wp-image-2583" height="283" sizes="(max-width: 355px) 100vw, 355px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Drop-Based-Learning-Rate-Schedule.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Drop-Based-Learning-Rate-Schedule.png 355w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/Drop-Based-Learning-Rate-Schedule-300x239.png 300w" width="355"/><p class="wp-caption-text">Drop Based Learning Rate Schedule</p></div>
+<p>We can implement this in Keras using a the <a href="http://keras.io/callbacks/">LearningRateScheduler</a> callback when fitting the model.</p>
+<p>The LearningRateScheduler callback allows us to define a function to call that takes the epoch number as an argument and returns the learning rate to use in stochastic gradient descent. When used, the learning rate specified by stochastic gradient descent is ignored.</p>
+<p>In the code below, we use the same example before of a single hidden layer network on the Ionosphere dataset. A new step_decay() function is defined that implements the equation:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d6980a6810256583" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+LearningRate = InitialLearningRate * DropRate^floor(Epoch / EpochDrop)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d6980a6810256583-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d6980a6810256583-1">LearningRate = InitialLearningRate * DropRate^floor(Epoch / EpochDrop)</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Where InitialLearningRate is the initial learning rate such as 0.1, the DropRate is the amount that the learning rate is modified each time it is changed such as 0.5, Epoch is the current epoch number and EpochDrop is how often to change the learning rate such as 10.</p>
+<p>Notice that we set the learning rate in the SGD class to 0 to clearly indicate that it is not used. Nevertheless, you can set a momentum term in SGD if you want to use momentum with this learning rate schedule.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d6980a8347476544" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# Drop-Based Learning Rate Decay
+import pandas
+from pandas import read_csv
+import numpy
+import math
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers import SGD
+from sklearn.preprocessing import LabelEncoder
+from keras.callbacks import LearningRateScheduler
+
+# learning rate schedule
+def step_decay(epoch):
+	initial_lrate = 0.1
+	drop = 0.5
+	epochs_drop = 10.0
+	lrate = initial_lrate * math.pow(drop, math.floor((1+epoch)/epochs_drop))
+	return lrate
+
+# fix random seed for reproducibility
+seed = 7
+numpy.random.seed(seed)
+# load dataset
+dataframe = read_csv("ionosphere.csv", header=None)
+dataset = dataframe.values
+# split into input (X) and output (Y) variables
+X = dataset[:,0:34].astype(float)
+Y = dataset[:,34]
+# encode class values as integers
+encoder = LabelEncoder()
+encoder.fit(Y)
+Y = encoder.transform(Y)
+# create model
+model = Sequential()
+model.add(Dense(34, input_dim=34, kernel_initializer='normal', activation='relu'))
+model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
+# Compile model
+sgd = SGD(lr=0.0, momentum=0.9, decay=0.0, nesterov=False)
+model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+# learning schedule callback
+lrate = LearningRateScheduler(step_decay)
+callbacks_list = [lrate]
+# Fit the model
+model.fit(X, Y, validation_split=0.33, epochs=50, batch_size=28, callbacks=callbacks_list, verbose=2)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-4">4</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-6">6</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-8">8</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-10">10</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-12">12</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-14">14</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-16">16</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-18">18</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-20">20</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-22">22</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-24">24</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-26">26</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-28">28</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-30">30</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-32">32</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-34">34</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-36">36</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-37">37</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-38">38</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-39">39</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-40">40</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-41">41</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-42">42</div><div class="crayon-num" data-line="crayon-5c0ca8d6980a8347476544-43">43</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980a8347476544-44">44</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-1"><span class="crayon-p"># Drop-Based Learning Rate Decay</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-2"><span class="crayon-e">import </span><span class="crayon-e">pandas</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-3"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-4"><span class="crayon-e">import </span><span class="crayon-e">numpy</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-5"><span class="crayon-e">import </span><span class="crayon-e">math</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-6"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-e">Sequential</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-7"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">layers </span><span class="crayon-e">import </span><span class="crayon-e">Dense</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-8"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">optimizers </span><span class="crayon-e">import </span><span class="crayon-e">SGD</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-9"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">preprocessing </span><span class="crayon-e">import </span><span class="crayon-e">LabelEncoder</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-10"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">callbacks </span><span class="crayon-e">import </span><span class="crayon-v">LearningRateScheduler</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-11"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-12"><span class="crayon-p"># learning rate schedule</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-13"><span class="crayon-e">def </span><span class="crayon-e">step_decay</span><span class="crayon-sy">(</span><span class="crayon-v">epoch</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-14"><span class="crayon-h"> </span><span class="crayon-v">initial_lrate</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.1</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-15"><span class="crayon-h"> </span><span class="crayon-v">drop</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">0.5</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-16"><span class="crayon-h"> </span><span class="crayon-v">epochs_drop</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">10.0</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-17"><span class="crayon-h"> </span><span class="crayon-v">lrate</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e ">initial_lrate *</span><span class="crayon-h"> </span><span class="crayon-v">math</span><span class="crayon-sy">.</span><span class="crayon-e">pow</span><span class="crayon-sy">(</span><span class="crayon-v">drop</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">math</span><span class="crayon-sy">.</span><span class="crayon-e">floor</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-o">+</span><span class="crayon-v">epoch</span><span class="crayon-sy">)</span><span class="crayon-o">/</span><span class="crayon-v">epochs_drop</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-18"><span class="crayon-h"> </span><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">lrate</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-19"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-20"><span class="crayon-p"># fix random seed for reproducibility</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-21"><span class="crayon-v">seed</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">7</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-22"><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-v">random</span><span class="crayon-sy">.</span><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-v">seed</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-23"><span class="crayon-p"># load dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-24"><span class="crayon-v">dataframe</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">"ionosphere.csv"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-v">None</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-25"><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataframe</span><span class="crayon-sy">.</span><span class="crayon-v">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-26"><span class="crayon-p"># split into input (X) and output (Y) variables</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-27"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-o">:</span><span class="crayon-cn">34</span><span class="crayon-sy">]</span><span class="crayon-sy">.</span><span class="crayon-e">astype</span><span class="crayon-sy">(</span><span class="crayon-t">float</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-28"><span class="crayon-v">Y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">34</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-29"><span class="crayon-p"># encode class values as integers</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-30"><span class="crayon-v">encoder</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LabelEncoder</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-31"><span class="crayon-v">encoder</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">Y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-32"><span class="crayon-v">Y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">encoder</span><span class="crayon-sy">.</span><span class="crayon-e">transform</span><span class="crayon-sy">(</span><span class="crayon-v">Y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-33"><span class="crayon-p"># create model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-34"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-35"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">34</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">input_dim</span><span class="crayon-o">=</span><span class="crayon-cn">34</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">kernel_initializer</span><span class="crayon-o">=</span><span class="crayon-s">'normal'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">activation</span><span class="crayon-o">=</span><span class="crayon-s">'relu'</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-36"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">kernel_initializer</span><span class="crayon-o">=</span><span class="crayon-s">'normal'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">activation</span><span class="crayon-o">=</span><span class="crayon-s">'sigmoid'</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-37"><span class="crayon-p"># Compile model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-38"><span class="crayon-v">sgd</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">SGD</span><span class="crayon-sy">(</span><span class="crayon-v">lr</span><span class="crayon-o">=</span><span class="crayon-cn">0.0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">momentum</span><span class="crayon-o">=</span><span class="crayon-cn">0.9</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">decay</span><span class="crayon-o">=</span><span class="crayon-cn">0.0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">nesterov</span><span class="crayon-o">=</span><span class="crayon-t">False</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-39"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-v">loss</span><span class="crayon-o">=</span><span class="crayon-s">'binary_crossentropy'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">optimizer</span><span class="crayon-o">=</span><span class="crayon-v">sgd</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">metrics</span><span class="crayon-o">=</span><span class="crayon-sy">[</span><span class="crayon-s">'accuracy'</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-40"><span class="crayon-p"># learning schedule callback</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-41"><span class="crayon-v">lrate</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LearningRateScheduler</span><span class="crayon-sy">(</span><span class="crayon-v">step_decay</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-42"><span class="crayon-v">callbacks_list</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-v">lrate</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca8d6980a8347476544-43"><span class="crayon-p"># Fit the model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980a8347476544-44"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">Y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">validation_split</span><span class="crayon-o">=</span><span class="crayon-cn">0.33</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">epochs</span><span class="crayon-o">=</span><span class="crayon-cn">50</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">batch_size</span><span class="crayon-o">=</span><span class="crayon-cn">28</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">callbacks</span><span class="crayon-o">=</span><span class="crayon-v">callbacks_list</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0022 seconds] -->
+<p>Running the example results in a classification accuracy of 99.14% on the validation dataset, again an improvement over the baseline for the model on the problem.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca8d6980aa404090179" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+...
+Epoch 45/50
+0s - loss: 0.0546 - acc: 0.9830 - val_loss: 0.0634 - val_acc: 0.9914
+Epoch 46/50
+0s - loss: 0.0544 - acc: 0.9872 - val_loss: 0.0638 - val_acc: 0.9914
+Epoch 47/50
+0s - loss: 0.0553 - acc: 0.9872 - val_loss: 0.0696 - val_acc: 0.9914
+Epoch 48/50
+0s - loss: 0.0537 - acc: 0.9872 - val_loss: 0.0675 - val_acc: 0.9914
+Epoch 49/50
+0s - loss: 0.0537 - acc: 0.9872 - val_loss: 0.0636 - val_acc: 0.9914
+Epoch 50/50
+0s - loss: 0.0534 - acc: 0.9872 - val_loss: 0.0679 - val_acc: 0.9914</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-2">2</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-4">4</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-6">6</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-8">8</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-10">10</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca8d6980aa404090179-12">12</div><div class="crayon-num" data-line="crayon-5c0ca8d6980aa404090179-13">13</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-1">...</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-2">Epoch 45/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-3">0s - loss: 0.0546 - acc: 0.9830 - val_loss: 0.0634 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-4">Epoch 46/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-5">0s - loss: 0.0544 - acc: 0.9872 - val_loss: 0.0638 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-6">Epoch 47/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-7">0s - loss: 0.0553 - acc: 0.9872 - val_loss: 0.0696 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-8">Epoch 48/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-9">0s - loss: 0.0537 - acc: 0.9872 - val_loss: 0.0675 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-10">Epoch 49/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-11">0s - loss: 0.0537 - acc: 0.9872 - val_loss: 0.0636 - val_acc: 0.9914</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca8d6980aa404090179-12">Epoch 50/50</div><div class="crayon-line" id="crayon-5c0ca8d6980aa404090179-13">0s - loss: 0.0534 - acc: 0.9872 - val_loss: 0.0679 - val_acc: 0.9914</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p></p>
+<h2>Tips for Using Learning Rate Schedules</h2>
+<p>This section lists some tips and tricks to consider when using learning rate schedules with neural networks.</p>
+<ul>
+<li><strong>Increase the initial learning rate</strong>. Because the learning rate will very likely decrease, start with a larger value to decrease from. A larger learning rate will result in a lot larger changes to the weights, at least in the beginning, allowing you to benefit from the fine tuning later.</li>
+<li><strong>Use a large momentum</strong>. Using a larger momentum value will help the optimization algorithm to continue to make updates in the right direction when your learning rate shrinks to small values.</li>
+<li><strong>Experiment with different schedules</strong>. It will not be clear which learning rate schedule to use so try a few with different configuration options and see what works best on your problem. Also try schedules that change exponentially and even schedules that respond to the accuracy of your model on the training or test datasets.</li>
+</ul>
+<h2>Summary</h2>
+<p>In this post you discovered learning rate schedules for training neural network models.</p>
+<p>After reading this post you learned:</p>
+<ul>
+<li>How to configure and use a time-based learning rate schedule in Keras.</li>
+<li>How to develop your own drop-based learning rate schedule in Keras.</li>
+</ul>
+<p>Do you have any questions about learning rate schedules for neural networks or about this post? Ask your question in the comments and I will do my best to answer.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-35"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<h2 style="text-align: center;">Frustrated With Your Progress In Deep Learning?</h2>
+<p><a href="/deep-learning-with-python/"><img align="left" alt="Deep Learning with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/DeepLearningWithPython-220.png" style="border: 0;"/></a></p>
+<h4 style="text-align: center;"> What If You Could Develop A Network in Minutes</h4>
+<p style="text-align: center;">…with just a few lines of Python</p>
+<p style="text-align: center;">Discover how in my new Ebook: <a href="https://machinelearningmastery.com/deep-learning-with-python/">Deep Learning With Python</a></p>
+<p style="text-align: center;">It covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> on topics like:<br/>
+<em>Multilayer Perceptrons</em>, <em>Convolutional Nets</em> and <em>Recurrent Neural Nets</em>, and more…</p>
+<h4 style="text-align: center;">Finally Bring Deep Learning To<br/>
+Your Own Projects</h4>
+<p style="text-align: center;">Skip the Academics. Just Results.</p>
+<p style="text-align: center;"><a href="https://machinelearningmastery.com/deep-learning-with-python/">Click to learn more</a>.</p>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2581 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Using+Learning+Rate+Schedules+for+Deep+Learning+Models+in+Python+with+Keras&amp;url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/tour-weka-machine-learning-workbench/" rel="prev"><i class="fa fa-angle-left"></i> A Tour of the Weka Machine Learning Workbench</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" rel="next">How To Load CSV Machine Learning Data in Weka <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">35 Responses to <em>Using Learning Rate Schedules for Deep Learning Models in Python with Keras</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-354711">
+<div class="comment-container" id="li-comment-354711">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fe3d9514a91e74564dbc95a6ac0ee201?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fe3d9514a91e74564dbc95a6ac0ee201?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://sci.uonbi.ac.ke" rel="external nofollow">Hunaina</a></span>
+<span class="date">June 22, 2016 at 8:49 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-354711" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great</p>
+<div class="reply">
+<a aria-label="Reply to Hunaina" class="comment-reply-link" href="#comment-354711" onclick='return addComment.moveForm( "comment-354711", "354711", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-354761">
+<div class="comment-container" id="li-comment-354761">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 23, 2016 at 10:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-354761" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Hunaina.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-354761" onclick='return addComment.moveForm( "comment-354761", "354761", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-354822">
+<div class="comment-container" id="li-comment-354822">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4564b2f701f93f9a391e7a161fdbf1f8?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4564b2f701f93f9a391e7a161fdbf1f8?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://uonbi.ac.ke" rel="external nofollow">alcajerah</a></span>
+<span class="date">June 23, 2016 at 11:18 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-354822" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>nice post</p>
+<div class="reply">
+<a aria-label="Reply to alcajerah" class="comment-reply-link" href="#comment-354822" onclick='return addComment.moveForm( "comment-354822", "354822", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-363894">
+<div class="comment-container" id="li-comment-363894">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e51fe8b7253165eeadfa41b4702c380f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e51fe8b7253165eeadfa41b4702c380f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shudhan</span>
+<span class="date">September 7, 2016 at 6:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-363894" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason, </p>
+<p>Interesting post. Can’t we use this learning rate and momentum for optimizers other than SGD? Since ‘adam’ is performing good with most of the datasets, i wanna try learning rate and momentum tuning for ‘adam’ optimizer. Also, I did a quick research on this and found that ‘adam’ already have decaying learning rate. Is it true? and what about other optimizers?</p>
+<div class="reply">
+<a aria-label="Reply to Shudhan" class="comment-reply-link" href="#comment-363894" onclick='return addComment.moveForm( "comment-363894", "363894", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-368389">
+<div class="comment-container" id="li-comment-368389">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e0cfbe5e5a7a9cb766e72c0b20979afa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e0cfbe5e5a7a9cb766e72c0b20979afa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yuzhen Lu</span>
+<span class="date">October 27, 2016 at 2:13 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-368389" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I want to implement  a learning rate that is exponentially decayed with respect to the cost? For example, the learning rate is updated as follows:</p>
+<p>                                eta = eta0*exp(CostFunction)</p>
+<p>Such that a larger learning rate is employed when the cost is large, vice versa.</p>
+<p>Do you know to achieve that in Keras? Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to Yuzhen Lu" class="comment-reply-link" href="#comment-368389" onclick='return addComment.moveForm( "comment-368389", "368389", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-368456">
+<div class="comment-container" id="li-comment-368456">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 28, 2016 at 9:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-368456" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Yuzhen,</p>
+<p>I would advise you to develop your decay function in excel or something to test and plot it. Use the above linear decay function inputs/outputs as a starting point.</p>
+<p>You can then plug your function into one of the examples above. </p>
+<p>Let me know how you go.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-368456" onclick='return addComment.moveForm( "comment-368456", "368456", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-400475">
+<div class="comment-container" id="li-comment-400475">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2e4b226116e8c5ffaa85e14080475c71?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2e4b226116e8c5ffaa85e14080475c71?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Linlin</span>
+<span class="date">May 25, 2017 at 5:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-400475" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason!</p>
+<p>Thanks for your great poster! It does great help!<br/>
+One more question: I use the “Drop-Based Learning Rate Schedule”, how can I print out the current learning rate in terminal?</p>
+<p>Best,</p>
+<div class="reply">
+<a aria-label="Reply to Linlin" class="comment-reply-link" href="#comment-400475" onclick='return addComment.moveForm( "comment-400475", "400475", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-400488">
+<div class="comment-container" id="li-comment-400488">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2e4b226116e8c5ffaa85e14080475c71?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2e4b226116e8c5ffaa85e14080475c71?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Linlin</span>
+<span class="date">May 25, 2017 at 10:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-400488" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Got the solution! Just print out</p>
+<div class="reply">
+<a aria-label="Reply to Linlin" class="comment-reply-link" href="#comment-400488" onclick='return addComment.moveForm( "comment-400488", "400488", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-401117">
+<div class="comment-container" id="li-comment-401117">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 2, 2017 at 11:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-401117" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good question, you might be able to call print() from the custom function. Let me know if that works.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-401117" onclick='return addComment.moveForm( "comment-401117", "401117", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-407239">
+<div class="comment-container" id="li-comment-407239">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2aa424179ff953a75e6b5a77c10c2488?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2aa424179ff953a75e6b5a77c10c2488?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Chong Wang</span>
+<span class="date">July 25, 2017 at 11:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-407239" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Does the weight decay change once per mini-batch or epoch? According to <a href="https://groups.google.com/forum/#!topic/keras-users/7KM2AvCurW0" rel="nofollow">https://groups.google.com/forum/#!topic/keras-users/7KM2AvCurW0</a>, it updates per mini-batch. In my problem, one epoch contains 800 mini-batches.</p>
+<div class="reply">
+<a aria-label="Reply to Chong Wang" class="comment-reply-link" href="#comment-407239" onclick='return addComment.moveForm( "comment-407239", "407239", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-407311">
+<div class="comment-container" id="li-comment-407311">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2017 at 7:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-407311" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If you implement the decay yourself, you can control the schedule, as in the tutorial above (e.g. a function of the epoch not the batch).</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-407311" onclick='return addComment.moveForm( "comment-407311", "407311", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-411652">
+<div class="comment-container" id="li-comment-411652">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8ae5686daa7340bf7db6aac535d343e0?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8ae5686daa7340bf7db6aac535d343e0?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Amr</span>
+<span class="date">August 29, 2017 at 10:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-411652" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Does it make sense to use these techniques of weight decay with adaptive optimizers like adam or rmsprop rather than sgd? or will it be redundant?</p>
+<div class="reply">
+<a aria-label="Reply to Amr" class="comment-reply-link" href="#comment-411652" onclick='return addComment.moveForm( "comment-411652", "411652", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-411701">
+<div class="comment-container" id="li-comment-411701">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 30, 2017 at 6:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-411701" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’d like to think it is redundant, but test and see on your problem to know for sure. Data wins.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-411701" onclick='return addComment.moveForm( "comment-411701", "411701", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-417929">
+<div class="comment-container" id="li-comment-417929">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/92b0d8de12de694aa877e896647fa988?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/92b0d8de12de694aa877e896647fa988?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Nicolas</span>
+<span class="date">October 26, 2017 at 12:08 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-417929" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks a lot for this guide! Is there a way to see the code you wrote before the update? I have a constraint and need to use Keras 1.2 currently, and when applying the SGD I get:</p>
+<p> File “/usr/lib64/python2.7/site-packages/keras/models.py”, line 924, in fit_generator<br/>
+    pickle_safe=pickle_safe)<br/>
+  File “/usr/lib64/python2.7/site-packages/keras/engine/training.py”, line 1401, in fit_generator<br/>
+    self._make_train_function()<br/>
+  File “/usr/lib64/python2.7/site-packages/keras/engine/training.py”, line 713, in _make_train_function<br/>
+    self.total_loss)<br/>
+TypeError: unbound method get_updates() must be called with SGD instance as first argument (got list instance instead)</p>
+<p>I assume this is because of some API change that I fail to see</p>
+<div class="reply">
+<a aria-label="Reply to Nicolas" class="comment-reply-link" href="#comment-417929" onclick='return addComment.moveForm( "comment-417929", "417929", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-417967">
+<div class="comment-container" id="li-comment-417967">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 26, 2017 at 5:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-417967" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I no longer have the older code.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-417967" onclick='return addComment.moveForm( "comment-417967", "417967", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-419324">
+<div class="comment-container" id="li-comment-419324">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/448a7de9c20b1a086feac07921b33be6?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/448a7de9c20b1a086feac07921b33be6?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tuan</span>
+<span class="date">November 8, 2017 at 8:05 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-419324" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, is there an option to specify momentum when using Adam optimizer in Keras? I can only see the momentum option in SGD.</p>
+<div class="reply">
+<a aria-label="Reply to Tuan" class="comment-reply-link" href="#comment-419324" onclick='return addComment.moveForm( "comment-419324", "419324", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-419349">
+<div class="comment-container" id="li-comment-419349">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 8, 2017 at 9:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-419349" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not as far as I remember. Double check the API to be sure.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-419349" onclick='return addComment.moveForm( "comment-419349", "419349", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-427453">
+<div class="comment-container" id="li-comment-427453">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">simon</span>
+<span class="date">January 24, 2018 at 2:36 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427453" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, I have a question here<br/>
+I wish to print out the learning rate information during the training but it won’t work with this code below:</p>
+<p>def step_decay(epoch):<br/>
+    initial_lrate = 0.001<br/>
+    drop = 0.5<br/>
+    epochs_drop = 100.0<br/>
+    lrate = initial_lrate * math.pow(drop, math.floor((1+epoch)/epochs_drop))<br/>
+    print (‘epoch: ‘ + str(epoch) + ‘, learning rate: ‘ + str(lrate)) # added<br/>
+    return lrate</p>
+<p>NUM_EPOCHS = 700<br/>
+BATCH_SIZE = 128</p>
+<p>for each_epoch in range(0, NUM_EPOCHS):<br/>
+    lrate = callbacks.LearningRateScheduler(step_decay)<br/>
+    callbacks_list = [lrate]<br/>
+    history = model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=1, callbacks=callbacks_list, verbose=2, validation_data=[x_test, y_test])<br/>
+    prediction_test = model.predict(x_test).flatten()</p>
+<p>Do I have to set ‘epochs’ to NUM_EPOCHS  and remove for-loop to display lrate?</p>
+<div class="reply">
+<a aria-label="Reply to simon" class="comment-reply-link" href="#comment-427453" onclick='return addComment.moveForm( "comment-427453", "427453", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-427461">
+<div class="comment-container" id="li-comment-427461">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 24, 2018 at 4:40 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427461" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Does the example in the post work for you?</p>
+<p>Perhaps start with something that works and modify it one piece at a time to achieve your desired outcome?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427461" onclick='return addComment.moveForm( "comment-427461", "427461", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-427635">
+<div class="comment-container" id="li-comment-427635">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">simon</span>
+<span class="date">January 26, 2018 at 10:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427635" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The example works but I want to display the learning rate during training.</p>
+<div class="reply">
+<a aria-label="Reply to simon" class="comment-reply-link" href="#comment-427635" onclick='return addComment.moveForm( "comment-427635", "427635", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-427691">
+<div class="comment-container" id="li-comment-427691">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 27, 2018 at 5:51 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427691" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I would expect the print in the callback function to work. </p>
+<p>Ensure you’re running from the command line and not in a notebook or ide.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427691" onclick='return addComment.moveForm( "comment-427691", "427691", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt depth-3" id="comment-427636">
+<div class="comment-container" id="li-comment-427636">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/eb7b7df095cf03dfc370c8382c24f909?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">simon</span>
+<span class="date">January 26, 2018 at 11:03 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427636" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Oh, never mind, it is displaying changed lrate per epoch without a for-loop.<br/>
+There was a lot of displayed information during the training (with verbose=1) and I missed the lrate reports.<br/>
+Thanks,</p>
+<div class="reply">
+<a aria-label="Reply to simon" class="comment-reply-link" href="#comment-427636" onclick='return addComment.moveForm( "comment-427636", "427636", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-427692">
+<div class="comment-container" id="li-comment-427692">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 27, 2018 at 5:51 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-427692" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Glad to hear it.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427692" onclick='return addComment.moveForm( "comment-427692", "427692", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-429365">
+<div class="comment-container" id="li-comment-429365">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e892bcd4a7e6e3792688d51bc0f89faa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e892bcd4a7e6e3792688d51bc0f89faa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ken</span>
+<span class="date">February 14, 2018 at 4:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-429365" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I know the learning rate can be adjusted in Keras, but all the options seem to only include some decay or decreasing learning rate. I am wondering if it’s possible to create a custom schedule that works like ReduceLROnPlateau, where it is looking to see if the loss stops decreasing for some number of epochs, and if so then it decreases the LR. But after some number of “decreases” it then increases the learning rate the next time loss stagnates, and then continues decreasing again on loss stagnation after that.</p>
+<p>My thought here is that you may descend into a local minimum that you may not be able to escape from unless you increase the learning rate, before continuing to descend to the global minimum.</p>
+<p>Does it make sense to create a function for learning rate? Would Keras accept that?</p>
+<p>Can anyone give me an idea on how I would write that function?</p>
+<p>Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Ken" class="comment-reply-link" href="#comment-429365" onclick='return addComment.moveForm( "comment-429365", "429365", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-429394">
+<div class="comment-container" id="li-comment-429394">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 14, 2018 at 8:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-429394" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sure, I don’t think it would be a problem. You may need an object rather than just a function to store state. I have not done this, so some experimentation may be required.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-429394" onclick='return addComment.moveForm( "comment-429394", "429394", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-433593">
+<div class="comment-container" id="li-comment-433593">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f85d180220c9369cfb6d6b92906e1efa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f85d180220c9369cfb6d6b92906e1efa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">kay</span>
+<span class="date">March 29, 2018 at 4:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-433593" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+              This post helped me a lot. How can i tweak the learning rate value after every epoch?</p>
+<div class="reply">
+<a aria-label="Reply to kay" class="comment-reply-link" href="#comment-433593" onclick='return addComment.moveForm( "comment-433593", "433593", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-433646">
+<div class="comment-container" id="li-comment-433646">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 30, 2018 at 6:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-433646" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can implement this directly as your own method, follow the above tutorial.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-433646" onclick='return addComment.moveForm( "comment-433646", "433646", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-437754">
+<div class="comment-container" id="li-comment-437754">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a80e3e8b0215e3421847f14300271753?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a80e3e8b0215e3421847f14300271753?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Molly</span>
+<span class="date">May 17, 2018 at 12:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-437754" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I want to know how to use keras to change the learning rate in every layers?</p>
+<div class="reply">
+<a aria-label="Reply to Molly" class="comment-reply-link" href="#comment-437754" onclick='return addComment.moveForm( "comment-437754", "437754", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-437768">
+<div class="comment-container" id="li-comment-437768">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 17, 2018 at 3:11 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-437768" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good question, I’m not sure off hand. Perhaps ask on the Keras user group:<br/>
+<a href="https://machinelearningmastery.com/get-help-with-keras/" rel="nofollow">https://machinelearningmastery.com/get-help-with-keras/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-437768" onclick='return addComment.moveForm( "comment-437768", "437768", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-439140">
+<div class="comment-container" id="li-comment-439140">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3ed37ece98ad7670d57a8c55dabaebbe?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3ed37ece98ad7670d57a8c55dabaebbe?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">GeLi</span>
+<span class="date">May 30, 2018 at 6:23 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-439140" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, I want to plot the learning rate curve of the adam optimizer, should I code callbacks=[lr] in the fit function</p>
+<div class="reply">
+<a aria-label="Reply to GeLi" class="comment-reply-link" href="#comment-439140" onclick='return addComment.moveForm( "comment-439140", "439140", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-439182">
+<div class="comment-container" id="li-comment-439182">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 31, 2018 at 6:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-439182" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Each model parameter (weight) has a learning rate, plotting each would be challenging.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439182" onclick='return addComment.moveForm( "comment-439182", "439182", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-442593">
+<div class="comment-container" id="li-comment-442593">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/70d9cef9dff3560fd6b0ef25cd4cf031?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/70d9cef9dff3560fd6b0ef25cd4cf031?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Isaiah Spearman</span>
+<span class="date">July 4, 2018 at 3:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-442593" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I used the tutorial from this link: <a href="https://enlight.nyc/neural-network/" rel="nofollow">https://enlight.nyc/neural-network/</a> and applied it to a 6 input data set. My values always converge to ~0, .5, or 1 depending on the number of hidden layers. This occurs after the first call to train each time. I suspect this is because it does not include learning rate or bias. Where would you apply the learning rate in this code?</p>
+<div class="reply">
+<a aria-label="Reply to Isaiah Spearman" class="comment-reply-link" href="#comment-442593" onclick='return addComment.moveForm( "comment-442593", "442593", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-442618">
+<div class="comment-container" id="li-comment-442618">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 4, 2018 at 8:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-442618" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If you have a question about someone else’s tutorial, perhaps ask them directly?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442618" onclick='return addComment.moveForm( "comment-442618", "442618", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-442821">
+<div class="comment-container" id="li-comment-442821">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f39ae554bc7b2f18107ef1ef0c98fb57?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f39ae554bc7b2f18107ef1ef0c98fb57?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Aayushee</span>
+<span class="date">July 6, 2018 at 8:39 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-442821" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Dr. Jason,</p>
+<p>Thanks for your informative posts on working with Keras.<br/>
+I am using Drop based Learning Schedule as per your tutorial which works fine and can print the changing learning rate with every epoch in the step_decay() function.<br/>
+Due to shortage of memory, I am saving this model and reloading it in another script.<br/>
+The model reloads and optimizes from the previous epoch only so learning keeps happening. But I am not able to see the learning rate from the callback. Perhaps the learning rate scheduler callback state is not saved. Do you have any idea on how I can use the previous callback state also in the reloaded model?</p>
+<div class="reply">
+<a aria-label="Reply to Aayushee" class="comment-reply-link" href="#comment-442821" onclick='return addComment.moveForm( "comment-442821", "442821", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-442868">
+<div class="comment-container" id="li-comment-442868">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 7, 2018 at 6:16 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/#comment-442868" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You might have to re-seed it manually.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442868" onclick='return addComment.moveForm( "comment-442868", "442868", "respond", "2581" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/using-learning-rate-schedules-deep-learning-models-python-keras/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="2581"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="c0f937864f"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="114"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-6"> <div class="textwidget"><p></p><center><br/>
+<strong>Deep Learning with Python</strong><br/>
+No math, just tutorials and working code.
+<p><a href="/deep-learning-with-python/">Click to Get Started Now!</a><br/>
+<a href="/deep-learning-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/DeepLearningWithPython-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1705 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How To Load CSV Machine Learning Data in Weka</title>
+<link href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How To Load CSV Machine Learning Data in Weka" property="og:title"/>
+<meta content="You must be able to load your data before you can start modeling it. In this post you will discover how you can load your CSV dataset in Weka. After reading this post, you will know: About the ARFF file format and how it is the default way to represent data in Weka. How to …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Weka Machine Learning" property="article:section"/>
+<meta content="2016-06-22T19:00:58+00:00" property="article:published_time"/>
+<meta content="2016-06-22T04:37:30+00:00" property="article:modified_time"/>
+<meta content="2016-06-22T04:37:30+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/How-To-Load-CSV-Machine-Learning-Data-in-Weka.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/How-To-Load-CSV-Machine-Learning-Data-in-Weka.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="How To Load CSV Machine Learning Data in Weka" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/feed/" rel="alternate" title="Machine Learning Mastery » How To Load CSV Machine Learning Data in Weka Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=2686" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fload-csv-machine-learning-data-weka%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fload-csv-machine-learning-data-weka%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-2686 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-13"> <div class="textwidget"><p>Want help with Weka? <a href="https://machinelearningmastery.leadpages.co/weka-machine-learning-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-2686 post type-post status-publish format-standard has-post-thumbnail hentry category-weka-machine-learning">
+<header>
+<h1 class="title entry-title">How To Load CSV Machine Learning Data in Weka</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-06-23T05:00:58+1100">June 23, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/weka-machine-learning/" title="View all items in Weka Machine Learning">Weka Machine Learning</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2686 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+To+Load+CSV+Machine+Learning+Data+in+Weka&amp;url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>You must be able to load your data before you can start modeling it.</p>
+<p>In this post you will discover how you can load your CSV dataset in Weka. After reading this post, you will know:</p>
+<ul>
+<li>About the ARFF file format and how it is the default way to represent data in Weka.</li>
+<li>How to load a CSV file in the Weka Explorer and save it in ARFF format.</li>
+<li>How to load a CSV file in the ArffViewer tool and save it in ARFF format.</li>
+</ul>
+<p>This tutorial assumes that you already have Weka installed.</p>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_2693" style="width: 650px"><img alt="How To Load CSV Machine Learning Data in Weka" class="size-full wp-image-2693" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/How-To-Load-CSV-Machine-Learning-Data-in-Weka.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/How-To-Load-CSV-Machine-Learning-Data-in-Weka.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/How-To-Load-CSV-Machine-Learning-Data-in-Weka-300x200.jpg 300w" width="640"/><p class="wp-caption-text">How To Load CSV Machine Learning Data in Weka<br/>Photo by <a href="https://www.flickr.com/photos/thales/9371458918/">Thales</a>, some rights reserved.</p></div>
+<h2>How to Talk About Data in Weka</h2>
+<p>Machine learning algorithms are primarily designed to work with arrays of numbers.</p>
+<p>This is called tabular or structured data because it is how data looks in a spreadsheet, comprised of rows and columns.</p>
+<p>Weka has a specific computer science centric vocabulary when describing data:</p>
+<ul>
+<li><strong>Instance</strong>: A row of data is called an instance, as in an instance or observation from the problem domain.</li>
+<li><strong>Attribute</strong>: A column of data is called a feature or attribute, as in feature of the observation.</li>
+</ul>
+<p>Each attribute can have a different type, for example:</p>
+<ul>
+<li><strong>Real</strong> for numeric values like 1.2.</li>
+<li><strong>Integer</strong> for numeric values without a fractional part like 5.</li>
+<li><strong>Nominal</strong> for categorical data like “dog” and “cat”.</li>
+<li><strong>String</strong> for lists of words, like this sentence.</li>
+</ul>
+<p>On classification problems, the output variable must be nominal. For regression problems, the output variable must be real.</p>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need more help with Weka for Machine Learning?</h3>
+<p>Take my free 14-day email course and discover how to use the platform step-by-step.</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/144d0b573f72a2%3A164f8be4f346dc/5675267779461120/" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Start Your FREE Mini-Course Now!</a></p>
+<script data-config="%7B%7D" data-leadbox="144d0b573f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/144d0b573f72a2%3A164f8be4f346dc/5675267779461120/" src="https://machinelearningmastery.leadpages.co/leadbox-1466526232.js" type="text/javascript"></script>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Data in Weka</h2>
+<p>Weka prefers to load data in the ARFF format.</p>
+<p>ARFF is an acronym that stands for Attribute-Relation File Format. It is an extension of the CSV file format where a header is used that provides metadata about the data types in the columns.</p>
+<p>For example, the first few lines of the classic iris flowers dataset in CSV format looks as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca84b7bc77004982868" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+5.1,3.5,1.4,0.2,Iris-setosa
+4.9,3.0,1.4,0.2,Iris-setosa
+4.7,3.2,1.3,0.2,Iris-setosa
+4.6,3.1,1.5,0.2,Iris-setosa
+5.0,3.6,1.4,0.2,Iris-setosa</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca84b7bc77004982868-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc77004982868-2">2</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc77004982868-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc77004982868-4">4</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc77004982868-5">5</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca84b7bc77004982868-1">5.1,3.5,1.4,0.2,Iris-setosa</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc77004982868-2">4.9,3.0,1.4,0.2,Iris-setosa</div><div class="crayon-line" id="crayon-5c0ca84b7bc77004982868-3">4.7,3.2,1.3,0.2,Iris-setosa</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc77004982868-4">4.6,3.1,1.5,0.2,Iris-setosa</div><div class="crayon-line" id="crayon-5c0ca84b7bc77004982868-5">5.0,3.6,1.4,0.2,Iris-setosa</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>The same file in ARFF format looks as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca84b7bc80692981371" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+@RELATION iris
+
+@ATTRIBUTE sepallength REAL
+@ATTRIBUTE sepalwidth REAL
+@ATTRIBUTE petallength REAL
+@ATTRIBUTE petalwidth REAL
+@ATTRIBUTE class {Iris-setosa,Iris-versicolor,Iris-virginica}
+
+@DATA
+5.1,3.5,1.4,0.2,Iris-setosa
+4.9,3.0,1.4,0.2,Iris-setosa
+4.7,3.2,1.3,0.2,Iris-setosa
+4.6,3.1,1.5,0.2,Iris-setosa
+5.0,3.6,1.4,0.2,Iris-setosa</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-2">2</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-4">4</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-6">6</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-8">8</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-10">10</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-12">12</div><div class="crayon-num" data-line="crayon-5c0ca84b7bc80692981371-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca84b7bc80692981371-14">14</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-1">@RELATION iris</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-2"> </div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-3">@ATTRIBUTE sepallength REAL</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-4">@ATTRIBUTE sepalwidth REAL</div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-5">@ATTRIBUTE petallength REAL</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-6">@ATTRIBUTE petalwidth REAL</div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-7">@ATTRIBUTE class {Iris-setosa,Iris-versicolor,Iris-virginica}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-8"> </div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-9">@DATA</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-10">5.1,3.5,1.4,0.2,Iris-setosa</div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-11">4.9,3.0,1.4,0.2,Iris-setosa</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-12">4.7,3.2,1.3,0.2,Iris-setosa</div><div class="crayon-line" id="crayon-5c0ca84b7bc80692981371-13">4.6,3.1,1.5,0.2,Iris-setosa</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca84b7bc80692981371-14">5.0,3.6,1.4,0.2,Iris-setosa</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>You can see that directives start with the at symbol (@) and that there is one for the name of the dataset (e.g. @RELATION iris), there is a directive to define the name and datatype of each attribute (e.g. @ATTRIBUTE sepallength REAL) and there is a directive to indicate the start of the raw data (e.g. @DATA).</p>
+<p>Lines in an ARFF file that start with a percentage symbol (%) indicate a comment.</p>
+<p>Values in the raw data section that have a question mark symbol (?) indicate an unknown or missing value. The format supports numeric and categorical values as in the iris example above, but also supports dates and string values.</p>
+<p>Depending on your installation of Weka, you may or may not have some default datasets in your Weka installation directory under the <em>data/</em> subdirectory. These default datasets distributed with Weka are in the ARFF format and have the .arff file extension.</p>
+<h2>Load CSV Files in the ARFF-Viewer</h2>
+<p>Your data is not likely to be in ARFF format.</p>
+<p>In fact, it is much more likely to be in Comma Separated Value (CSV) format. This is a simple format where data is laid out in a table of rows and columns and a comma is used to separate the values on a row. Quotes may also be used to surround values, especially if the data contains strings of text with spaces.</p>
+<p>The CSV format is easily exported from Microsoft Excel, so once you can get your data into Excel, you can easily convert it to CSV format.</p>
+<p>Weka provides a handy tool to load CSV files and save them in ARFF. You only need to do this once with your dataset.</p>
+<p>Using the steps below you can convert your dataset from CSV format to ARFF format and use it with the Weka workbench. If you do not have a CSV file handy, you can use the iris flowers dataset. Download the file from the <a href="https://archive.ics.uci.edu/ml/datasets/Iris">UCI Machine Learning repository</a> (<a href="https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data">direct link</a>) and save it to your current working directory as <em>iris.csv</em>.</p>
+<p>1. Start the Weka chooser.</p>
+<div class="wp-caption aligncenter" id="attachment_2687" style="width: 394px"><img alt="Weka GUI Chooser" class="size-full wp-image-2687" height="231" sizes="(max-width: 384px) 100vw, 384px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-GUI-Chooser-1.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-GUI-Chooser-1.png 384w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-GUI-Chooser-1-300x180.png 300w" width="384"/><p class="wp-caption-text">Screenshot of the Weka GUI Chooser</p></div>
+<p>2. Open the ARFF-Viewer by clicking “Tools” in the menu and select “ArffViewer”.</p>
+<p>3. You will be presented with an empty ARFF-Viewer window.</p>
+<div class="wp-caption aligncenter" id="attachment_2688" style="width: 806px"><img alt="Weka ARFF Viewer" class="size-full wp-image-2688" height="597" sizes="(max-width: 796px) 100vw, 796px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-ARFF-Viewer-1.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-ARFF-Viewer-1.png 796w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-ARFF-Viewer-1-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-ARFF-Viewer-1-768x576.png 768w" width="796"/><p class="wp-caption-text">Weka ARFF Viewer</p></div>
+<p>4. Open your CSV file in the ARFF-Viewer by clicking the “File” menu and select “Open”. Navigate to your current working directory. Change the “Files of Type:” filter to “CSV data files (*.csv)”. Select your file and click the “Open” button.</p>
+<div class="wp-caption aligncenter" id="attachment_2690" style="width: 632px"><img alt="Load CSV In ARFF Viewer" class="size-full wp-image-2690" height="325" sizes="(max-width: 622px) 100vw, 622px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Load-CSV-In-ARFF-Viewer.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Load-CSV-In-ARFF-Viewer.png 622w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Load-CSV-In-ARFF-Viewer-300x157.png 300w" width="622"/><p class="wp-caption-text">Load CSV In ARFF Viewer</p></div>
+<p>5. You should see a sample of your CSV file loaded into the ARFF-Viewer.</p>
+<p>6. Save your dataset in ARFF format by clicking the “File” menu and selecting “Save as…”. Enter a filename with a .arff extension and click the “Save” button.</p>
+<p>You can now load your saved .arff file directly into Weka.</p>
+<p>Note, the ARFF-Viewer provides options for modifying your dataset before saving. For example you can change values, change the name of attributes and change their data types.</p>
+<p>It is highly recommended that you specify the names of each attribute as this will help with analysis of your data later. Also, make sure that the data types of each attribute are correct.</p>
+<h2>Load CSV Files in the Weka Explorer</h2>
+<p>You can also load your CSV files directly in the Weka Explorer interface.</p>
+<p>This is handy if you are in a hurry and want to quickly test out an idea.</p>
+<p>This section shows you how you can load your CSV file in the Weka Explorer interface. You can use the iris dataset again, to practice if you do not have a CSV dataset to load.</p>
+<p>1. Start the Weka GUI Chooser.</p>
+<p>2. Launch the Weka Explorer by clicking the “Explorer” button.</p>
+<div class="wp-caption aligncenter" id="attachment_2691" style="width: 810px"><img alt="Weka Explorer" class="size-full wp-image-2691" height="599" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-Explorer.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-Explorer.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-Explorer-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/Weka-Explorer-768x575.png 768w" width="800"/><p class="wp-caption-text">Screenshot of the Weka Explorer</p></div>
+<p>3. Click the “Open file…” button.</p>
+<p>4. Navigate to your current working directory. Change the “Files of Type” to “CSV data files (*.csv)”. Select your file and click the “Open” button.</p>
+<p>You can work with the data directly. You can also save your dataset in ARFF format by clicking he “Save” button and typing a filename.</p>
+<h2>Use Excel for Other File Formats</h2>
+<p>If you have data in another format, load it in Microsoft Excel first.</p>
+<p>It is common to get data in another format such as CSV using a different delimiter or fixed width fields. Excel has powerful tools for loading tabular data in a variety of formats. Use these tools and first load your data into Excel.</p>
+<p>Once you have loaded your data into Excel, you can export it into CSV format. You can then work with it in Weka, either directly or by first converting it to ARFF format.</p>
+<h2>Resources</h2>
+<p>Below are some additional resources that you may find useful when working with CSV data in Weka.</p>
+<ul>
+<li><a href="http://www.cs.waikato.ac.nz/ml/weka/arff.html">Attribute-Relation File Format</a></li>
+<li><a href="https://weka.wikispaces.com/Can+I+use+CSV+files%3F">Can I use CSV files?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV File Format</a></li>
+</ul>
+<h2>Summary</h2>
+<p>In this post you discovered how to load your CSV data into Weka for machine learning.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>About the ARFF file format and how Weka uses it to represent datasets for machine learning.</li>
+<li>How to load your CSV data using ARFF-Viewer and save it into ARFF format.</li>
+<li>How to load your CSV data directly in the Weka Explorer and use it for modeling.</li>
+</ul>
+<p>Do you have any questions about loading data in Weka or about this post? Ask your questions in the comments and I will do my best to answer.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-40"> <div class="textwidget"><p></p><div class="woo-sc-hr"></div><br/>
+<center>
+<h2>Want Machine Learning Without The Code?</h2>
+<p><a href="/machine-learning-mastery-weka/"><img align="left" alt="Master Machine Learning With Weka" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/MachineLearningMasteryWithWeka-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Models in Minutes</h4>
+<p><em>…with just a few a few clicks</em></p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/machine-learning-mastery-weka/">Machine Learning Mastery With Weka</a></p>
+<p>Covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> like:<br/><em>Loading data</em>, <em>visualization</em>, <em>build models</em>, <em>tuning</em>, and much more…</p>
+<h4>Finally Bring The Machine Learning To<br/>Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/machine-learning-mastery-weka/">Click to learn more</a>.</p>
+<p></p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2686 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+To+Load+CSV+Machine+Learning+Data+in+Weka&amp;url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/" rel="prev"><i class="fa fa-angle-left"></i> Using Learning Rate Schedules for Deep Learning Models in Python with Keras</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/crash-course-convolutional-neural-networks/" rel="next">Crash Course in Convolutional Neural Networks for Machine Learning <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">60 Responses to <em>How To Load CSV Machine Learning Data in Weka</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-354815">
+<div class="comment-container" id="li-comment-354815">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4564b2f701f93f9a391e7a161fdbf1f8?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4564b2f701f93f9a391e7a161fdbf1f8?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://uonbi.ac.ke" rel="external nofollow">alcajerah</a></span>
+<span class="date">June 23, 2016 at 10:13 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-354815" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>great post</p>
+<div class="reply">
+<a aria-label="Reply to alcajerah" class="comment-reply-link" href="#comment-354815" onclick='return addComment.moveForm( "comment-354815", "354815", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-368160">
+<div class="comment-container" id="li-comment-368160">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/505b39f575f73197533e93108909a19d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/505b39f575f73197533e93108909a19d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ayo</span>
+<span class="date">October 25, 2016 at 11:26 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-368160" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you for this helpful post. please I encountered java.io.IOException when trying to view my .CSV file in WEKA. I need your help.</p>
+<div class="reply">
+<a aria-label="Reply to Ayo" class="comment-reply-link" href="#comment-368160" onclick='return addComment.moveForm( "comment-368160", "368160", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-368251">
+<div class="comment-container" id="li-comment-368251">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 26, 2016 at 8:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-368251" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m sorry to hear that Ayo. </p>
+<p>Maybe your file is too large? </p>
+<p>Maybe try loading it in excel first and check that the file is not corrupt?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-368251" onclick='return addComment.moveForm( "comment-368251", "368251", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-372838">
+<div class="comment-container" id="li-comment-372838">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/597d722727ac0dc5e53d63ab9322dc60?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/597d722727ac0dc5e53d63ab9322dc60?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sunkanmi</span>
+<span class="date">November 29, 2016 at 12:31 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-372838" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Thanks for the good job you’re doing.</p>
+<p>What is the limit of the size of csv file that can be converted into arff format by the weka workbench.<br/>
+I have a csv file above 2gig and I couldn’t get weka Arff viewer or explorer to load it up for conversion.</p>
+<div class="reply">
+<a aria-label="Reply to Sunkanmi" class="comment-reply-link" href="#comment-372838" onclick='return addComment.moveForm( "comment-372838", "372838", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-372989">
+<div class="comment-container" id="li-comment-372989">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 30, 2016 at 7:51 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-372989" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great question, I have no idea Sunkanmi. My guess would be the memory limit of Java (which can be increased) and the memory limit of your hardware.</p>
+<p>More details on giving Weka more ram:<br/>
+<a href="https://weka.wikispaces.com/OutOfMemoryException" rel="nofollow">https://weka.wikispaces.com/OutOfMemoryException</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-372989" onclick='return addComment.moveForm( "comment-372989", "372989", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-375512">
+<div class="comment-container" id="li-comment-375512">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ccf2a28c09a24e2ad1ad19897ec2f27c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ccf2a28c09a24e2ad1ad19897ec2f27c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rodney Williams</span>
+<span class="date">December 17, 2016 at 11:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-375512" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I get an error message, “java.io.IOE.exception 12 Problem encountered on line:2”</p>
+<p>same messagewhether I try to load with tools or directly using Explorer</p>
+<div class="reply">
+<a aria-label="Reply to Rodney Williams" class="comment-reply-link" href="#comment-375512" onclick='return addComment.moveForm( "comment-375512", "375512", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-375640">
+<div class="comment-container" id="li-comment-375640">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 18, 2016 at 5:28 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-375640" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry to hear that Rodney. I’ve not seen this before. Perhaps try posting to stack overflow or the Weka email list?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-375640" onclick='return addComment.moveForm( "comment-375640", "375640", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-376931">
+<div class="comment-container" id="li-comment-376931">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/0bfbe9c276da7dd89568caf049e2f7c1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/0bfbe9c276da7dd89568caf049e2f7c1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Farah Sardouk</span>
+<span class="date">December 23, 2016 at 4:04 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-376931" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to Farah Sardouk" class="comment-reply-link" href="#comment-376931" onclick='return addComment.moveForm( "comment-376931", "376931", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-376948">
+<div class="comment-container" id="li-comment-376948">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 23, 2016 at 5:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-376948" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You’re welcome Farah.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-376948" onclick='return addComment.moveForm( "comment-376948", "376948", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-384741">
+<div class="comment-container" id="li-comment-384741">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/14970349219bf0f759eadb89951ca6bd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/14970349219bf0f759eadb89951ca6bd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">santanu chatterjee</span>
+<span class="date">January 28, 2017 at 7:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-384741" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have a data set which contains quantity,unit price,duty,model,sepcs,brand names of some products. I initially used Naive Bayes and later used auto weka to determine that my ideal algorithm will be random forest and its gives 10% accuracy rate and runs smoothly,whenever I use test using training data set.</p>
+<p>All hell breaks loose, when I copy the same data file and remove the brand names,so that I can use it as a test dataset. I either receive inputmappedclassifier option or errors like – “problem evaluating classifier-index4-size1 or “different nos of lables 15!=1.</p>
+<p>Namely, I have placed brand name column for both test and training datasets at the end.I did some online search and used question mark on the brand column of the test data set. I have used random alphanumeric values. I have even converted them into arff format and cross checked the attribute data type on both file,but nothing seems to help. Where am I going wrong?I know I am close.can anyone help?</p>
+<div class="reply">
+<a aria-label="Reply to santanu chatterjee" class="comment-reply-link" href="#comment-384741" onclick='return addComment.moveForm( "comment-384741", "384741", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-384742">
+<div class="comment-container" id="li-comment-384742">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/14970349219bf0f759eadb89951ca6bd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/14970349219bf0f759eadb89951ca6bd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">santanu chatterjee</span>
+<span class="date">January 28, 2017 at 7:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-384742" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It would be 100% accuracy and not 10%</p>
+<div class="reply">
+<a aria-label="Reply to santanu chatterjee" class="comment-reply-link" href="#comment-384742" onclick='return addComment.moveForm( "comment-384742", "384742", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-385381">
+<div class="comment-container" id="li-comment-385381">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 1, 2017 at 10:08 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-385381" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi santanu,</p>
+<p>This post might help with making predictions on new data:<br/>
+<a href="http://machinelearningmastery.com/save-machine-learning-model-make-predictions-weka/" rel="nofollow">http://machinelearningmastery.com/save-machine-learning-model-make-predictions-weka/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-385381" onclick='return addComment.moveForm( "comment-385381", "385381", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-384833">
+<div class="comment-container" id="li-comment-384833">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6418ccb12620a890f9d80028830c42cf?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6418ccb12620a890f9d80028830c42cf?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Asmaa M. Elmohamady</span>
+<span class="date">January 29, 2017 at 7:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-384833" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Dear Jason, </p>
+<p>i have two problems when load .csv file to weka </p>
+<p>1- The file loaded correctly but because of enclosure character the sentences are not loaded completely.</p>
+<p>2- When trying to apply stringTowordvector filter  this error appear (attribute names are not unique! causes: ‘class’).</p>
+<div class="reply">
+<a aria-label="Reply to Asmaa M. Elmohamady" class="comment-reply-link" href="#comment-384833" onclick='return addComment.moveForm( "comment-384833", "384833", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-385387">
+<div class="comment-container" id="li-comment-385387">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 1, 2017 at 10:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-385387" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Asmaa, sorry, I don’t have good examples of loading textual data in Weka.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-385387" onclick='return addComment.moveForm( "comment-385387", "385387", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-389512">
+<div class="comment-container" id="li-comment-389512">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1869b541477e3d070c114ef805510970?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1869b541477e3d070c114ef805510970?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">vidhi</span>
+<span class="date">February 22, 2017 at 3:12 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-389512" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>i have multiple values for a single attribute. how can i write them</p>
+<div class="reply">
+<a aria-label="Reply to vidhi" class="comment-reply-link" href="#comment-389512" onclick='return addComment.moveForm( "comment-389512", "389512", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-389637">
+<div class="comment-container" id="li-comment-389637">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 23, 2017 at 8:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-389637" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great question!</p>
+<p>Consider making them binary attributes. Have one column for each value, then mark a 1 or a 0 on a row for each column for a given observation.</p>
+<p>I hope that helps.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-389637" onclick='return addComment.moveForm( "comment-389637", "389637", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-392717">
+<div class="comment-container" id="li-comment-392717">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3a7fbe53506bead80a21a60c3a8b82e3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3a7fbe53506bead80a21a60c3a8b82e3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://dont%20have%20one" rel="external nofollow">Toby</a></span>
+<span class="date">March 15, 2017 at 7:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-392717" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>Great post! Just curious, is it possible to set this up real time? In that if I have a process that collects data real time via a CSV file that then needs to be converted to arff. Can this be done?</p>
+<p>And then once this is done, is it possible to add and delete values from the arff object?</p>
+<p>thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Toby" class="comment-reply-link" href="#comment-392717" onclick='return addComment.moveForm( "comment-392717", "392717", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-392732">
+<div class="comment-container" id="li-comment-392732">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 15, 2017 at 8:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-392732" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I would recommend using the command line interface for Weka to achieve this.</p>
+<p>Sorry, I don’t have examples, but consider checking the Weka system/user guide provided with Weka.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-392732" onclick='return addComment.moveForm( "comment-392732", "392732", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-393540">
+<div class="comment-container" id="li-comment-393540">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f77560663e3f80f7485af819e50e51cb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f77560663e3f80f7485af819e50e51cb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Boum</span>
+<span class="date">March 21, 2017 at 10:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-393540" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>How can i introduce 3 indpendent real attributes classes ?<br/>
+ie: Not one class that contains 3 values No; 3 indpendent real attributes classes</p>
+<div class="reply">
+<a aria-label="Reply to Boum" class="comment-reply-link" href="#comment-393540" onclick='return addComment.moveForm( "comment-393540", "393540", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-393701">
+<div class="comment-container" id="li-comment-393701">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 22, 2017 at 7:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-393701" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I believe Weka does not support outputting a vector prediction (e.g. 3 classes).</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-393701" onclick='return addComment.moveForm( "comment-393701", "393701", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-397829">
+<div class="comment-container" id="li-comment-397829">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/58b4b7574c8cb5d5e6b94dce7db4059e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/58b4b7574c8cb5d5e6b94dce7db4059e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">nicolas</span>
+<span class="date">April 28, 2017 at 6:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-397829" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello jason,</p>
+<p>I have built and followed the steps on this page to transform my CSV file into an arff successfully. However, now that I load the dataset into Weka, it is impossible for me to use a j48 tree. What can I do to build a tree and begin analyzing my data? Thanks!</p>
+<p>Best,<br/>
+Nick</p>
+<div class="reply">
+<a aria-label="Reply to nicolas" class="comment-reply-link" href="#comment-397829" onclick='return addComment.moveForm( "comment-397829", "397829", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-397862">
+<div class="comment-container" id="li-comment-397862">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 28, 2017 at 7:57 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-397862" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps you need to make your output variable nominal so you can use classification algorithms?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397862" onclick='return addComment.moveForm( "comment-397862", "397862", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-397924">
+<div class="comment-container" id="li-comment-397924">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/54e334bae91556fcb3abbf7a9db91f6f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/54e334bae91556fcb3abbf7a9db91f6f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Dimple</span>
+<span class="date">April 28, 2017 at 9:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-397924" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>the first row values are taken as attribute names, thus losing first row values. How can we retain the values and give explicit attribute names?</p>
+<div class="reply">
+<a aria-label="Reply to Dimple" class="comment-reply-link" href="#comment-397924" onclick='return addComment.moveForm( "comment-397924", "397924", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-397966">
+<div class="comment-container" id="li-comment-397966">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 29, 2017 at 7:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-397966" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good question. I’m not sure off-hand, sorry.</p>
+<p>One way would be to specify col names in your file. Or even add a dummy first line to the file.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397966" onclick='return addComment.moveForm( "comment-397966", "397966", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-402029">
+<div class="comment-container" id="li-comment-402029">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9b3899e7183e51f6cced68a99a6e5bec?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9b3899e7183e51f6cced68a99a6e5bec?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">reda</span>
+<span class="date">June 9, 2017 at 11:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-402029" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>i tray to open  my csv data in weka but is not work  erreur [[  file’data.csv’ not recognised as an csv data files file reaon : 1 problem encountered on line 2</p>
+<div class="reply">
+<a aria-label="Reply to reda" class="comment-reply-link" href="#comment-402029" onclick='return addComment.moveForm( "comment-402029", "402029", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-402079">
+<div class="comment-container" id="li-comment-402079">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 10, 2017 at 8:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-402079" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Consider double checking your file is a CSV file. Open in a text editor or MS Excel to confirm.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-402079" onclick='return addComment.moveForm( "comment-402079", "402079", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-407433">
+<div class="comment-container" id="li-comment-407433">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/66bc918abe6afc1140e1b2e473eef96c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/66bc918abe6afc1140e1b2e473eef96c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">marzieh</span>
+<span class="date">July 26, 2017 at 10:59 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-407433" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Deer Mr.Brownlee,</p>
+<p>I going to use weka for a IDS purpose on KDDcup99 dataset.<br/>
+I have to use SVM and Entropy on this dataset ,and according to this result I will decrease some attributes from the dataset and make a decision tree for detecting intrusion faster ,<br/>
+let me know is it possible to use WEKA GUI? or I should use weka library in java?</p>
+<div class="reply">
+<a aria-label="Reply to marzieh" class="comment-reply-link" href="#comment-407433" onclick='return addComment.moveForm( "comment-407433", "407433", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-407487">
+<div class="comment-container" id="li-comment-407487">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 27, 2017 at 8:07 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-407487" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I have not used that dataset in many years. My best advice is to try.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-407487" onclick='return addComment.moveForm( "comment-407487", "407487", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-417648">
+<div class="comment-container" id="li-comment-417648">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/06397a0344d763ddf93a0942e3308cd3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/06397a0344d763ddf93a0942e3308cd3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">mai hegazy</span>
+<span class="date">October 23, 2017 at 10:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-417648" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hello Dr.Jason,<br/>
+please I have a problem with kosarak dataset , I can’t run it into weka</p>
+<div class="reply">
+<a aria-label="Reply to mai hegazy" class="comment-reply-link" href="#comment-417648" onclick='return addComment.moveForm( "comment-417648", "417648", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-417686">
+<div class="comment-container" id="li-comment-417686">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 24, 2017 at 5:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-417686" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t know about that dataset. Perhaps post your error to stack overflow?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-417686" onclick='return addComment.moveForm( "comment-417686", "417686", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-418374">
+<div class="comment-container" id="li-comment-418374">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/319385a575aa9f82250acf73316e5d2a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/319385a575aa9f82250acf73316e5d2a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sarah</span>
+<span class="date">October 30, 2017 at 1:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-418374" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Can I open .mat file in Weka?</p>
+<div class="reply">
+<a aria-label="Reply to Sarah" class="comment-reply-link" href="#comment-418374" onclick='return addComment.moveForm( "comment-418374", "418374", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-418404">
+<div class="comment-container" id="li-comment-418404">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 30, 2017 at 5:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-418404" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I don’t know, sorry.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-418404" onclick='return addComment.moveForm( "comment-418404", "418404", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-421107">
+<div class="comment-container" id="li-comment-421107">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ac04eac97852cae9ecba7057741219fd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ac04eac97852cae9ecba7057741219fd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">samridhi</span>
+<span class="date">November 25, 2017 at 12:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421107" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>trying to run a .csv file in weka on my MacBook but there is an error which says</p>
+<p>invalid stream header:49642c53</p>
+<div class="reply">
+<a aria-label="Reply to samridhi" class="comment-reply-link" href="#comment-421107" onclick='return addComment.moveForm( "comment-421107", "421107", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-421142">
+<div class="comment-container" id="li-comment-421142">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 25, 2017 at 10:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421142" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps double check your data file in a text editor and ensure the format matches your expectations.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421142" onclick='return addComment.moveForm( "comment-421142", "421142", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-421739">
+<div class="comment-container" id="li-comment-421739">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c52df5ffba8ace3c1eb2a025bfcbad7e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c52df5ffba8ace3c1eb2a025bfcbad7e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/" rel="external nofollow">Roghayeh</a></span>
+<span class="date">November 30, 2017 at 9:01 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421739" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Excellent post</p>
+<div class="reply">
+<a aria-label="Reply to Roghayeh" class="comment-reply-link" href="#comment-421739" onclick='return addComment.moveForm( "comment-421739", "421739", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-421799">
+<div class="comment-container" id="li-comment-421799">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 1, 2017 at 7:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421799" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421799" onclick='return addComment.moveForm( "comment-421799", "421799", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-421774">
+<div class="comment-container" id="li-comment-421774">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/21cb8c9a7712f0e3e71de0607c15971a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/21cb8c9a7712f0e3e71de0607c15971a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">FS</span>
+<span class="date">December 1, 2017 at 5:41 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421774" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Is there a way to add a column in my test data csv file indicating which data sample it is and then, identifying corresponding prediction score against the individual sample?<br/>
+Thank you for the excellent post!<br/>
+FS</p>
+<div class="reply">
+<a aria-label="Reply to FS" class="comment-reply-link" href="#comment-421774" onclick='return addComment.moveForm( "comment-421774", "421774", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-421817">
+<div class="comment-container" id="li-comment-421817">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 1, 2017 at 7:42 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-421817" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps add in CSV and use a filter to separate and save the separate datasets.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-421817" onclick='return addComment.moveForm( "comment-421817", "421817", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-422747">
+<div class="comment-container" id="li-comment-422747">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a1327ecae84427cb009e9fb4b502d93e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a1327ecae84427cb009e9fb4b502d93e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pranati Mathur</span>
+<span class="date">December 11, 2017 at 1:07 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-422747" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi.</p>
+<p>I get the error “java.lang.illegalArgumentException: Attribute names are not unique! Causes: ‘vhigh’ ‘2’”. Please help.<br/>
+I tried to upload .csv file to the weka explorer, but I get this exception and the file doesn’t load.</p>
+<div class="reply">
+<a aria-label="Reply to Pranati Mathur" class="comment-reply-link" href="#comment-422747" onclick='return addComment.moveForm( "comment-422747", "422747", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-422769">
+<div class="comment-container" id="li-comment-422769">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 11, 2017 at 4:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-422769" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps double check your data in a text editor or excel?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-422769" onclick='return addComment.moveForm( "comment-422769", "422769", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-425612">
+<div class="comment-container" id="li-comment-425612">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/36361b93a4e9103ace4d73df655a3bf8?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/36361b93a4e9103ace4d73df655a3bf8?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Marie</span>
+<span class="date">January 4, 2018 at 5:39 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-425612" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hi Jason<br/>
+after loading .csv file and saving it as a .arff file and opening it in WEKA, my histograms are all in black and white.  I have tried many different things but none of them are working.  What could the problem be?</p>
+<p>thanks for reading.<br/>
+Marie</p>
+<div class="reply">
+<a aria-label="Reply to Marie" class="comment-reply-link" href="#comment-425612" onclick='return addComment.moveForm( "comment-425612", "425612", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-425659">
+<div class="comment-container" id="li-comment-425659">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 5, 2018 at 5:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-425659" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Weka things you have a real valued output. Perhaps double check your file?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-425659" onclick='return addComment.moveForm( "comment-425659", "425659", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-429578">
+<div class="comment-container" id="li-comment-429578">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e2295ec603b57f737a78f8cab0791950?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e2295ec603b57f737a78f8cab0791950?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">ehren</span>
+<span class="date">February 15, 2018 at 1:20 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-429578" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>is there a post that explains how to write the header correctly in order to view the file in weka? i have tried MANY times to create the header, check it and correct errors with extra commas using a text editor and it won’t open at all in the arff viewer.  no matter what i do i get an error and the file won’t even open.  it looks EXACTLY like an arff opened in my text editor from within weka but weka will not read my csvs at all.</p>
+<div class="reply">
+<a aria-label="Reply to ehren" class="comment-reply-link" href="#comment-429578" onclick='return addComment.moveForm( "comment-429578", "429578", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-429583">
+<div class="comment-container" id="li-comment-429583">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 15, 2018 at 2:50 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-429583" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Open an existing .arff file and adapt it for your data. </p>
+<p>Or use the ARFF editor provided with Weka.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-429583" onclick='return addComment.moveForm( "comment-429583", "429583", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-435532">
+<div class="comment-container" id="li-comment-435532">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/80fc8ea1684c8bde1c6e4e6526062283?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/80fc8ea1684c8bde1c6e4e6526062283?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">ilhame</span>
+<span class="date">April 20, 2018 at 10:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-435532" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you so much for your guidance</p>
+<p>My probem occurs after converting csv file to arff file, I notice that a new index column is added as attribute, although arff provides index column. So if my csv file has 5 attributes it becomes 6 in arff file.</p>
+<p>I don’t know how to fix this.</p>
+<div class="reply">
+<a aria-label="Reply to ilhame" class="comment-reply-link" href="#comment-435532" onclick='return addComment.moveForm( "comment-435532", "435532", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-435559">
+<div class="comment-container" id="li-comment-435559">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 21, 2018 at 6:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-435559" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps check your CSV file does not have extra columns. Maybe look in excel or a text editor?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435559" onclick='return addComment.moveForm( "comment-435559", "435559", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-438986">
+<div class="comment-container" id="li-comment-438986">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3f4eb15063093f11dc804652c9e47b66?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3f4eb15063093f11dc804652c9e47b66?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Douye</span>
+<span class="date">May 29, 2018 at 1:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-438986" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>MONTHLY MEAN SUNSHINE HOURS<br/>
+MONTH/YRS	2005	2006	2007	2008	2009	2010	2011	2012	2013	2014	2015	2016<br/>
+JANUARY	5.3	4.4	7.5	4.5	2	5.2	5.4	5.4	5.5	6.4	5.2	4.6<br/>
+FEBRUARY	6.7	4.7	7.4	6	2.2	5.2	5.9	4.9	4.1	4.6	5.3	2.2<br/>
+MARCH	5.5	2.9	5.8	4.7	8.0	3.3	6.1	5.4	5.7	5.6	4.4	4.3<br/>
+APRIL	5.4	4.8	5.2	5	3.6	5.8	5.1	5.7	5.6	5.8	4.7	5.7<br/>
+MAY	4.8	3.7	6.1	6	5	5.3	5.6	5.1	5.9	5.8	5.2	5.1<br/>
+JUNE	4.7	4.6	5.6	5	4.2	3.8	3.3	3.8	4.3	4.5	3	4.3<br/>
+JULY	2.2	2.3	4.4	3.1	2.9	2.9	2.4	1.7	2.7	2.5	2.1	4.2<br/>
+AUGUST	1.5	1.4	2.7	2.3	2.2	2.4	1.6	2.6	2.1	1.5	1.6	2.8<br/>
+SEPTEMBER	3.8	2	3.9	3.1	3.4	3.6	2.5	3.6	2.8	1.8	2.5	2.2<br/>
+OCTOBER	4.1	3.5	5.9	5.6	3.8	5.5	4.4	4.7	4.7	3.7	5.2	4.9<br/>
+NOVEMBER	6.7	5.7	7.5	7.6	6.8	6	7	6.3	6.1	5.9	6.8	5.5<br/>
+DECEMBER	6.3	5.8	7.4	6.1	7.5	7.1	7.3	7.6	6.5	6.2	8.8	4.4<br/>
+TOTAL	57	45.8	70.4	59	44.4	56.1	56.6	56.8	56	54.3	54.8	50.2<br/>
+MEAN	4.8	3.8	5.9	5	3.7	4.7	4.7	4.7	4.6	4.5	4.6	4.2</p>
+<p>Above is a sample weather data, a word doc. Please is there any modification i should try before loading data into WEKA?</p>
+<div class="reply">
+<a aria-label="Reply to Douye" class="comment-reply-link" href="#comment-438986" onclick='return addComment.moveForm( "comment-438986", "438986", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-438994">
+<div class="comment-container" id="li-comment-438994">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 29, 2018 at 2:55 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-438994" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It really depends on the goals of your project.</p>
+<p>This might help:<br/>
+<a href="http://machinelearningmastery.com/how-to-define-your-machine-learning-problem/" rel="nofollow">http://machinelearningmastery.com/how-to-define-your-machine-learning-problem/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438994" onclick='return addComment.moveForm( "comment-438994", "438994", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-440036">
+<div class="comment-container" id="li-comment-440036">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a06a3aecd8bb3a29cd612e63f8c06c2e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a06a3aecd8bb3a29cd612e63f8c06c2e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Nelson Ajayi</span>
+<span class="date">June 7, 2018 at 5:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440036" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank sfor this interesting post Jason. I am more interested in how to use the ARFF-Viewer options for modifying your dataset before saving. Particularly to change their data types. I have played around the interface for such options but didnt get any clue. Please help</p>
+<div class="reply">
+<a aria-label="Reply to Nelson Ajayi" class="comment-reply-link" href="#comment-440036" onclick='return addComment.moveForm( "comment-440036", "440036", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440052">
+<div class="comment-container" id="li-comment-440052">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 7, 2018 at 6:35 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440052" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t have an example of changing data types in the ARFF viewer.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440052" onclick='return addComment.moveForm( "comment-440052", "440052", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-440068">
+<div class="comment-container" id="li-comment-440068">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fccacd131a188c9859e52142738242c9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fccacd131a188c9859e52142738242c9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shravan</span>
+<span class="date">June 7, 2018 at 2:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440068" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you Jason, this article helps.</p>
+<div class="reply">
+<a aria-label="Reply to Shravan" class="comment-reply-link" href="#comment-440068" onclick='return addComment.moveForm( "comment-440068", "440068", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440145">
+<div class="comment-container" id="li-comment-440145">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 8, 2018 at 6:04 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440145" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad to hear that.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440145" onclick='return addComment.moveForm( "comment-440145", "440145", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-440727">
+<div class="comment-container" id="li-comment-440727">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/23fea1ff8c0191bc3eeb530bbcb8985c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/23fea1ff8c0191bc3eeb530bbcb8985c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mark W.</span>
+<span class="date">June 13, 2018 at 9:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440727" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Jason, I just stumbled upon this post in attempting to leverage WEKA for my own dissertation process.  After only a few moments I believe that the resource you have given the rest of us (machinelearningmastery.com) is going to be the key to my success and that of many to come!  Just learning how to turn a .csv into .arff has already opened countless doors for me.  I now have a preliminary method for my research.  Can’t thank you enough!</p>
+<div class="reply">
+<a aria-label="Reply to Mark W." class="comment-reply-link" href="#comment-440727" onclick='return addComment.moveForm( "comment-440727", "440727", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440773">
+<div class="comment-container" id="li-comment-440773">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 14, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-440773" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Well done Mark, I’m glad to hear about your progress! Hang in there.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440773" onclick='return addComment.moveForm( "comment-440773", "440773", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-446410">
+<div class="comment-container" id="li-comment-446410">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f8f6f42d79bb62fe2c71ea948689e887?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f8f6f42d79bb62fe2c71ea948689e887?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Himagaran</span>
+<span class="date">August 18, 2018 at 5:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-446410" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great post</p>
+<p>I need to learn data mining for a project with code, any suggestions? links?</p>
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to Himagaran" class="comment-reply-link" href="#comment-446410" onclick='return addComment.moveForm( "comment-446410", "446410", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-446449">
+<div class="comment-container" id="li-comment-446449">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 19, 2018 at 6:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-446449" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This website is full of tutorials with code, dive in!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446449" onclick='return addComment.moveForm( "comment-446449", "446449", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-449444">
+<div class="comment-container" id="li-comment-449444">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/64bc917c1e7f72a26e33450b0bb66d31?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/64bc917c1e7f72a26e33450b0bb66d31?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://na" rel="external nofollow">ken stonecipher</a></span>
+<span class="date">September 21, 2018 at 5:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-449444" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Jason can you help me.  I cannot get a .CSV file to load in Weka.  When I am in tools I get the message. java io.IOException  wrong number of values.  Read 11, expected 10 read Toek(EOL) line 13  problem encountered on line 13.</p>
+<p>My file is a CSV format.</p>
+<p>Help please</p>
+<div class="reply">
+<a aria-label="Reply to ken stonecipher" class="comment-reply-link" href="#comment-449444" onclick='return addComment.moveForm( "comment-449444", "449444", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-449458">
+<div class="comment-container" id="li-comment-449458">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 21, 2018 at 6:34 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-449458" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps inspect your file in a text editor and confirm it has a CSV format and that the file looks valid.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449458" onclick='return addComment.moveForm( "comment-449458", "449458", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-454343">
+<div class="comment-container" id="li-comment-454343">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9b3d8789f413b0ef29887ced7f66c810?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9b3d8789f413b0ef29887ced7f66c810?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">vishnu</span>
+<span class="date">November 11, 2018 at 1:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-454343" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Jason – how to load  a .txt file into weka. I have to classify the reviews of a movie and then find out if the movie is bad or good. I have got bunch of .txt files of each positive reviews and negative reviews files.<br/>
+Help me how to load them in weka and perform classification</p>
+<div class="reply">
+<a aria-label="Reply to vishnu" class="comment-reply-link" href="#comment-454343" onclick='return addComment.moveForm( "comment-454343", "454343", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-454374">
+<div class="comment-container" id="li-comment-454374">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 11, 2018 at 6:08 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/load-csv-machine-learning-data-weka/#comment-454374" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t have examples of working with .txt files in Weka, I cannot give you good advice.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-454374" onclick='return addComment.moveForm( "comment-454374", "454374", "respond", "2686" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/load-csv-machine-learning-data-weka/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="2686"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="087a0c53a3"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="163"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-7"> <div class="textwidget"><p></p><center><br/>
+<strong>Machine Learning with Weka</strong><br/>
+Develop predictive models without writing code.
+<p><a href="/machine-learning-mastery-weka/">Click to Get Started Now!</a><br/>
+<a href="/machine-learning-mastery-weka/"><img alt="Machine Learning Mastery With Weka" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/MachineLearningMasteryWithWeka-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

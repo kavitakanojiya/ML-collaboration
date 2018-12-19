@@ -1,0 +1,1539 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>A Gentle Introduction to k-fold Cross-Validation</title>
+<link href="https://machinelearningmastery.com/k-fold-cross-validation/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="A Gentle Introduction to k-fold Cross-Validation" property="og:title"/>
+<meta content="Cross-validation is a statistical method used to estimate the skill of machine learning models. It is commonly used in applied machine learning to compare and select a model for a given predictive modeling problem because it is easy to understand, easy to implement, and results in skill estimates that generally have a lower bias than …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/k-fold-cross-validation/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Statistical Methods" property="article:section"/>
+<meta content="2018-05-22T19:00:24+00:00" property="article:published_time"/>
+<meta content="2018-05-21T22:03:48+00:00" property="article:modified_time"/>
+<meta content="2018-05-21T22:03:48+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/A-Gentle-Introduction-to-k-fold-Cross-Validation.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/A-Gentle-Introduction-to-k-fold-Cross-Validation.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="426" property="og:image:height"/>
+<meta content="A Gentle Introduction to k-fold Cross-Validation" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/k-fold-cross-validation/feed/" rel="alternate" title="Machine Learning Mastery » A Gentle Introduction to k-fold Cross-Validation Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=5281" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fk-fold-cross-validation%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fk-fold-cross-validation%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-5281 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-48"> <div class="textwidget"><p>Want help with statistics? <a href="https://machinelearningmastery.lpages.co/smfml-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-5281 post type-post status-publish format-standard has-post-thumbnail hentry category-statistical-methods">
+<header>
+<h1 class="title entry-title">A Gentle Introduction to k-fold Cross-Validation</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2018-05-23T05:00:24+1100">May 23, 2018</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/statistical-methods/" title="View all items in Statistical Methods">Statistical Methods</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-5281 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Gentle+Introduction+to+k-fold+Cross-Validation&amp;url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Cross-validation is a statistical method used to estimate the skill of machine learning models.</p>
+<p>It is commonly used in applied machine learning to compare and select a model for a given predictive modeling problem because it is easy to understand, easy to implement, and results in skill estimates that generally have a lower bias than other methods.</p>
+<p>In this tutorial, you will discover a gentle introduction to the k-fold cross-validation procedure for estimating the skill of machine learning models.</p>
+<p>After completing this tutorial, you will know:</p>
+<ul>
+<li>That k-fold cross validation is a procedure used to estimate the skill of the model on new data.</li>
+<li>There are common tactics that you can use to select the value of k for your dataset.</li>
+<li>There are commonly used variations on cross-validation such as stratified and repeated that are available in scikit-learn.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_5289" style="width: 650px"><img alt="A Gentle Introduction to k-fold Cross-Validation" class="size-full wp-image-5289" height="426" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/A-Gentle-Introduction-to-k-fold-Cross-Validation.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/A-Gentle-Introduction-to-k-fold-Cross-Validation.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/A-Gentle-Introduction-to-k-fold-Cross-Validation-300x200.jpg 300w" width="640"/><p class="wp-caption-text">A Gentle Introduction to k-fold Cross-Validation<br/>Photo by <a href="https://www.flickr.com/photos/jbaldock/3586229318/">Jon Baldock</a>, some rights reserved.</p></div>
+<h2>Tutorial Overview</h2>
+<p>This tutorial is divided into 5 parts; they are:</p>
+<ol>
+<li>k-Fold Cross-Validation</li>
+<li>Configuration of k</li>
+<li>Worked Example</li>
+<li>Cross-Validation API</li>
+<li>Variations on Cross-Validation</li>
+</ol>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with Statistics for Machine Learning?</h3>
+<p>Take my free 7-day email crash course now (with sample code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/142f75173f72a2%3A164f8be4f346dc/5750943224168448/" style="background: rgb(255, 206, 10); color: rgb(255, 255, 255); text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Download Your FREE Mini-Course</a><script data-config="%7B%7D" data-leadbox="142f75173f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/142f75173f72a2%3A164f8be4f346dc/5750943224168448/" src="https://machinelearningmastery.lpages.co/leadbox-1526328103.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>k-Fold Cross-Validation</h2>
+<p>Cross-validation is a resampling procedure used to evaluate machine learning models on a limited data sample.</p>
+<p>The procedure has a single parameter called k that refers to the number of groups that a given data sample is to be split into. As such, the procedure is often called k-fold cross-validation. When a specific value for k is chosen, it may be used in place of k in the reference to the model, such as k=10 becoming 10-fold cross-validation.</p>
+<p>Cross-validation is primarily used in applied machine learning to estimate the skill of a machine learning model on unseen data. That is, to use a limited sample in order to estimate how the model is expected to perform in general when used to make predictions on data not used during the training of the model.</p>
+<p>It is a popular method because it is simple to understand and because it generally results in a less biased or less optimistic estimate of the model skill than other methods, such as a simple train/test split.</p>
+<p>The general procedure is as follows:</p>
+<ol>
+<li>Shuffle the dataset randomly.</li>
+<li>Split the dataset into k groups</li>
+<li>For each unique group:
+<ol>
+<li>Take the group as a hold out or test data set</li>
+<li>Take the remaining groups as a training data set</li>
+<li>Fit a model on the training set and evaluate it on the test set</li>
+<li>Retain the evaluation score and discard the model</li>
+</ol>
+</li>
+<li>Summarize the skill of the model using the sample of model evaluation scores</li>
+</ol>
+<p>Importantly, each observation in the data sample is assigned to an individual group and stays in that group for the duration of the procedure. This means that each sample is given the opportunity to be used in the hold out set 1 time and used to train the model k-1 times.</p>
+<blockquote><p>This approach involves randomly dividing the set of observations into k groups, or folds, of approximately equal size. The first fold is treated as a validation set, and the method is fit on the remaining k − 1 folds.</p></blockquote>
+<p>— Page 181, <a href="http://amzn.to/2FkHqvW">An Introduction to Statistical Learning</a>, 2013.</p>
+<p>It is also important that any preparation of the data prior to fitting the model occur on the CV-assigned training dataset within the loop rather than on the broader data set. This also applies to any tuning of hyperparameters. A failure to perform these operations within the loop may result in <a href="https://machinelearningmastery.com/data-leakage-machine-learning/">data leakage</a> and an optimistic estimate of the model skill.</p>
+<blockquote><p>Despite the best efforts of statistical methodologists, users frequently invalidate their results by inadvertently peeking at the test data.</p></blockquote>
+<p>— Page 708, <a href="http://amzn.to/2thrWHq">Artificial Intelligence: A Modern Approach (3rd Edition)</a>, 2009.</p>
+<p>The results of a k-fold cross-validation run are often summarized with the mean of the model skill scores. It is also good practice to include a measure of the variance of the skill scores, such as the standard deviation or standard error.</p>
+<h2>Configuration of k</h2>
+<p>The k value must be chosen carefully for your data sample.</p>
+<p>A poorly chosen value for k may result in a mis-representative idea of the skill of the model, such as a score with a high variance (that may change a lot based on the data used to fit the model), or a high bias, (such as an overestimate of the skill of the model).</p>
+<p>Three common tactics for choosing a value for k are as follows:</p>
+<ul>
+<li><strong>Representative</strong>: The value for k is chosen such that each train/test group of data samples is large enough to be statistically representative of the broader dataset.</li>
+<li><strong>k=10</strong>: The value for k is fixed to 10, a value that has been found through experimentation to generally result in a model skill estimate with low bias a modest variance.</li>
+<li><strong>k=n</strong>: The value for k is fixed to n, where n is the size of the dataset to give each test sample an opportunity to be used in the hold out dataset. This approach is called leave-one-out cross-validation.</li>
+</ul>
+<blockquote><p>The choice of k is usually 5 or 10, but there is no formal rule. As k gets larger, the difference in size between the training set and the resampling subsets gets smaller. As this difference decreases, the bias of the technique becomes smaller</p></blockquote>
+<p>— Page 70, <a href="http://amzn.to/2Fmrbib">Applied Predictive Modeling</a>, 2013.</p>
+<p>A value of k=10 is very common in the field of applied machine learning, and is recommend if you are struggling to choose a value for your dataset.</p>
+<blockquote><p>To summarize, there is a bias-variance trade-off associated with the choice of k in k-fold cross-validation. Typically, given these considerations, one performs k-fold cross-validation using k = 5 or k = 10, as these values have been shown empirically to yield test error rate estimates that suffer neither from excessively high bias nor from very high variance.</p></blockquote>
+<p>— Page 184, <a href="http://amzn.to/2FkHqvW">An Introduction to Statistical Learning</a>, 2013.</p>
+<p>If a value for k is chosen that does not evenly split the data sample, then one group will contain a remainder of the examples. It is preferable to split the data sample into k groups with the same number of samples, such that the sample of model skill scores are all equivalent.</p>
+<h2>Worked Example</h2>
+<p>To make the cross-validation procedure concrete, let’s look at a worked example.</p>
+<p>Imagine we have a data sample with 6 observations:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549a9001648176" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549a9001648176-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549a9001648176-1">[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>The first step is to pick a value for k in order to determine the number of folds used to split the data. Here, we will use a value of k=3. That means we will shuffle the data and then split the data into 3 groups. Because we have 6 observations, each group will have an equal number of 2 observations.</p>
+<p>For example:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549b3614162595" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Fold1: [0.5, 0.2]
+Fold2: [0.1, 0.3]
+Fold3: [0.4, 0.6]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549b3614162595-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549b3614162595-2">2</div><div class="crayon-num" data-line="crayon-5c0ca93d549b3614162595-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549b3614162595-1">Fold1: [0.5, 0.2]</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549b3614162595-2">Fold2: [0.1, 0.3]</div><div class="crayon-line" id="crayon-5c0ca93d549b3614162595-3">Fold3: [0.4, 0.6]</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>We can then make use of the sample, such as to evaluate the skill of a machine learning algorithm.</p>
+<p>Three models are trained and evaluated with each fold given a chance to be the held out test set.</p>
+<p>For example:</p>
+<ul>
+<li><strong>Model1</strong>: Trained on Fold1 + Fold2, Tested on Fold3</li>
+<li><strong>Model2</strong>: Trained on Fold2 + Fold3, Tested on Fold1</li>
+<li><strong>Model3</strong>: Trained on Fold1 + Fold3, Tested on Fold2</li>
+</ul>
+<p>The models are then discarded after they are evaluated as they have served their purpose.</p>
+<p>The skill scores are collected for each model and summarized for use.</p>
+<h2>Cross-Validation API</h2>
+<p>We do not have to implement k-fold cross-validation manually. The scikit-learn library provides an implementation that will split a given data sample up.</p>
+<p>The <em>KFold()</em> scikit-learn class can be used. It takes as arguments the number of splits, whether or not to shuffle the sample, and the seed for the pseudorandom number generator used prior to the shuffle.</p>
+<p>For example, we can create an instance that splits a dataset into 3 folds, shuffles prior to the split, and uses a value of 1 for the pseudorandom number generator.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549b6054463966" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+kfold = KFold(3, True, 1)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549b6054463966-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549b6054463966-1"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">KFold</span><span class="crayon-sy">(</span><span class="crayon-cn">3</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>The <em>split()</em> function can then be called on the class where the data sample is provided as an argument. Called repeatedly, the split will return each group of train and test sets. Specifically, arrays are returned containing the indexes into the original data sample of observations to use for train and test sets on each iteration.</p>
+<p>For example, we can enumerate the splits of the indices for a data sample using the created <em>KFold</em> instance as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549b9067291191" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# enumerate splits
+for train, test in kfold.split(data):
+	print('train: %s, test: %s' % (train, test))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549b9067291191-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549b9067291191-2">2</div><div class="crayon-num" data-line="crayon-5c0ca93d549b9067291191-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549b9067291191-1"><span class="crayon-p"># enumerate splits</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549b9067291191-2"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">test </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">kfold</span><span class="crayon-sy">.</span><span class="crayon-e">split</span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca93d549b9067291191-3"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'train: %s, test: %s'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0004 seconds] -->
+<p>We can tie all of this together with our small dataset used in the worked example of the prior section.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549bb037862845" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# scikit-learn k-fold cross-validation
+from numpy import array
+from sklearn.model_selection import KFold
+# data sample
+data = array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+# prepare cross validation
+kfold = KFold(3, True, 1)
+# enumerate splits
+for train, test in kfold.split(data):
+	print('train: %s, test: %s' % (data[train], data[test]))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549bb037862845-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bb037862845-2">2</div><div class="crayon-num" data-line="crayon-5c0ca93d549bb037862845-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bb037862845-4">4</div><div class="crayon-num" data-line="crayon-5c0ca93d549bb037862845-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bb037862845-6">6</div><div class="crayon-num" data-line="crayon-5c0ca93d549bb037862845-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bb037862845-8">8</div><div class="crayon-num" data-line="crayon-5c0ca93d549bb037862845-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bb037862845-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549bb037862845-1"><span class="crayon-p"># scikit-learn k-fold cross-validation</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bb037862845-2"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-t">array</span></div><div class="crayon-line" id="crayon-5c0ca93d549bb037862845-3"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-v">KFold</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bb037862845-4"><span class="crayon-p"># data sample</span></div><div class="crayon-line" id="crayon-5c0ca93d549bb037862845-5"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">array</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-cn">0.1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.2</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.3</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.4</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.5</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.6</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bb037862845-6"><span class="crayon-p"># prepare cross validation</span></div><div class="crayon-line" id="crayon-5c0ca93d549bb037862845-7"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">KFold</span><span class="crayon-sy">(</span><span class="crayon-cn">3</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bb037862845-8"><span class="crayon-p"># enumerate splits</span></div><div class="crayon-line" id="crayon-5c0ca93d549bb037862845-9"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">test </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">kfold</span><span class="crayon-sy">.</span><span class="crayon-e">split</span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bb037862845-10"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'train: %s, test: %s'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">data</span><span class="crayon-sy">[</span><span class="crayon-v">train</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">data</span><span class="crayon-sy">[</span><span class="crayon-v">test</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0010 seconds] -->
+<p>Running the example prints the specific observations chosen for each train and test set. The indices are used directly on the original data array to retrieve the observation values.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d549bc653809564" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+train: [0.1 0.4 0.5 0.6], test: [0.2 0.3]
+train: [0.2 0.3 0.4 0.6], test: [0.1 0.5]
+train: [0.1 0.2 0.3 0.5], test: [0.4 0.6]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d549bc653809564-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d549bc653809564-2">2</div><div class="crayon-num" data-line="crayon-5c0ca93d549bc653809564-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d549bc653809564-1">train: [0.1 0.4 0.5 0.6], test: [0.2 0.3]</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d549bc653809564-2">train: [0.2 0.3 0.4 0.6], test: [0.1 0.5]</div><div class="crayon-line" id="crayon-5c0ca93d549bc653809564-3">train: [0.1 0.2 0.3 0.5], test: [0.4 0.6]</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>Usefully, the k-fold cross validation implementation in scikit-learn is provided as a component operation within broader methods, such as grid-searching model hyperparameters and scoring a model on a dataset.</p>
+<p>Nevertheless, the <em>KFold</em> class can be used directly in order to split up a dataset prior to modeling such that all models will use the same data splits. This is especially helpful if you are working with very large data samples. The use of the same splits across algorithms can have benefits for statistical tests that you may wish to perform on the data later.</p>
+<h2>Variations on Cross-Validation</h2>
+<p>There are a number of variations on the k-fold cross validation procedure.</p>
+<p>Three commonly used variations are as follows:</p>
+<ul>
+<li><strong>Train/Test Split</strong>: Taken to one extreme, k may be set to 1 such that a single train/test split is created to evaluate the model.</li>
+<li><strong>LOOCV</strong>: Taken to another extreme, k may be set to the total number of observations in the dataset such that each observation is given a chance to be the held out of the dataset. This is called leave-one-out cross-validation, or LOOCV for short.</li>
+<li><strong>Stratified</strong>: The splitting of data into folds may be governed by criteria such as ensuring that each fold has the same proportion of observations with a given categorical value, such as the class outcome value. This is called stratified cross-validation.</li>
+<li><strong>Repeated</strong>: This is where the k-fold cross-validation procedure is repeated n times, where importantly, the data sample is shuffled prior to each repetition, which results in a different split of the sample.</li>
+</ul>
+<p>The scikit-learn library provides a suite of cross-validation implementation. You can see the full list in the <a href="http://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection">Model Selection API</a>.</p>
+<h2>Extensions</h2>
+<p>This section lists some ideas for extending the tutorial that you may wish to explore.</p>
+<ul>
+<li>Find 3 machine learning research papers that use a value of 10 for k-fold cross-validation.</li>
+<li>Write your own function to split a data sample using k-fold cross-validation.</li>
+<li>Develop examples to demonstrate each of the main types of cross-validation supported by scikit-learn.</li>
+</ul>
+<p>If you explore any of these extensions, I’d love to know.</p>
+<h2>Further Reading</h2>
+<p>This section provides more resources on the topic if you are looking to go deeper.</p>
+<h3>Posts</h3>
+<ul>
+<li><a href="https://machinelearningmastery.com/implement-resampling-methods-scratch-python/">How to Implement Resampling Methods From Scratch In Python</a></li>
+<li><a href="https://machinelearningmastery.com/evaluate-performance-machine-learning-algorithms-python-using-resampling/">Evaluate the Performance of Machine Learning Algorithms in Python using Resampling</a></li>
+<li><a href="https://machinelearningmastery.com/difference-test-validation-datasets/">What is the Difference Between Test and Validation Datasets?</a></li>
+<li><a href="https://machinelearningmastery.com/data-leakage-machine-learning/">Data Leakage in Machine Learning</a></li>
+</ul>
+<h3>Books</h3>
+<ul>
+<li><a href="http://amzn.to/2Fmrbib">Applied Predictive Modeling</a>, 2013.</li>
+<li><a href="http://amzn.to/2FkHqvW">An Introduction to Statistical Learning</a>, 2013.</li>
+<li><a href="http://amzn.to/2thrWHq">Artificial Intelligence: A Modern Approach (3rd Edition)</a>, 2009.</li>
+</ul>
+<h3>API</h3>
+<ul>
+<li><a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html">sklearn.model_selection.KFold() API</a><br/>
+<a href="http://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection">sklearn.model_selection: Model Selection API</a></li>
+</ul>
+<h3>Articles</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Resampling_(statistics)">Resampling (statistics) on Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)">Cross-validation (statistics) on Wikipedia</a></li>
+</ul>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered a gentle introduction to the k-fold cross-validation procedure for estimating the skill of machine learning models.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>That k-fold cross validation is a procedure used to estimate the skill of the model on new data.</li>
+<li>There are common tactics that you can use to select the value of k for your dataset.</li>
+<li>There are commonly used variations on cross-validation, such as stratified and repeated, that are available in scikit-learn.</li>
+</ul>
+<p>Do you have any questions?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-49"> <div class="textwidget"><p></p><center><div class="woo-sc-hr"></div>
+<h2>Get a Handle on Statistics for Machine Learning!</h2>
+<p><a href="/statistics_for_machine_learning/"><img align="left" alt="Statistical Methods for Machine Learning" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop a working understanding of statistics</h4>
+<p>…by writing lines of code in python</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/statistics_for_machine_learning/">Statistical Methods for Machine Learning</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>Hypothesis Tests, Correlation, Nonparametric Stats, Resampling</em>, and much more…</p>
+<h4>Discover how to Transform Data into Knowledge</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/statistics_for_machine_learning/">Click to learn more</a>.<br/>
+</p><div class="woo-sc-hr"></div></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-5281 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=A+Gentle+Introduction+to+k-fold+Cross-Validation&amp;url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/k-fold-cross-validation/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/how-to-transform-data-to-fit-the-normal-distribution/" rel="prev"><i class="fa fa-angle-left"></i> How to Transform Data to Better Fit The Normal Distribution</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/a-gentle-introduction-to-the-bootstrap-method/" rel="next">A Gentle Introduction to the Bootstrap Method <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">40 Responses to <em>A Gentle Introduction to k-fold Cross-Validation</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-438611">
+<div class="comment-container" id="li-comment-438611">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/bb33d232fae4229e7977d2d13a09f12b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/bb33d232fae4229e7977d2d13a09f12b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kristian Lunow Nielsen</span>
+<span class="date">May 25, 2018 at 4:30 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438611" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason</p>
+<p>Nice gentle tutorial you have made there!<br/>
+I have a more technical question; Can you comment on why the error estimate obtained through k-fold-cross-validation is almost unbiased? with an emphasis on why. </p>
+<p>I have had a hard time finding literature describing why.<br/>
+It is my understanding that everyone comments on the bias/variance trade-off when asked about the almost unbiased feature of k-fold-cross-validation.</p>
+<div class="reply">
+<a aria-label="Reply to Kristian Lunow Nielsen" class="comment-reply-link" href="#comment-438611" onclick='return addComment.moveForm( "comment-438611", "438611", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-438673">
+<div class="comment-container" id="li-comment-438673">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 26, 2018 at 5:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438673" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<p>Good question. </p>
+<p>We repeat the model evaluation process multiple times (instead of one time) and calculate the mean skill. The mean estimate of any parameter is less biased than a one-shot estimate. There is still some bias though.</p>
+<p>The cost is we get variance on this estimate, so it’s good to report both mean and variance or mean and stdev of the score.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438673" onclick='return addComment.moveForm( "comment-438673", "438673", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-438628">
+<div class="comment-container" id="li-comment-438628">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/75659ac0e00e3e4e0e784048d2c3eccd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/75659ac0e00e3e4e0e784048d2c3eccd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Vladislav Gladkikh</span>
+<span class="date">May 25, 2018 at 7:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438628" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Another possible extension: stratified cross-validation for regression. It is not directly implemented in Scikit-learn, and there is discussion if it worth implementing or not: <a href="https://github.com/scikit-learn/scikit-learn/issues/4757" rel="nofollow">https://github.com/scikit-learn/scikit-learn/issues/4757</a> but this is exactly what I need in my work. I do it like this:</p>
+<p></p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca93d55f5e318024405" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from sklearn.model_selection import StratifiedKFold
+import numpy as np
+
+n_splits = 3
+
+X = np.ones(10)
+y = np.arange(1,11,dtype=float)
+
+# binning to make StratifiedKFold work
+yc = np.outer(y[::n_splits],np.ones(n_splits)).flatten()[:len(y)]
+yc[-n_splits:]=yc[-n_splits]*np.ones(n_splits)
+
+skf = StratifiedKFold(n_splits=n_splits)
+for train, test in skf.split(X, yc):
+    print("train: %s test: %s" % (train, test))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-2">2</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-4">4</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-6">6</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-8">8</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-10">10</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-12">12</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca93d55f5e318024405-14">14</div><div class="crayon-num" data-line="crayon-5c0ca93d55f5e318024405-15">15</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-1"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">StratifiedKFold</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-2"><span class="crayon-e">import </span><span class="crayon-e">numpy </span><span class="crayon-st">as</span><span class="crayon-h"> </span><span class="crayon-e">np</span></div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-3"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-4"><span class="crayon-v">n_splits</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">3</span></div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-5"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-6"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">ones</span><span class="crayon-sy">(</span><span class="crayon-cn">10</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-7"><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">arange</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">11</span><span class="crayon-sy">,</span><span class="crayon-v">dtype</span><span class="crayon-o">=</span><span class="crayon-t">float</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-8"> </div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-9"><span class="crayon-p"># binning to make StratifiedKFold work</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-10"><span class="crayon-v">yc</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">outer</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">[</span><span class="crayon-o">::</span><span class="crayon-v">n_splits</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">ones</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-sy">.</span><span class="crayon-e">flatten</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-11"><span class="crayon-v">yc</span><span class="crayon-sy">[</span><span class="crayon-o">-</span><span class="crayon-v">n_splits</span><span class="crayon-o">:</span><span class="crayon-sy">]</span><span class="crayon-o">=</span><span class="crayon-v">yc</span><span class="crayon-sy">[</span><span class="crayon-o">-</span><span class="crayon-v">n_splits</span><span class="crayon-sy">]</span><span class="crayon-o">*</span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">ones</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-12"> </div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-13"><span class="crayon-v">skf</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">StratifiedKFold</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-o">=</span><span class="crayon-v">n_splits</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca93d55f5e318024405-14"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">test </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">skf</span><span class="crayon-sy">.</span><span class="crayon-e">split</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yc</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca93d55f5e318024405-15"><span class="crayon-h">    </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"train: %s test: %s"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0009 seconds] -->
+<p></p>
+<div class="reply">
+<a aria-label="Reply to Vladislav Gladkikh" class="comment-reply-link" href="#comment-438628" onclick='return addComment.moveForm( "comment-438628", "438628", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-438629">
+<div class="comment-container" id="li-comment-438629">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/75659ac0e00e3e4e0e784048d2c3eccd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/75659ac0e00e3e4e0e784048d2c3eccd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Vladislav Gladkikh</span>
+<span class="date">May 25, 2018 at 7:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438629" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>How to make code formatting here?</p>
+<div class="reply">
+<a aria-label="Reply to Vladislav Gladkikh" class="comment-reply-link" href="#comment-438629" onclick='return addComment.moveForm( "comment-438629", "438629", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-3" id="comment-438680">
+<div class="comment-container" id="li-comment-438680">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 26, 2018 at 5:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438680" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can use PRE HTML tags. I formatted your code for you.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438680" onclick='return addComment.moveForm( "comment-438680", "438680", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-438679">
+<div class="comment-container" id="li-comment-438679">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 26, 2018 at 5:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-438679" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for sharing!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438679" onclick='return addComment.moveForm( "comment-438679", "438679", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-439031">
+<div class="comment-container" id="li-comment-439031">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d25a68c2a599ebf3ca17dd3cbba07ffd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d25a68c2a599ebf3ca17dd3cbba07ffd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">hayet</span>
+<span class="date">May 29, 2018 at 10:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-439031" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Should be used k cross-validation in deep learning?</p>
+<div class="reply">
+<a aria-label="Reply to hayet" class="comment-reply-link" href="#comment-439031" onclick='return addComment.moveForm( "comment-439031", "439031", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-439074">
+<div class="comment-container" id="li-comment-439074">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 30, 2018 at 6:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-439074" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It can be for small networks/datasets.</p>
+<p>Often it is too slow.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439074" onclick='return addComment.moveForm( "comment-439074", "439074", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-440220">
+<div class="comment-container" id="li-comment-440220">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/5587eca521469df48b395b105f62fa92?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/5587eca521469df48b395b105f62fa92?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Chan</span>
+<span class="date">June 8, 2018 at 9:45 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-440220" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Dear Jason,</p>
+<p>Thanks for this insight ,especially the worked example section. It’s very helpful to understand the fundamentals. However, I have a basic question which I didn’t understand completely.<br/>
+If we throw away all the models that we learn from every group (3 models in your example shown), what would be the final model to predict unseen /test data? </p>
+<p>Is it something like:</p>
+<p>We are using cross-validation only to choose the right hyper-parameter for a model? say K for KNN.<br/>
+1. We fix a value of K;train and cross-validate to get three different models with different parameters (/coefficients like Y=3x+2; Y=2x+3; Y=2.5X+3 = just some random values)<br/>
+2. Every model has its own error rate. Average them out to get a mean error rate for that hyper-parameter setup / values<br/>
+3. Try with other values of Hyper-parameters (step 1 and 2 repetitively for all set of hyper-parameter values)</p>
+<p>4. Choose the hyper-parameter set with the least average error<br/>
+5. Train the whole training data set (without any validation split this time) with new value of hyper-parameter and get the new model [Y=2.75X+2.5 for eg.,]<br/>
+6. Use this as a model to predict the new / unseen / test data. Loss value would be the final error from this model</p>
+<p>Is this the way? or May be I understood it completely wrong.</p>
+<p>Sorry for this naive question as I’m quite new or just a started. Thanks for your understanding 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Chan" class="comment-reply-link" href="#comment-440220" onclick='return addComment.moveForm( "comment-440220", "440220", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440271">
+<div class="comment-container" id="li-comment-440271">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 9, 2018 at 6:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-440271" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I explain how to develop a final model here:<br/>
+<a href="https://machinelearningmastery.com/train-final-machine-learning-model/" rel="nofollow">https://machinelearningmastery.com/train-final-machine-learning-model/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440271" onclick='return addComment.moveForm( "comment-440271", "440271", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-441563">
+<div class="comment-container" id="li-comment-441563">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ee0194a0c61707d11bef32ac01c2ba1d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ee0194a0c61707d11bef32ac01c2ba1d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">teja_chebrole</span>
+<span class="date">June 21, 2018 at 9:40 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-441563" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>awesome article..very useful…</p>
+<div class="reply">
+<a aria-label="Reply to teja_chebrole" class="comment-reply-link" href="#comment-441563" onclick='return addComment.moveForm( "comment-441563", "441563", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-441604">
+<div class="comment-container" id="li-comment-441604">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 22, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-441604" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad it helped.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-441604" onclick='return addComment.moveForm( "comment-441604", "441604", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-442905">
+<div class="comment-container" id="li-comment-442905">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fd04134af5c4661c42f68038ea4b3d93?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fd04134af5c4661c42f68038ea4b3d93?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">M.sarat chandra</span>
+<span class="date">July 7, 2018 at 5:32 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-442905" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>if loocv is done it increase the size of k as datasets increase size .what would u say abt this.<br/>
+when to use loocv on data. what is use of pseudo random number generator.</p>
+<div class="reply">
+<a aria-label="Reply to M.sarat chandra" class="comment-reply-link" href="#comment-442905" onclick='return addComment.moveForm( "comment-442905", "442905", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-442933">
+<div class="comment-container" id="li-comment-442933">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 8, 2018 at 6:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-442933" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>In turn it increases the number of models to fit and the time it will take to evaluate.</p>
+<p>The choice of random numbers does not matter as long as you are consistent in your experiment.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442933" onclick='return addComment.moveForm( "comment-442933", "442933", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-443133">
+<div class="comment-container" id="li-comment-443133">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9cb26d360639ee849afa096a1a12af5b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9cb26d360639ee849afa096a1a12af5b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">marison</span>
+<span class="date">July 10, 2018 at 4:20 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-443133" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hi,</p>
+<p>1. can u plz provide me a code for implementing the k-fold cross validation in R ?</p>
+<p>2. do we have to do cross validation on complete data set or only on the training dataset after splitting into training and testing dataset?</p>
+<div class="reply">
+<a aria-label="Reply to marison" class="comment-reply-link" href="#comment-443133" onclick='return addComment.moveForm( "comment-443133", "443133", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-443170">
+<div class="comment-container" id="li-comment-443170">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 11, 2018 at 5:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-443170" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Here is an example in R:<br/>
+<a href="http://machinelearningmastery.com/evaluate-machine-learning-algorithms-with-r/" rel="nofollow">http://machinelearningmastery.com/evaluate-machine-learning-algorithms-with-r/</a></p>
+<p>It is your choice how to estimate the skill of a model on unseen data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443170" onclick='return addComment.moveForm( "comment-443170", "443170", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-443617">
+<div class="comment-container" id="li-comment-443617">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ac9513f0652fb7565d82976259f24b65?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ac9513f0652fb7565d82976259f24b65?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Zhian</span>
+<span class="date">July 16, 2018 at 7:36 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-443617" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello, </p>
+<p>Thank you for the great tutorial. I have one question regarding the cross validation for the data sets of dynamic processes. How one could do cross validation in this case? Assume we have 10 experiments where the state of the system is the quantity which is changing in time (initial value problem). I am not sure here one should shuffle the data or not. Shall I take the whole one experiment as a set for cross validation or choose a part of every experiment for that purpose? every experiment contain different features which control the state of the system. When I want to validate I would like to to take the initial state of the system and with the vector of features to propagate the state in time. This is exactly what I need in practice. </p>
+<p>Could you please provide me your comments on that. I hope I am clear abot my issue.<br/>
+Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Zhian" class="comment-reply-link" href="#comment-443617" onclick='return addComment.moveForm( "comment-443617", "443617", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-443660">
+<div class="comment-container" id="li-comment-443660">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 17, 2018 at 6:16 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-443660" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You could use walk-forward validation:<br/>
+<a href="https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/" rel="nofollow">https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443660" onclick='return addComment.moveForm( "comment-443660", "443660", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-445503">
+<div class="comment-container" id="li-comment-445503">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/abc4e0382caa79a3affeba0620f38219?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/abc4e0382caa79a3affeba0620f38219?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tamara</span>
+<span class="date">August 8, 2018 at 5:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-445503" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Firstly, your tutorials are excellent and very helpful. Thank you so much!<br/>
+I have a question related to the use of k-fold cross-validation (k-fold CV) in testing the validity of a neural network model (how well it performs for new data). I’m afraid there is some confusion in this field as k-fold CV appears to be required for justifying any results.<br/>
+So far I understand we can use k-fold CV to find optimal parameters while defining the network (as accuracy for train and test data will tell when it is over or under fitting) and we can make the choices that ensure good performance. Once we made these choices we can run the algorithm for the entire training data and we generate a model. This model has to be then tested for new data (validation set  and training set). My question is: on how many new data sets has this model to be tested din order to be considered useful?<br/>
+Since we have a model, using again k-fold CV does not help (we do not look for a new model). I my understanding the k-fold CV testing is mainly for the algorithm/method optimization while the final model should be only tested on new data. Is this correct? if so, should I split the test data into smaller sets, and use these as multiple tests, or using just the one test data set is enough?</p>
+<p>Many thanks,<br/>
+Tamara</p>
+<div class="reply">
+<a aria-label="Reply to Tamara" class="comment-reply-link" href="#comment-445503" onclick='return addComment.moveForm( "comment-445503", "445503", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-445528">
+<div class="comment-container" id="li-comment-445528">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 8, 2018 at 6:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-445528" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Often we split the training dataset into train and validation and use the validation to tune hyperparameters.</p>
+<p>Perhaps this post will help:<br/>
+<a href="https://machinelearningmastery.com/difference-test-validation-datasets/" rel="nofollow">https://machinelearningmastery.com/difference-test-validation-datasets/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-445528" onclick='return addComment.moveForm( "comment-445528", "445528", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-446080">
+<div class="comment-container" id="li-comment-446080">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3ba6f1778a156080bb0399a6088dbfed?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3ba6f1778a156080bb0399a6088dbfed?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">ashish</span>
+<span class="date">August 14, 2018 at 7:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-446080" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi jason , thanks for a nice blog </p>
+<p>my dataset size is 6000 (image data).  how do we know which type of cross validation should use (simply train test split or k- fold cross validation) .</p>
+<div class="reply">
+<a aria-label="Reply to ashish" class="comment-reply-link" href="#comment-446080" onclick='return addComment.moveForm( "comment-446080", "446080", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-446122">
+<div class="comment-container" id="li-comment-446122">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 15, 2018 at 5:58 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-446122" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Start with 10-folds.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446122" onclick='return addComment.moveForm( "comment-446122", "446122", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-446175">
+<div class="comment-container" id="li-comment-446175">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fbd345657fa4f5957872056f0b119947?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fbd345657fa4f5957872056f0b119947?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Carlos</span>
+<span class="date">August 16, 2018 at 2:46 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-446175" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good morning!</p>
+<p>I am an Economics Student at University of São Paulo and I am researching about Backtesting, Stress Test and Validation Models to Credit Risk. Thus, would you help me answering some questions? I researching how to create a good procedure to validate prediction models that tries to forecast default behavior of the agents. Thereby, suppose a log-odds logit model of Default Probability that uses some explanatory variables as GDP, Official Interest Rates, etc. In order to evaluate it, I calculate the stability and the backtesting, using part of my data not used in the estimation with this purpose. In the backtesting case, I use a forecast, based on the regression of relevant variables to perceive if my model is corresponding to the forecast that has interval of confidence to evaluate if they are in or out. Furthermore, I evaluate the signal of the parameters to verify if it is beavering according to the economic sense.<br/>
+After reading some papers, including your publication here and a Basel one (“Sound Practices for Backtesting Counterparty Credit Risk Models”), I have some doubts.</p>
+<p>1)	Do a pattern backtesting procedure lead completely about the overfitting issue? If not, which the recommendations to solve it?<br/>
+2)	What are the issues not covered by a pattern backtesting procedure and we should pay attention using another metrics to lead with them?<br/>
+3)	Could you indicate some paper or document that explains about Back-pricing, conception introduced by “Sound Practices for Backtesting Counterparty Credit Risk Models”? I have not found another document and I had not understood their explanation.<br/>
+“A bank can carry out additional validation work to support the quality of its models by carrying out back-pricing. Back-pricing, which is similar to backtesting, is a quantitative comparison of model predictions with realizations, but based on re-running current models on historical market data. In order to make meaningful statements about the performance of the model, the historical data need to be divided into distinct calibration and verification data sets for each initialization date, with the model calibrated using the calibration data set before the initialization date and the forecasts after initialization tested on the verification data sets. This type of analysis helps to inform the effectiveness of model remediation, ie by demonstrating that a change to the model made in light of recent experience would have improved past and present performance. An appropriate back-pricing allows extending the backtesting data set into the past.” </p>
+<p>Thus, I appreciate your attention and help.</p>
+<p>The best regards.</p>
+<div class="reply">
+<a aria-label="Reply to Carlos" class="comment-reply-link" href="#comment-446175" onclick='return addComment.moveForm( "comment-446175", "446175", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-446202">
+<div class="comment-container" id="li-comment-446202">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 16, 2018 at 6:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-446202" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Too much for one comment, sorry. One small question at a time please.</p>
+<p>You can get started with back-testing procedures for time series forecasting here:<br/>
+<a href="https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/" rel="nofollow">https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446202" onclick='return addComment.moveForm( "comment-446202", "446202", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-448052">
+<div class="comment-container" id="li-comment-448052">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8d368829a5c8e1b958a0edb0d94adb41?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8d368829a5c8e1b958a0edb0d94adb41?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Scott Miller</span>
+<span class="date">September 6, 2018 at 11:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-448052" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, I’m using k-fold with regularized linear regression (Ridge) with the objective to determine the optimial regularization parameter.  </p>
+<p>For each regularization parameter, I do k-fold CV to compute the CV error.</p>
+<p>I then select the regularization parmeter that achieves the lowest CV error.  </p>
+<p>However, in k-fold when I use ‘shuffle=True’ AND no ‘random_state’ in k-fold, the optimal regularization parameter changes each time I run the program.</p>
+<p>           kf=KFold(n_splits=n_kfolds, shuffle=True)</p>
+<p>If I use a random state or ‘shuffle = False’, the results are always the same.  </p>
+<p>Question:  Do you feel this is normal behavior and any recommendations.</p>
+<p>note:  Predictions are really good, just looking for general discussion.</p>
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Scott Miller" class="comment-reply-link" href="#comment-448052" onclick='return addComment.moveForm( "comment-448052", "448052", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-448090">
+<div class="comment-container" id="li-comment-448090">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 7, 2018 at 8:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-448090" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, it might be a good idea to repeat each experiment to counter the variance of the model.</p>
+<p>Going even one step further, you might even want to use statistical tests to help determine whether “better” is real or noise. I have tutorials on this under the topic of statistics I believe.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-448090" onclick='return addComment.moveForm( "comment-448090", "448090", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-450663">
+<div class="comment-container" id="li-comment-450663">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7eacd5a3eee68ab707cbd23eb07b1de0?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7eacd5a3eee68ab707cbd23eb07b1de0?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pascal Schmidt</span>
+<span class="date">October 4, 2018 at 1:35 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-450663" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, </p>
+<p>thank you for the great tutorial. It helped me a lot to understand cross-validation better.<br/>
+There is one concept I am still unsure about and I was hoping you could answer this for me please.</p>
+<p>When I do feature selection before cross validation then my error will be biased because I chose the features based on training and testing set (data leakage). Therefore, I believe I have to do feature selection inside the cross validation loop with only the training data and then test my model on the test data. </p>
+<p>So my question is when I end up with different predictors for the different folds, should I choose the predictors that occured the majority of the time? And after that, should I do cross validation for this model with the same predictors? So, do k-fold cv with my final model where every predictor is the same for the different folds? And then use this estimate to be my cv error? </p>
+<p>It would be really great if you could help me out. Thanks again for the article and keep up the great work.</p>
+<div class="reply">
+<a aria-label="Reply to Pascal Schmidt" class="comment-reply-link" href="#comment-450663" onclick='return addComment.moveForm( "comment-450663", "450663", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-450666">
+<div class="comment-container" id="li-comment-450666">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 4, 2018 at 3:30 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-450666" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<p>Correct. Yes, you will get different features, and perhaps you can take the average across the findings from each fold.</p>
+<p>Alternately, you can use one hold out dataset to choose features, and a separate set for estimating model performance/tuning.</p>
+<p>It comes down to how much data you have to “spend” and how much leakage/bias you can handle. We almost never have enough data to be pure.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-450666" onclick='return addComment.moveForm( "comment-450666", "450666", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-450800">
+<div class="comment-container" id="li-comment-450800">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7b0c95114764fbde39b5da675d2fdd9c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7b0c95114764fbde39b5da675d2fdd9c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pascal Schmidt</span>
+<span class="date">October 6, 2018 at 3:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-450800" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks, Jason. I guess statistics is not as black and white as a discipline like mathematics. A lot of different ways to deal with problems and no one best solution exists. This makes it so challenging I feel. A lot of experience is required to deal with all these unique data sets.</p>
+<div class="reply">
+<a aria-label="Reply to Pascal Schmidt" class="comment-reply-link" href="#comment-450800" onclick='return addComment.moveForm( "comment-450800", "450800", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-450821">
+<div class="comment-container" id="li-comment-450821">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 6, 2018 at 5:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-450821" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, the best way to get good is to practice, like programming, driving, and everything else we want to do in life.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-450821" onclick='return addComment.moveForm( "comment-450821", "450821", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-451782">
+<div class="comment-container" id="li-comment-451782">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4f82de56ea15cd5961c979f4fd04d717?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4f82de56ea15cd5961c979f4fd04d717?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Bilal</span>
+<span class="date">October 16, 2018 at 6:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-451782" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>for which purpose we calculate the standard deviation from any data set.</p>
+<div class="reply">
+<a aria-label="Reply to Bilal" class="comment-reply-link" href="#comment-451782" onclick='return addComment.moveForm( "comment-451782", "451782", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451838">
+<div class="comment-container" id="li-comment-451838">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 17, 2018 at 6:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-451838" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>In what context?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451838" onclick='return addComment.moveForm( "comment-451838", "451838", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-451795">
+<div class="comment-container" id="li-comment-451795">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d29a11a76d1b7ccea59954d4130fef42?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d29a11a76d1b7ccea59954d4130fef42?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Leontine Ham</span>
+<span class="date">October 16, 2018 at 9:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-451795" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you for explaining the fundamentals of CV.<br/>
+I am working with repeated (50x) 5-fold cross validation, but I am trying to figure out which statistical test I can use in order to compare two datasets. Can you help me? Or is that out of the scope of this blog?</p>
+<div class="reply">
+<a aria-label="Reply to Leontine Ham" class="comment-reply-link" href="#comment-451795" onclick='return addComment.moveForm( "comment-451795", "451795", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451842">
+<div class="comment-container" id="li-comment-451842">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 17, 2018 at 6:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-451842" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, see this post:<br/>
+<a href="https://machinelearningmastery.com/statistical-significance-tests-for-comparing-machine-learning-algorithms/" rel="nofollow">https://machinelearningmastery.com/statistical-significance-tests-for-comparing-machine-learning-algorithms/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451842" onclick='return addComment.moveForm( "comment-451842", "451842", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-452302">
+<div class="comment-container" id="li-comment-452302">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a1fda191de4cac35c814533c108e0164?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a1fda191de4cac35c814533c108e0164?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">kingshuk</span>
+<span class="date">October 22, 2018 at 1:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-452302" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason ,</p>
+<p>What is the difference between Kfold and Stratified K fold?</p>
+<div class="reply">
+<a aria-label="Reply to kingshuk" class="comment-reply-link" href="#comment-452302" onclick='return addComment.moveForm( "comment-452302", "452302", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-452319">
+<div class="comment-container" id="li-comment-452319">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 22, 2018 at 6:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-452319" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Kfold uses random split of the into k folds.<br/>
+Stratified tries to maintain the same distribution of the target variable when randomly selecting examples for each fold.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-452319" onclick='return addComment.moveForm( "comment-452319", "452319", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-457374">
+<div class="comment-container" id="li-comment-457374">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1f2bca3e735cdb733ca71f4ffd17e9f9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1f2bca3e735cdb733ca71f4ffd17e9f9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://Nil" rel="external nofollow">Rana Muhammad Kashif</a></span>
+<span class="date">December 5, 2018 at 3:30 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-457374" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for this post!</p>
+<p>Can we split the data by ourselves and then train some data and test the remaining?<br/>
+For example, my data is on cricket and i want to train the data based on two splits i.e. 0-6 overs and 7-15 overs, and test the 16-20 overs data in a 20 overs match. Is it rational? If yes how can we do this within R?</p>
+<div class="reply">
+<a aria-label="Reply to Rana Muhammad Kashif" class="comment-reply-link" href="#comment-457374" onclick='return addComment.moveForm( "comment-457374", "457374", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-457478">
+<div class="comment-container" id="li-comment-457478">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 6, 2018 at 5:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-457478" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes. You can use the caret library to do that.</p>
+<p>You can get started with caret in R here:<br/>
+<a href="https://machinelearningmastery.com/start-here/#r" rel="nofollow">https://machinelearningmastery.com/start-here/#r</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-457478" onclick='return addComment.moveForm( "comment-457478", "457478", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-457415">
+<div class="comment-container" id="li-comment-457415">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fcf460c07a7b3ea414394664d267a2ca?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fcf460c07a7b3ea414394664d267a2ca?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ruslan</span>
+<span class="date">December 5, 2018 at 10:19 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-457415" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason! Good article!</p>
+<p>What should we do when not all parts are equal? Say we have 5 5 5 5 6 or 7 7 7 8 or 9 9 9 9 8</p>
+<p>Should we skip the biggest/least one? Should we apply weighting somehow? Do the same as if it had the same size?</p>
+<p>Thank you.</p>
+<div class="reply">
+<a aria-label="Reply to Ruslan" class="comment-reply-link" href="#comment-457415" onclick='return addComment.moveForm( "comment-457415", "457415", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-457487">
+<div class="comment-container" id="li-comment-457487">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 6, 2018 at 5:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/k-fold-cross-validation/#comment-457487" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Try to make each fold equal, but if they are mostly equal, that is okay.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-457487" onclick='return addComment.moveForm( "comment-457487", "457487", "respond", "5281" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/k-fold-cross-validation/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="5281"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="f12c5bbc38"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="247"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-50"> <div class="textwidget"><p></p><center><br/>
+<strong>Statistics for Machine Learning</strong><br/>
+Understand statistics by writing code in Python.
+<p><a href="/statistics_for_machine_learning/">Click to Get Started Now!</a><br/>
+<a href="/statistics_for_machine_learning/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/05/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1819 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Classification And Regression Trees for Machine Learning</title>
+<link href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Classification And Regression Trees for Machine Learning" property="og:title"/>
+<meta content="Decision Trees are an important type of algorithm for predictive modeling machine learning. The classical decision tree algorithms have been around for decades and modern variations like random forest are among the most powerful techniques available. In this post you will discover the humble decision tree algorithm known by it’s more modern name CART which stands …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Understand Machine Learning Algorithms" property="article:section"/>
+<meta content="2016-04-07T19:00:52+00:00" property="article:published_time"/>
+<meta content="2017-09-20T21:32:04+00:00" property="article:modified_time"/>
+<meta content="2017-09-20T21:32:04+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Classification-And-Regression-Trees-for-Machine-Learning.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Classification-And-Regression-Trees-for-Machine-Learning.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="425" property="og:image:height"/>
+<meta content="Classification And Regression Trees for Machine Learning" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/feed/" rel="alternate" title="Machine Learning Mastery » Classification And Regression Trees for Machine Learning Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=2295" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fclassification-and-regression-trees-for-machine-learning%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fclassification-and-regression-trees-for-machine-learning%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-2295 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-12"> <div class="textwidget"><p>Want help with algorithms? <a href="https://machinelearningmastery.leadpages.co/machine-learning-algorithms-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-2295 post type-post status-publish format-standard has-post-thumbnail hentry category-machine-learning-algorithms">
+<header>
+<h1 class="title entry-title">Classification And Regression Trees for Machine Learning</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-04-08T05:00:52+1100">April 8, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/" title="View all items in Understand Machine Learning Algorithms">Understand Machine Learning Algorithms</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2295 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Classification+And+Regression+Trees+for+Machine+Learning&amp;url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Decision Trees are an important type of algorithm for predictive modeling machine learning.</p>
+<p>The classical decision tree algorithms have been around for decades and modern variations like random forest are among the most powerful techniques available.</p>
+<p>In this post you will discover the humble decision tree algorithm known by it’s more modern name CART which stands for Classification And Regression Trees. After reading this post, you will know:</p>
+<ul>
+<li>The many names used to describe the CART algorithm for machine learning.</li>
+<li>The representation used by learned CART models that is actually stored on disk.</li>
+<li>How a CART model can be learned from training data.</li>
+<li>How a learned CART model can be used to make predictions on unseen data.</li>
+<li>Additional resources that you can use to learn more about CART and related algorithms.</li>
+</ul>
+<p>If you have taken an algorithms and data structures course, it might be hard to hold you back from implementing this simple and powerful algorithm. And from there, you’re a small step away from your own implementation of Random Forests.</p>
+<p>Let’s get started.</p>
+<ul>
+<li><strong>Update Aug 2017</strong>: Fixed a typo that indicated that Gini is the count of instances for a class, should have been the proportion of instances. Also updated to show Gini weighting for evaluating the split in addition to calculating purity for child nodes.</li>
+</ul>
+<div class="wp-caption aligncenter" id="attachment_2297" style="width: 650px"><img alt="Classification And Regression Trees for Machine Learning" class="size-full wp-image-2297" height="425" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Classification-And-Regression-Trees-for-Machine-Learning.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Classification-And-Regression-Trees-for-Machine-Learning.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Classification-And-Regression-Trees-for-Machine-Learning-300x199.jpg 300w" width="640"/><p class="wp-caption-text">Classification And Regression Trees for Machine Learning<br/>Photo by <a href="https://www.flickr.com/photos/wonderlane/2062184804/">Wonderlane</a>, some rights reserved.</p></div>
+<h2>Decision Trees</h2>
+<p>Classification and Regression Trees or CART for short is a term introduced by <a href="https://en.wikipedia.org/wiki/Leo_Breiman">Leo Breiman</a> to refer to <a href="https://en.wikipedia.org/wiki/Decision_tree_learning">Decision Tree</a> algorithms that can be used for classification or regression predictive modeling problems.</p>
+<p>Classically, this algorithm is referred to as “decision trees”, but on some platforms like R they are referred to by the more modern term CART.</p>
+<p>The CART algorithm provides a foundation for important algorithms like bagged decision trees, random forest and boosted decision trees.</p>
+<h2 style="text-align: center;">Get your FREE Algorithms Mind Map</h2>
+<div class="wp-caption alignleft" id="attachment_2021" style="width: 395px"><img alt="Machine Learning Algorithms Mind Map" class="wp-image-2021 size-full" height="248" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2013/11/Machine-Learning-Algorithms-Mindmap-Sample.png" width="385"/><p class="wp-caption-text">Sample of the handy machine learning algorithms mind map.</p></div>
+<p>I've created a handy mind map of 60+ algorithms organized by type.</p>
+<p>Download it, print it and use it. </p>
+<center><a href="https://machinelearningmastery.leadpages.co/leadbox/147764973f72a2%3A164f8be4f346dc/5752754626625536/" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Download For Free</a>
+<p><br/>Also get exclusive access to the machine learning algorithms email mini-course.</p>
+</center>
+<p> </p>
+<p> </p>
+<h2>CART Model Representation</h2>
+<p>The representation for the CART model is a binary tree.</p>
+<p>This is your binary tree from algorithms and data structures, nothing too fancy. Each root node represents a single input variable (x) and a split point on that variable (assuming the variable is numeric).</p>
+<p>The leaf nodes of the tree contain an output variable (y) which is used to make a prediction.</p>
+<p>Given a dataset with two inputs (x) of height in centimeters and weight in kilograms the output of sex as male or female, below is a crude example of a binary decision tree (completely fictitious for demonstration purposes only).</p>
+<div class="wp-caption aligncenter" id="attachment_2296" style="width: 525px"><img alt="Example Decision Tree" class="size-full wp-image-2296" height="386" sizes="(max-width: 515px) 100vw, 515px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/02/Example-Decision-Tree.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/02/Example-Decision-Tree.png 515w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/02/Example-Decision-Tree-300x225.png 300w" width="515"/><p class="wp-caption-text">Example Decision Tree</p></div>
+<p>The tree can be stored to file as a graph or a set of rules. For example, below is the above decision tree as a set of rules.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0caa85a0afd889333132" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+If Height &gt; 180 cm Then Male
+If Height &lt;= 180 cm AND Weight &gt; 80 kg Then Male
+If Height &lt;= 180 cm AND Weight &lt;= 80 kg Then Female
+Make Predictions With CART Models</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0caa85a0afd889333132-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0caa85a0afd889333132-2">2</div><div class="crayon-num" data-line="crayon-5c0caa85a0afd889333132-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0caa85a0afd889333132-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0caa85a0afd889333132-1">If Height &gt; 180 cm Then Male</div><div class="crayon-line crayon-striped-line" id="crayon-5c0caa85a0afd889333132-2">If Height &lt;= 180 cm AND Weight &gt; 80 kg Then Male</div><div class="crayon-line" id="crayon-5c0caa85a0afd889333132-3">If Height &lt;= 180 cm AND Weight &lt;= 80 kg Then Female</div><div class="crayon-line crayon-striped-line" id="crayon-5c0caa85a0afd889333132-4">Make Predictions With CART Models</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>With the binary tree representation of the CART model described above, making predictions is relatively straightforward.</p>
+<p>Given a new input, the tree is traversed by evaluating the specific input started at the root node of the tree.</p>
+<p>A learned binary tree is actually a partitioning of the input space. You can think of each input variable as a dimension on a p-dimensional space. The decision tree split this up into rectangles (when p=2 input variables) or some kind of hyper-rectangles with more inputs.</p>
+<p>New data is filtered through the tree and lands in one of the rectangles and the output value for that rectangle is the prediction made by the model. This gives you some feeling for the type of decisions that a CART model is capable of making, e.g. boxy decision boundaries.</p>
+<p>For example, given the input of [height = 160 cm, weight = 65 kg], we would traverse the above tree as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0caa85a0b06511360061" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Height &gt; 180 cm: No
+Weight &gt; 80 kg: No
+Therefore: Female</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0caa85a0b06511360061-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0caa85a0b06511360061-2">2</div><div class="crayon-num" data-line="crayon-5c0caa85a0b06511360061-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0caa85a0b06511360061-1">Height &gt; 180 cm: No</div><div class="crayon-line crayon-striped-line" id="crayon-5c0caa85a0b06511360061-2">Weight &gt; 80 kg: No</div><div class="crayon-line" id="crayon-5c0caa85a0b06511360061-3">Therefore: Female</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p></p>
+<h2>Learn a CART Model From Data</h2>
+<p>Creating a CART model involves selecting input variables and split points on those variables until a suitable tree is constructed.</p>
+<p>The selection of which input variable to use and the specific split or cut-point is chosen using a greedy algorithm to minimize a cost function. Tree construction ends using a predefined stopping criterion, such as a minimum number of training instances assigned to each leaf node of the tree.</p>
+<h3>Greedy Splitting</h3>
+<p>Creating a binary decision tree is actually a process of dividing up the input space. A greedy approach is used to divide the space called <a href="https://en.wikipedia.org/wiki/Binary_splitting">recursive binary splitting</a>.</p>
+<p>This is a numerical procedure where all the values are lined up and different split points are tried and tested using a cost function. The split with the best cost (lowest cost because we minimize cost) is selected.</p>
+<p>All input variables and all possible split points are evaluated and chosen in a greedy manner (e.g. the very best split point is chosen each time).</p>
+<p>For regression predictive modeling problems the cost function that is minimized to choose split points is the sum squared error across all training samples that fall within the rectangle:</p>
+<p style="text-align: center;">sum(y – prediction)^2</p>
+<p>Where y is the output for the training sample and prediction is the predicted output for the rectangle.</p>
+<p>For classification the Gini index function is used which provides an indication of how “pure” the leaf nodes are (how mixed the training data assigned to each node is).</p>
+<p style="text-align: center;">G = sum(pk * (1 – pk))</p>
+<p>Where G is the Gini index over all classes, pk are the proportion of training instances with class k in the rectangle of interest. A node that has all classes of the same type (perfect class purity) will have G=0, where as a G that has a 50-50 split of classes for a binary classification problem (worst purity) will have a G=0.5.</p>
+<p>For a binary classification problem, this can be re-written as:</p>
+<p style="text-align: center;">G = 2 * p1 * p2<br/>
+or<br/>
+G = 1 – (p1^2 + p2^2)</p>
+<p>The Gini index calculation for each node is weighted by the total number of instances in the parent node. The Gini score for a chosen split point in a binary classification problem is therefore calculated as follows:</p>
+<p style="text-align: center;">G = ((1 – (g1_1^2 + g1_2^2)) * (ng1/n)) + ((1 – (g2_1^2 + g2_2^2)) * (ng2/n))</p>
+<p>Where G is the Gini index for the split point, g1_1 is the proportion of instances in group 1 for class 1, g1_2 for class 2, g2_1 for group 2 and class 1, g2_2 group 2 class 2, ng1 and ng2 are the total number of instances in group 1 and 2 and n are the total number of instances we are trying to group from the parent node.</p>
+<h3>Stopping Criterion</h3>
+<p>The recursive binary splitting procedure described above needs to know when to stop splitting as it works its way down the tree with the training data.</p>
+<p>The most common stopping procedure is to use a minimum count on the number of training instances assigned to each leaf node. If the count is less than some minimum then the split is not accepted and the node is taken as a final leaf node.</p>
+<p>The count of training members is tuned to the dataset, e.g. 5 or 10. It defines how specific to the training data the tree will be. Too specific (e.g. a count of 1) and the tree will overfit the training data and likely have poor performance on the test set.</p>
+<h3>Pruning The Tree</h3>
+<p>The stopping criterion is important as it strongly influences the performance of your tree. You can use <a href="https://en.wikipedia.org/wiki/Pruning_(decision_trees)">pruning</a> after learning your tree to further lift performance.</p>
+<p>The complexity of a decision tree is defined as the number of splits in the tree. Simpler trees are preferred. They are easy to understand (you can print them out and show them to subject matter experts), and they are less likely to overfit your data.</p>
+<p>The fastest and simplest pruning method is to work through each leaf node in the tree and evaluate the effect of removing it using a hold-out test set. Leaf nodes are removed only if it results in a drop in the overall cost function on the entire test set. You stop removing nodes when no further improvements can be made.</p>
+<p>More sophisticated pruning methods can be used such as cost complexity pruning (also called weakest link pruning) where a learning parameter (alpha) is used to weigh whether nodes can be removed based on the size of the sub-tree.</p>
+<div class="wp-caption aligncenter" id="attachment_2299" style="width: 650px"><img alt="Recursive Binary Splitting for Decision Trees" class="size-full wp-image-2299" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Recursive-Binary-Splitting-for-Decision-Trees.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Recursive-Binary-Splitting-for-Decision-Trees.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/Recursive-Binary-Splitting-for-Decision-Trees-300x200.jpg 300w" width="640"/><p class="wp-caption-text">Recursive Binary Splitting for Decision Trees<br/>Photo by <a href="https://www.flickr.com/photos/pauldineen/8527296947/">Paul L Dineen</a>, some rights reserved.</p></div>
+<h2>Data Preparation for CART</h2>
+<p>CART does not require any special data preparation other than a good representation of the problem.</p>
+<h2>Further Reading</h2>
+<p>This section lists some resources that you can refer to if you are looking to go deeper with CART.</p>
+<ul>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/0412048418?tag=inspiredalgor-20">Classification and Regression Trees</a></li>
+</ul>
+<p>Below are some good machine learning texts that describe the CART algorithm from a machine learning perspective.</p>
+<ul>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/1461471370?tag=inspiredalgor-20">An Introduction to Statistical Learning: with Applications in R</a>, Chapter 8</li>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/1461468485?tag=inspiredalgor-20">Applied Predictive Modeling</a>, Chapter 8 and 14</li>
+<li><a class="easyazon-link" href="http://www.amazon.com/dp/0123748569?tag=inspiredalgor-20">Data Mining: Practical Machine Learning Tools and Techniques</a>, chapter 6.</li>
+</ul>
+<h2>Summary</h2>
+<p>In this post you have discovered the Classification And Regression Trees (CART) for machine learning. You learned:</p>
+<ul>
+<li>The classical name Decision Tree and the more Modern name CART for the algorithm.</li>
+<li>The representation used for CART is a binary tree.</li>
+<li>Predictions are made with CART by traversing the binary tree given a new input record.</li>
+<li>The tree is learned using a greedy algorithm on the training data to pick splits in the tree.</li>
+<li>Stopping criteria define how much tree learns and pruning can be used to improve a learned tree.</li>
+</ul>
+<p>Do you have any questions about CART or this post?<br/>
+Ask in the comments and I will do my best to answer.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-36"> <div class="textwidget"><p></p><div class="woo-sc-hr"></div><br/>
+<center>
+<h2 style="text-align: center;">Frustrated With Machine Learning Math?</h2>
+<p><a href="/master-machine-learning-algorithms/"><img align="left" alt="Mater Machine Learning Algorithms" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/MasterMachineLearningAlgorithms-small.png" style="border: 0;"/></a></p>
+<h4 style="text-align: center;">See How Algorithms Work in Minutes</h4>
+<p style="text-align: center;">…with just arithmetic and simple examples</p>
+<p style="text-align: center;">Discover how in my new Ebook: <a href="/master-machine-learning-algorithms/">Master Machine Learning Algorithms</a></p>
+<p style="text-align: center;">It covers <strong>explanations</strong> and <strong>examples</strong> of <strong>10 top algorithms</strong>, like:<br/><em>Linear Regression</em>, <em>k-Nearest Neighbors</em>, <em>Support Vector Machines</em> and much more…</p>
+<h4 style="text-align: center;">Finally, Pull Back the Curtain on <br/>Machine Learning Algorithms</h4>
+<p style="text-align: center;">Skip the Academics. Just Results.</p>
+<p style="text-align: center;"><a href="/master-machine-learning-algorithms/">Click to learn more</a>.</p>
+<p></p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-2295 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Classification+And+Regression+Trees+for+Machine+Learning&amp;url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/deep-learning-books/" rel="prev"><i class="fa fa-angle-left"></i> Deep Learning Books</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/naive-bayes-for-machine-learning/" rel="next">Naive Bayes for Machine Learning <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">49 Responses to <em>Classification And Regression Trees for Machine Learning</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-349507">
+<div class="comment-container" id="li-comment-349507">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/cc05771cd9a37126ac7aae9eeb61fd5b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/cc05771cd9a37126ac7aae9eeb61fd5b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Audio Alief Kautsar Hartama</span>
+<span class="date">April 27, 2016 at 10:39 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-349507" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>how about C 4.5 (which is called J48 in weka) and C 5.0, please make tutorial for that sir, i need it</p>
+<div class="reply">
+<a aria-label="Reply to Audio Alief Kautsar Hartama" class="comment-reply-link" href="#comment-349507" onclick='return addComment.moveForm( "comment-349507", "349507", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-353337">
+<div class="comment-container" id="li-comment-353337">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6cc1688c575961aeee0ab941b5bcecd9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6cc1688c575961aeee0ab941b5bcecd9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yogesh</span>
+<span class="date">June 10, 2016 at 3:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-353337" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have one sentence amd its polarity -ve or +ve, I want use CART for accuricy.But I am not able to understand how?</p>
+<div class="reply">
+<a aria-label="Reply to Yogesh" class="comment-reply-link" href="#comment-353337" onclick='return addComment.moveForm( "comment-353337", "353337", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-362483">
+<div class="comment-container" id="li-comment-362483">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2a44387b76743d4b9ced04211ebe3604?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2a44387b76743d4b9ced04211ebe3604?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">joe</span>
+<span class="date">August 29, 2016 at 5:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-362483" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>is it possible to infuse CART in GA?</p>
+<div class="reply">
+<a aria-label="Reply to joe" class="comment-reply-link" href="#comment-362483" onclick='return addComment.moveForm( "comment-362483", "362483", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-362629">
+<div class="comment-container" id="li-comment-362629">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 30, 2016 at 8:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-362629" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No idea Joe.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-362629" onclick='return addComment.moveForm( "comment-362629", "362629", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-363968">
+<div class="comment-container" id="li-comment-363968">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c40942ef6adafbefc6554513227e2562?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c40942ef6adafbefc6554513227e2562?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mynose</span>
+<span class="date">September 8, 2016 at 5:20 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-363968" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sir, i am wanting to compare CART and GA.</p>
+<div class="reply">
+<a aria-label="Reply to Mynose" class="comment-reply-link" href="#comment-363968" onclick='return addComment.moveForm( "comment-363968", "363968", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-364027">
+<div class="comment-container" id="li-comment-364027">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 9, 2016 at 7:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-364027" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Mynose, they are very different. CART is a function approximation method and a GA is a function optimization method.</p>
+<p>I guess you could use the GA to optimize a set of rules or a tree and compare that to the CART. Sounds fun.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-364027" onclick='return addComment.moveForm( "comment-364027", "364027", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-369120">
+<div class="comment-container" id="li-comment-369120">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f4ea9f4c5d9e4b59067b6d770872eae7?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f4ea9f4c5d9e4b59067b6d770872eae7?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Lee</span>
+<span class="date">November 2, 2016 at 4:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-369120" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, Jason! How can I avoid over-fitting problem when using a CART model. When I used a CART tree to classify different fault types of data, the cp is the only parameter for obtained a optimal CART model. But the tree structure of the training model is obviously over-fitted from my domain knowledge. So what should I do to avoid overfitting?</p>
+<div class="reply">
+<a aria-label="Reply to Lee" class="comment-reply-link" href="#comment-369120" onclick='return addComment.moveForm( "comment-369120", "369120", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-369223">
+<div class="comment-container" id="li-comment-369223">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 3, 2016 at 7:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-369223" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Lee, great question.</p>
+<p>The main approach is to constrain the depth of the tree.</p>
+<p>You can do this when growing the tree, but the preferred method is to prune a deep tree after it is constructed.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-369223" onclick='return addComment.moveForm( "comment-369223", "369223", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-370149">
+<div class="comment-container" id="li-comment-370149">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ec50136890b9ea639c39cb58f6c3f2d9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ec50136890b9ea639c39cb58f6c3f2d9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rohit</span>
+<span class="date">November 10, 2016 at 4:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-370149" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Sir,</p>
+<p>How is the variable selection of input variables done while implementing the greedy algorithm . For calculating the minimum cost function you need the predicted values , but how does the algorithm select the variable from input variable for the first split.</p>
+<p>Regards,<br/>
+Rohit</p>
+<div class="reply">
+<a aria-label="Reply to Rohit" class="comment-reply-link" href="#comment-370149" onclick='return addComment.moveForm( "comment-370149", "370149", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-370164">
+<div class="comment-container" id="li-comment-370164">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 10, 2016 at 7:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-370164" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Rohit, we have the predicted values at the time we calculate splits – it’s all in the training data.</p>
+<p>Splits are fixed after training, then we just use them to make predictions on new data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-370164" onclick='return addComment.moveForm( "comment-370164", "370164", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-385205">
+<div class="comment-container" id="li-comment-385205">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7f7d065c2710b0b2b7cb4c84f068ba2d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7f7d065c2710b0b2b7cb4c84f068ba2d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">madhav</span>
+<span class="date">January 31, 2017 at 4:31 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-385205" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sir, i have following questions. It would be of great help if you could answer them for me.</p>
+<p>1)Is CART the modern name for decision tree approach in Data Science field.<br/>
+2)What are the scenarios where CART can be used.<br/>
+3)what are the advantages of using CART over other techniques of predicition.</p>
+<div class="reply">
+<a aria-label="Reply to madhav" class="comment-reply-link" href="#comment-385205" onclick='return addComment.moveForm( "comment-385205", "385205", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-385417">
+<div class="comment-container" id="li-comment-385417">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 1, 2017 at 10:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-385417" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi madhav,</p>
+<p>1. Yes, CART or classification and regression trees is the modern name for the standard decision tree.<br/>
+2. Very widely on classification and regression predictive modeling problems. Try it and see.<br/>
+3. Fast to train, easy to understand result and generally quite effective.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-385417" onclick='return addComment.moveForm( "comment-385417", "385417", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-394607">
+<div class="comment-container" id="li-comment-394607">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/41900f5b80756455ad9192e5c149fc64?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/41900f5b80756455ad9192e5c149fc64?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Farina</span>
+<span class="date">March 29, 2017 at 4:17 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-394607" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason</p>
+<p>I am wondering why my CART produced only one nodes when I exclude one variable for example ID? I tried to change the cp but it is still giving the same results. Can you assist me on this?</p>
+<div class="reply">
+<a aria-label="Reply to Farina" class="comment-reply-link" href="#comment-394607" onclick='return addComment.moveForm( "comment-394607", "394607", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-397331">
+<div class="comment-container" id="li-comment-397331">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/043a203b05fdc4311ef14a021fae027c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/043a203b05fdc4311ef14a021fae027c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Winston Jade Molit</span>
+<span class="date">April 23, 2017 at 5:10 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-397331" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Is CART algorithm appropriate for decision making projects?</p>
+<div class="reply">
+<a aria-label="Reply to Winston Jade Molit" class="comment-reply-link" href="#comment-397331" onclick='return addComment.moveForm( "comment-397331", "397331", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-397382">
+<div class="comment-container" id="li-comment-397382">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 24, 2017 at 5:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-397382" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>That depends if the decision can be framed as a classification or regression type problem.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-397382" onclick='return addComment.moveForm( "comment-397382", "397382", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-399489">
+<div class="comment-container" id="li-comment-399489">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7ab39c11ccfb9901d256930eae579bc8?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7ab39c11ccfb9901d256930eae579bc8?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Luc</span>
+<span class="date">May 12, 2017 at 10:41 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-399489" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I am new into machine learning. For an intership it is asked if it is possible to make a classification method. The input variables are a small number of words(varying from 1-6), output variables are 0 or 1. Is it possible to apply CART for this problem? I am having difficulties finding on what kind of problems different algorithms are used, do you have tips?</p>
+<div class="reply">
+<a aria-label="Reply to Luc" class="comment-reply-link" href="#comment-399489" onclick='return addComment.moveForm( "comment-399489", "399489", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-399533">
+<div class="comment-container" id="li-comment-399533">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 13, 2017 at 6:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-399533" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I would recommend that you follow this process:<br/>
+<a href="http://machinelearningmastery.com/start-here/#process" rel="nofollow">http://machinelearningmastery.com/start-here/#process</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-399533" onclick='return addComment.moveForm( "comment-399533", "399533", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-405329">
+<div class="comment-container" id="li-comment-405329">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2e161f27482f9c387be8f7d2c64753a4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2e161f27482f9c387be8f7d2c64753a4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Radhakrishna</span>
+<span class="date">July 10, 2017 at 1:28 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-405329" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I would like to know what parameters to change in CART, CHAID and QUEST decision tree algorithms for effective modeling.</p>
+<div class="reply">
+<a aria-label="Reply to Radhakrishna" class="comment-reply-link" href="#comment-405329" onclick='return addComment.moveForm( "comment-405329", "405329", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-405466">
+<div class="comment-container" id="li-comment-405466">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 11, 2017 at 10:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-405466" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry I do not have this information.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405466" onclick='return addComment.moveForm( "comment-405466", "405466", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-405703">
+<div class="comment-container" id="li-comment-405703">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4ba820e569718a8975eba75df1db5dab?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4ba820e569718a8975eba75df1db5dab?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Marco</span>
+<span class="date">July 13, 2017 at 7:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-405703" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I didn’t understand how the algorithm selects the input variables for the splits. In your example,<br/>
+why was the height split before weight? Thank you.</p>
+<div class="reply">
+<a aria-label="Reply to Marco" class="comment-reply-link" href="#comment-405703" onclick='return addComment.moveForm( "comment-405703", "405703", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-405731">
+<div class="comment-container" id="li-comment-405731">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 13, 2017 at 10:04 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-405731" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It was just an example.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405731" onclick='return addComment.moveForm( "comment-405731", "405731", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-406374">
+<div class="comment-container" id="li-comment-406374">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/05975296c1354e2b3ee7b6f12b95913b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/05975296c1354e2b3ee7b6f12b95913b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Amine</span>
+<span class="date">July 18, 2017 at 9:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-406374" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I’am working on a highly unbalanced data, I have 4 classes, 98,4% of the data is class 0. When i try to prune the tree using rpart package. Using X-Var relative error to decide on the number of nodes gives exactly one node. Is it possible to change X-Var relative error to another one (in the this package or in another one) that takes more on consideration the other classes ? </p>
+<p>Thank you !!</p>
+<div class="reply">
+<a aria-label="Reply to Amine" class="comment-reply-link" href="#comment-406374" onclick='return addComment.moveForm( "comment-406374", "406374", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-406437">
+<div class="comment-container" id="li-comment-406437">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 19, 2017 at 8:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-406437" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Ouch</p>
+<p>Sorry I am not familiar with that package.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-406437" onclick='return addComment.moveForm( "comment-406437", "406437", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-406422">
+<div class="comment-container" id="li-comment-406422">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2e42e5e701098059114349df4561ff0c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2e42e5e701098059114349df4561ff0c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Taylor Nelson</span>
+<span class="date">July 19, 2017 at 6:57 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-406422" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I haven’t seen many examples of decision trees used for regression, just for classification.  Have any favorite examples you know of, or will you do a post on that?  It would be interesting to talk about the difference between OLS and other linear regression methods methinks.</p>
+<p>Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Taylor Nelson" class="comment-reply-link" href="#comment-406422" onclick='return addComment.moveForm( "comment-406422", "406422", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-406451">
+<div class="comment-container" id="li-comment-406451">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 19, 2017 at 8:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-406451" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Here are some examples:<br/>
+<a href="http://machinelearningmastery.com/non-linear-regression-in-r-with-decision-trees/" rel="nofollow">http://machinelearningmastery.com/non-linear-regression-in-r-with-decision-trees/</a></p>
+<p>Use the search feature on the blog.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-406451" onclick='return addComment.moveForm( "comment-406451", "406451", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-409005">
+<div class="comment-container" id="li-comment-409005">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/be574e4fb5f70c7f7c26c3ae8b426d34?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/be574e4fb5f70c7f7c26c3ae8b426d34?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Pia Laine</span>
+<span class="date">August 9, 2017 at 1:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-409005" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi,</p>
+<p>just a little remark about the Gini function – I think there is a typo:</p>
+<p>G = sum(pk * (1 – pk))<br/>
+-&gt; G = sum( pk/p * (1 – pk/p) ), where p is the total number of instances in the rectangle.</p>
+<p>As we seem to be looking at the relative portions of instances per class.</p>
+<div class="reply">
+<a aria-label="Reply to Pia Laine" class="comment-reply-link" href="#comment-409005" onclick='return addComment.moveForm( "comment-409005", "409005", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-409045">
+<div class="comment-container" id="li-comment-409045">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 9, 2017 at 6:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-409045" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Pia, I’ll investigate.</p>
+<p>Yes, it’s a typo. Fixed. Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-409045" onclick='return addComment.moveForm( "comment-409045", "409045", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-409824">
+<div class="comment-container" id="li-comment-409824">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/5bd621420dcbf5a088da0b12beb2c601?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/5bd621420dcbf5a088da0b12beb2c601?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://machinelearningmastery.com" rel="external nofollow">Sthembiso</a></span>
+<span class="date">August 16, 2017 at 5:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-409824" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi! Jason Brownlee</p>
+<p>Could you help me with this question, i’m new on machine learning. Thanks</p>
+<p>You are a junior data scientist within Standard Bank Corporate and Investment Banking and have been tasked to explain to the Investment Bankers how data science algorithms work and in what ways they can assist them in running their day to day activities.<br/>
+The investment bankers receive a lot of information on a daily basis from internal and external sources such as journals, newsfeeds, macro-economic data, company financials to name but a few. They use this information to assess where the next big deals are likely to emanate from and prioritise those opportunities which they perceive to have the highest chance of materialisation. They also take into account factors such as:<br/>
+I.	Value of the deal<br/>
+II.	Potential commission<br/>
+III.	Presence of Standard Bank in country where deal is taking place<br/>
+IV.	Type of deal (merger, acquisition, equity deal etc.)<br/>
+V.	Credit ratings of companies involved in deal<br/>
+VI.	Geographical region<br/>
+VII.	Industrial Sector (e.g. Agriculture, Tourism, Financial Service etc.)</p>
+<p>Please note that deals occur few and far between.<br/>
+You then decide to showcase to them the power of Decision trees and how they can be used to evaluate all potential deals. Using the information above:</p>
+<p>1.	Explain the steps in making a decision tree and how they can be applied to this business challenge.</p>
+<div class="reply">
+<a aria-label="Reply to Sthembiso" class="comment-reply-link" href="#comment-409824" onclick='return addComment.moveForm( "comment-409824", "409824", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-409892">
+<div class="comment-container" id="li-comment-409892">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 17, 2017 at 6:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-409892" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This looks like homework, I would recommend getting help from your teachers.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-409892" onclick='return addComment.moveForm( "comment-409892", "409892", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-413395">
+<div class="comment-container" id="li-comment-413395">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/943b26d5399a976bd61d6f050b9736e9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/943b26d5399a976bd61d6f050b9736e9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://venkat.com" rel="external nofollow">venkat</a></span>
+<span class="date">September 11, 2017 at 4:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-413395" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>#rm(list=ls(all=TRUE))<br/>
+setwd(“C:\\Users\\hp\\Desktop\\R”)<br/>
+version<br/>
+#Reading from a CSV file<br/>
+univ=read.table(‘dataDemographics.csv’,<br/>
+                header=T,sep=’,’,<br/>
+                col.names=c(“ID”, “age”,  “exp”,	“inc”,<br/>
+                            “zip”,	“family”,<br/>
+                            “edu”,	“mortgage”))<br/>
+dim(univ)<br/>
+head(univ)<br/>
+str(univ)<br/>
+names(univ)<br/>
+sum(is.na(univ))<br/>
+sum(is.na(univ[[2]])) #see missig values in col 2<br/>
+sapply(univ, function(x) sum(is.na(x)))<br/>
+row.names.data.frame(is.na(univ))<br/>
+# Reading Second Table<br/>
+loanCalls &lt;- read.table("dataLoanCalls.csv", header=T, sep=",",<br/>
+                        col.names=c("ID", "infoReq", "loan"),<br/>
+                        dec=".", na.strings="NA")<br/>
+head(loanCalls)<br/>
+dim(loanCalls)</p>
+<p>sum(is.na(loanCalls))<br/>
+sapply(loanCalls, function(x) sum(is.na(x)))</p>
+<p># Reading third Table<br/>
+cc &lt;- read.table("dataCC.csv", header=T, sep=",",<br/>
+                 col.names=c("ID", "Month", "Monthly"),<br/>
+                 dec=".", na.strings="NA")<br/>
+head(cc)<br/>
+dim(cc)<br/>
+sum(is.na(cc))<br/>
+sapply(cc, function(x)sum(is.na(x)))</p>
+<p>#We have the monthly credit card spending over 12 months.</p>
+<p>#We need to compute monthly spendings</p>
+<p>tapply<br/>
+head(cc)<br/>
+summary(cc)<br/>
+str(cc)<br/>
+cc$ID &lt;- as.factor(cc$ID)<br/>
+cc$Month &lt;- as.factor(cc$Month)<br/>
+sapply(cc,function(x) length(unique(x)))<br/>
+summary(cc)</p>
+<p># function to cal. mean<br/>
+meanNA &lt;- function(x){<br/>
+  a &lt;-mean(x, na.rm=TRUE)</p>
+<p>  return(a)<br/>
+}</p>
+<p>ccAvg &lt;- data.frame(seq(1,5000),<br/>
+                    tapply(cc$Monthly, cc$ID, meanNA))<br/>
+ccAvg<br/>
+head(ccAvg)<br/>
+dim(ccAvg)<br/>
+names(ccAvg)<br/>
+colnames(ccAvg) &lt;- c("ID", "ccavg")<br/>
+str(ccAvg)<br/>
+ccAvg$ID &lt;- as.factor(ccAvg$ID)<br/>
+summary(ccAvg)<br/>
+str(ccAvg)<br/>
+rm(cc)</p>
+<p># Reading fourth table<br/>
+otherAccts &lt;- read.table("dataOtherAccts.csv", header=T, sep=",",<br/>
+                         col.names=c("ID", "Var", "Val"),<br/>
+                         dec=".", na.strings="NA")<br/>
+dim(otherAccts)<br/>
+head(otherAccts)<br/>
+summary(otherAccts)<br/>
+otherAccts$ID &lt;- as.factor(otherAccts$ID)<br/>
+otherAccts$Val &lt;- as.factor(otherAccts$Val)<br/>
+summary(otherAccts)<br/>
+str(otherAccts)</p>
+<p># to transpose<br/>
+library(reshape)<br/>
+otherAcctsT=data.frame(cast(otherAccts,<br/>
+                            ID~Var,value="Val"))<br/>
+head(otherAcctsT)<br/>
+dim(otherAcctsT)</p>
+<p>#Merging the tables<br/>
+univComp &lt;- merge(univ,ccAvg,<br/>
+                  by.x="ID",by.y="ID",<br/>
+                  all=TRUE)  #Outer join</p>
+<p>univComp &lt;- merge(univComp, otherAcctsT,<br/>
+                  by.x="ID", by.y="ID",<br/>
+                  all=TRUE)</p>
+<p>univComp &lt;- merge(univComp, loanCalls,<br/>
+                  by.x="ID", by.y="ID",<br/>
+                  all=TRUE)</p>
+<p>dim(univComp)<br/>
+head(univComp)<br/>
+str(univComp)<br/>
+summary(univComp)<br/>
+names(univComp)<br/>
+sum(is.na(univComp))</p>
+<p>#Dealing with missing values<br/>
+#install.packages("VIM")<br/>
+library(VIM)<br/>
+matrixplot(univComp)</p>
+<p>#Filling up missing values with KNNimputation<br/>
+library(DMwR)<br/>
+univ2 &lt;- knnImputation(univComp,<br/>
+                    k = 10, meth = "median")<br/>
+sum(is.na(univ2))<br/>
+summary(univ2)<br/>
+head(univ2,10)<br/>
+univ2$family &lt;- ceiling(univ2$family)<br/>
+univ2$edu &lt;- ceiling(univ2$edu)<br/>
+head(univ2,15)</p>
+<p>str(univ2)<br/>
+names(univ2)<br/>
+# converting ID, Family, Edu, loan into factor<br/>
+attach(univ2)<br/>
+univ2$ID &lt;- as.factor(ID)<br/>
+univ2$family &lt;- as.factor(family)<br/>
+univ2$edu &lt;- as.factor(edu)<br/>
+univ2$loan &lt;- as.factor(loan)<br/>
+str(univ2)<br/>
+summary(univ2)<br/>
+sapply(univ2, function(x) length(unique(x)))</p>
+<p># removing the id, Zip and experience as experience<br/>
+# is correlated to age<br/>
+names(univ2)<br/>
+univ2Num &lt;- subset(univ2, select=c(2,3,4,8,9))<br/>
+head(univ2Num)<br/>
+cor(univ2Num)</p>
+<p>names(univ2)<br/>
+univ2 &lt;- univ2[,-c(1,3,5)]<br/>
+str(univ2)<br/>
+summary(univ2)</p>
+<p># Converting the categorical variables into factors<br/>
+# Discretizing age and income into categorial variables<br/>
+library(infotheo)</p>
+<p>#Discretizing the variable 'age'<br/>
+age &lt;- discretize(univ2$age, disc="equalfreq",<br/>
+                  nbins=10)<br/>
+class(age)<br/>
+head(age)<br/>
+age=as.factor(age$X)</p>
+<p>#Discretizing the variable 'inc'<br/>
+inc=discretize(univ2$inc, disc="equalfreq",<br/>
+               nbins=10)<br/>
+head(inc)<br/>
+inc=as.factor(inc$X)</p>
+<p>#Discretizing the variable 'age'<br/>
+ccavg=discretize(univ2$ccavg, disc="equalwidth",<br/>
+                 nbins=10)<br/>
+ccavg=as.factor(ccavg$X)</p>
+<p>#Discretizing the variable 'age'<br/>
+mortgage=discretize(univ2$mortgage, disc="equalwidth",<br/>
+                    nbins=5)<br/>
+mortgage=as.factor(mortgage$X)</p>
+<p># *** Removing the numerical variables from the original<br/>
+# *** data and adding the categorical forms of them<br/>
+head(univ2)<br/>
+univ2 &lt;- subset(univ2, select= -c(age,inc,ccavg,mortgage))<br/>
+head(univ2)<br/>
+univ2 &lt;- cbind(age,inc,ccavg,mortgage,univ2)<br/>
+head(univ2,20)<br/>
+dim(univ2)<br/>
+str(univ2)<br/>
+summary(univ2)</p>
+<p># Let us divide the data into training, testing<br/>
+# and evaluation data sets<br/>
+rows=seq(1,5000,1)<br/>
+set.seed(123)<br/>
+trainRows=sample(rows,3000)<br/>
+set.seed(123)<br/>
+remainingRows=rows[-(trainRows)]<br/>
+testRows=sample(remainingRows, 1000)<br/>
+evalRows=rows[-c(trainRows,testRows)]</p>
+<p>train = univ2[trainRows,]<br/>
+test=univ2[testRows,]<br/>
+eval=univ2[evalRows,]<br/>
+dim(train); dim(test); dim(eval)<br/>
+rm(age,ccavg, mortgage, inc, univ)</p>
+<p>               #### Building Models</p>
+<p>           #Decision Trees using C50</p>
+<p>names(train)<br/>
+#install.packages("C50")<br/>
+library(C50)<br/>
+dtC50 &lt;- C5.0(loan ~ ., data = train, rules=TRUE)<br/>
+summary(dtC50)</p>
+<p>predict(dtC50, newdata=train, type="class")<br/>
+a=table(train$loan, predict(dtC50,<br/>
+                      newdata=train, type="class"))<br/>
+rcTrain=(a[2,2])/(a[2,1]+a[2,2])*100<br/>
+rcTrain</p>
+<p># Predicting on Testing Data<br/>
+predict(dtC50, newdata=test, type="class")<br/>
+a=table(test$loan, predict(dtC50,<br/>
+                       newdata=test, type="class"))<br/>
+rcTest=(a[2,2])/(a[2,1]+a[2,2])*100<br/>
+rcTest</p>
+<p># Predicting on Evaluation Data<br/>
+predict(dtC50, newdata=eval, type="class")<br/>
+a=table(eval$loan, predict(dtC50,<br/>
+                       newdata=eval, type="class"))<br/>
+rcEval=(a[2,2])/(a[2,1]+a[2,2])*100<br/>
+rcEval</p>
+<p>cat("Recall in Training", rcTrain, '\n',<br/>
+    "Recall in Testing", rcTest, '\n',<br/>
+    "Recall in Evaluation", rcEval)</p>
+<p>#Test by increasing the number of bins in inc and ccavg to 10<br/>
+#Test by changing the bin to euqalwidth in inc and ccavg</p>
+<p>library(ggplot2)<br/>
+#using qplot<br/>
+qplot(edu, inc, data=univ2, color=loan,<br/>
+      size=as.numeric(ccavg))+<br/>
+  theme_bw()+scale_size_area(max_size=9)+<br/>
+  xlab("Educational qualifications") +<br/>
+  ylab("Income") +<br/>
+  theme(axis.text.x=element_text(size=18),<br/>
+        axis.title.x = element_text(size =18,<br/>
+                                    colour = 'black'))+<br/>
+  theme(axis.text.y=element_text(size=18),<br/>
+        axis.title.y = element_text(size = 18,<br/>
+                                    colour = 'black',<br/>
+                                    angle = 90))</p>
+<p>#using ggplot<br/>
+ggplot(data=univ2,<br/>
+       aes(x=edu, y=inc, color=loan,<br/>
+           size=as.numeric(ccavg)))+<br/>
+  geom_point()+<br/>
+  scale_size_area(max_size=9)+<br/>
+  xlab("Educational qualifications") +<br/>
+  ylab("Income") +<br/>
+  theme_bw()+<br/>
+  theme(axis.text.x=element_text(size=18),<br/>
+        axis.title.x = element_text(size =18,<br/>
+                                    colour = 'black'))+<br/>
+  theme(axis.text.y=element_text(size=18),<br/>
+        axis.title.y = element_text(size = 18,<br/>
+                                    colour = 'black',<br/>
+                                    angle = 90))</p>
+<p>rm(a,rcEval,rcTest,rcTrain)</p>
+<p>#—————————————————</p>
+<p>          #Decision Trees using CART</p>
+<p>#Load the rpart package<br/>
+library(rpart)</p>
+<p>#Use the rpart function to build a classification tree model<br/>
+dtCart &lt;- rpart(loan ~ ., data=train, method="class", cp = .001)    </p>
+<p>#Type churn.rp to retrieve the node detail of the<br/>
+#classification tree<br/>
+dtCart</p>
+<p>#Use the printcp function to examine the complexity parameter<br/>
+printcp(dtCart)</p>
+<p>#use the plotcp function to plot the cost complexity parameters<br/>
+plotcp(dtCart)</p>
+<p>#plot function and the text function to plot the classification tree<br/>
+plot(dtCart,main="Classification Tree for loan Class",<br/>
+     margin=.1, uniform=TRUE)<br/>
+text(dtCart, use.n=T)</p>
+<p>## steps to validate the prediction performance of a classification tree<br/>
+————————————————————————<br/>
+predict(dtCart, newdata=train, type="class")<br/>
+a &lt;- table(train$loan, predict(dtCart,<br/>
+                      newdata=train, type="class"))<br/>
+dtrain &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a &lt;-table(test$loan, predict(dtCart,<br/>
+                       newdata=test, type="class"))<br/>
+dtest &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a &lt;- table(eval$loan, predict(dtCart,<br/>
+                        newdata=eval, type="class"))<br/>
+deval &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>cat("Recall in Training", dtrain, '\n',<br/>
+    "Recall in Testing", dtest, '\n',<br/>
+    "Recall in Evaluation", deval)</p>
+<p>####  Pruning a tree<br/>
+——————–<br/>
+#Finding the minimum cross-validation error of the<br/>
+#classification tree model<br/>
+min(dtCart$cptable[,"xerror"])</p>
+<p>#Locate the record with the minimum cross-validation errors<br/>
+which.min(dtCart$cptable[,"xerror"])</p>
+<p>#Get the cost complexity parameter of the record with<br/>
+#the minimum cross-validation errors<br/>
+dtCart.cp &lt;- dtCart$cptable[5,"CP"]<br/>
+dtCart.cp</p>
+<p>#Prune the tree by setting the cp parameter to the CP value<br/>
+#of the record with minimum cross-validation errors:<br/>
+prune.tree &lt;- prune(dtCart, cp= dtCart.cp)<br/>
+prune.tree</p>
+<p>#Visualize the classification tree by using the plot and<br/>
+#text function<br/>
+plot(prune.tree, margin= 0.01)<br/>
+text(prune.tree, all=FALSE , use.n=TRUE)</p>
+<p>## steps to validate the prediction performance of a classification tree<br/>
+————————————————————————</p>
+<p>a &lt;- table(train$loan, predict(prune.tree,<br/>
+                               newdata=train, type="class"))<br/>
+dtrain &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a &lt;-table(test$loan, predict(prune.tree,<br/>
+                             newdata=test, type="class"))<br/>
+dtest &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a &lt;- table(eval$loan, predict(prune.tree,<br/>
+                              newdata=eval, type="class"))<br/>
+deval &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>cat("Recall in Training", dtrain, '\n',<br/>
+    "Recall in Testing", dtest, '\n',<br/>
+    "Recall in Evaluation", deval)</p>
+<p>#———————————————————</p>
+<p>  # Decision tree using Conditional Inference </p>
+<p>library(party)<br/>
+ctree.model= ctree(loan ~ ., data = train)<br/>
+plot(ctree.model)</p>
+<p>a=table(train$loan, predict(ctree.model, newdata=train))<br/>
+djtrain &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a=table(test$loan, predict(ctree.model, newdata=test))<br/>
+djtest &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>a=table(eval$loan, predict(ctree.model, newdata=eval))<br/>
+djeval &lt;- (a[2,2])/(a[2,1]+a[2,2])*100</p>
+<p>cat("Recall in Training", djtrain, '\n',<br/>
+    "Recall in Testing", djtest, '\n',<br/>
+    "Recall in Evaluation", djeval)</p>
+<div class="reply">
+<a aria-label="Reply to venkat" class="comment-reply-link" href="#comment-413395" onclick='return addComment.moveForm( "comment-413395", "413395", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-413436">
+<div class="comment-container" id="li-comment-413436">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 11, 2017 at 12:09 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-413436" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I cannot debug your code.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-413436" onclick='return addComment.moveForm( "comment-413436", "413436", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-416257">
+<div class="comment-container" id="li-comment-416257">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e6584baecbad379b05d85953427c803a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e6584baecbad379b05d85953427c803a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rishabh</span>
+<span class="date">October 10, 2017 at 10:58 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-416257" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey Jason!</p>
+<p>“Get your FREE Algorithms Mind Map”: Top of the page download for free link is leading to the page which does not exist. </p>
+<p>Please help.</p>
+<div class="reply">
+<a aria-label="Reply to Rishabh" class="comment-reply-link" href="#comment-416257" onclick='return addComment.moveForm( "comment-416257", "416257", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-416297">
+<div class="comment-container" id="li-comment-416297">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 11, 2017 at 7:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-416297" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The link works for me.</p>
+<p>You can sign-up to get the mind map here:<br/>
+<a href="https://machinelearningmastery.leadpages.co/machine-learning-algorithms-mini-course/" rel="nofollow">https://machinelearningmastery.leadpages.co/machine-learning-algorithms-mini-course/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-416297" onclick='return addComment.moveForm( "comment-416297", "416297", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-418268">
+<div class="comment-container" id="li-comment-418268">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a3f863a01d72248e79652023db3ee6e1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a3f863a01d72248e79652023db3ee6e1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Aniket Saxena</span>
+<span class="date">October 29, 2017 at 2:34 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-418268" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>At this link(www.saedsayad.com/decision_tree.htm), Saed wrote at the bottom of the page some issues about decision trees. So my question is, </p>
+<p>1. What if we dealt with missing values in the dataset prior to fit the model to our dataset, how decision trees will work as Saed mention that decision trees only work with missing values?</p>
+<p>2. What are continuous attributes as Saed allude that decision trees algorithm works with continuous attributes(binning)?</p>
+<p>Please help regarding these questions……..</p>
+<div class="reply">
+<a aria-label="Reply to Aniket Saxena" class="comment-reply-link" href="#comment-418268" onclick='return addComment.moveForm( "comment-418268", "418268", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-418293">
+<div class="comment-container" id="li-comment-418293">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 29, 2017 at 5:56 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-418293" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Indeed, missing values can be treated as another value to split on.</p>
+<p>Continuous means real-valued.</p>
+<p>If you have questions for Saed, perhaps ask him directly?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-418293" onclick='return addComment.moveForm( "comment-418293", "418293", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-425997">
+<div class="comment-container" id="li-comment-425997">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/b0e59bf2b17b54c499cc4b602784adef?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/b0e59bf2b17b54c499cc4b602784adef?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://www.vkvtechnologies.com" rel="external nofollow">Karthick</a></span>
+<span class="date">January 9, 2018 at 9:50 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-425997" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Can CART be used in SuperMarket??</p>
+<div class="reply">
+<a aria-label="Reply to Karthick" class="comment-reply-link" href="#comment-425997" onclick='return addComment.moveForm( "comment-425997", "425997", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-426062">
+<div class="comment-container" id="li-comment-426062">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 10, 2018 at 5:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-426062" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What is supermarket?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-426062" onclick='return addComment.moveForm( "comment-426062", "426062", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-427634">
+<div class="comment-container" id="li-comment-427634">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1f1ec57df7ee4a4090370eba8b60b09d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1f1ec57df7ee4a4090370eba8b60b09d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Dhanunjaya Mitta</span>
+<span class="date">January 26, 2018 at 10:08 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-427634" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,<br/>
+I would like to know what actually the greedy approach and Gini index refers to??? What is the use of them</p>
+<div class="reply">
+<a aria-label="Reply to Dhanunjaya Mitta" class="comment-reply-link" href="#comment-427634" onclick='return addComment.moveForm( "comment-427634", "427634", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-427690">
+<div class="comment-container" id="li-comment-427690">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 27, 2018 at 5:51 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-427690" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I show how to implement the gini score in this post:<br/>
+<a href="https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/" rel="nofollow">https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427690" onclick='return addComment.moveForm( "comment-427690", "427690", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-429172">
+<div class="comment-container" id="li-comment-429172">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/bd438547640d7dda30591ee8bc8ab4eb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/bd438547640d7dda30591ee8bc8ab4eb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Adiputra Simanjuntak</span>
+<span class="date">February 12, 2018 at 2:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-429172" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good morning Sir, I want to ask you about CART algorithm for predicting continuous number… I have read another reference and it tells that to predict continuous number, we should replace the gini index using standard deviation reduction. is it true??<br/>
+thanks Sir</p>
+<div class="reply">
+<a aria-label="Reply to Adiputra Simanjuntak" class="comment-reply-link" href="#comment-429172" onclick='return addComment.moveForm( "comment-429172", "429172", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-429182">
+<div class="comment-container" id="li-comment-429182">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 12, 2018 at 2:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-429182" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>The gini index is for CART for classification, you will need to use a different metric for regression. Sorry I do not have an example.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-429182" onclick='return addComment.moveForm( "comment-429182", "429182", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-444433">
+<div class="comment-container" id="li-comment-444433">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/88cc7328a31fc7335d484bb2340ca9c3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/88cc7328a31fc7335d484bb2340ca9c3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Adiputra Simanjuntak</span>
+<span class="date">July 26, 2018 at 2:11 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-444433" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the response Sir. According to that, I want to ask your opinion about standard deviation reduction can be used for regression tree. If you don’t mind, I hope you can explain to me, Sir. Thanks Sir</p>
+<div class="reply">
+<a aria-label="Reply to Adiputra Simanjuntak" class="comment-reply-link" href="#comment-444433" onclick='return addComment.moveForm( "comment-444433", "444433", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-444440">
+<div class="comment-container" id="li-comment-444440">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2018 at 2:29 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-444440" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t understand your question. Perhaps you can provide more context? </p>
+<p>What is “standard deviation reduction” and how does it relate to regression trees?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-444440" onclick='return addComment.moveForm( "comment-444440", "444440", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-5" id="comment-444442">
+<div class="comment-container" id="li-comment-444442">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/88cc7328a31fc7335d484bb2340ca9c3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/88cc7328a31fc7335d484bb2340ca9c3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Adiputra Simanjuntak</span>
+<span class="date">July 26, 2018 at 3:18 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-444442" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have read this article <a href="http://www.saedsayad.com/decision_tree_reg.htm" rel="nofollow">http://www.saedsayad.com/decision_tree_reg.htm</a> </p>
+<p>He used the Standard Deviation Reduction to replacing Information Gain. So, I still confuse to build the tree using such the formula. Maybe, you can help me, Sir.. 🙂</p>
+<p>Thanks before</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-5" id="comment-444485">
+<div class="comment-container" id="li-comment-444485">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 27, 2018 at 5:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-444485" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t know about that method, perhaps contact the author?</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-440461">
+<div class="comment-container" id="li-comment-440461">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c7e8cb78230d7721ce03e4622a972057?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c7e8cb78230d7721ce03e4622a972057?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hninnyuhlaing</span>
+<span class="date">June 11, 2018 at 3:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-440461" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hello!sir<br/>
+I want to know,CART can use in my system including three class labels .</p>
+<div class="reply">
+<a aria-label="Reply to Hninnyuhlaing" class="comment-reply-link" href="#comment-440461" onclick='return addComment.moveForm( "comment-440461", "440461", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-440514">
+<div class="comment-container" id="li-comment-440514">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 12, 2018 at 6:35 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-440514" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>CART can support 2 or more class labels.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440514" onclick='return addComment.moveForm( "comment-440514", "440514", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-457030">
+<div class="comment-container" id="li-comment-457030">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d6babc2a97bd3430dbfb2a4d2692678?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d6babc2a97bd3430dbfb2a4d2692678?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ro</span>
+<span class="date">December 3, 2018 at 4:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-457030" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What’s the difference between cart and id3?</p>
+<div class="reply">
+<a aria-label="Reply to Ro" class="comment-reply-link" href="#comment-457030" onclick='return addComment.moveForm( "comment-457030", "457030", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-457051">
+<div class="comment-container" id="li-comment-457051">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">December 3, 2018 at 6:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/classification-and-regression-trees-for-machine-learning/#comment-457051" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I recall that ID3 came first and CART was an improvement.</p>
+<p>I don’t recall the specific differences off hand, perhaps this will help:<br/>
+<a href="https://en.wikipedia.org/wiki/ID3_algorithm" rel="nofollow">https://en.wikipedia.org/wiki/ID3_algorithm</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-457051" onclick='return addComment.moveForm( "comment-457051", "457051", "respond", "2295" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/classification-and-regression-trees-for-machine-learning/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="2295"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="091514339d"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="234"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-9"> <div class="textwidget"><p></p><center><br/>
+<strong>Understand How Algorithms Work</strong><br/>
+No theory, just clear descriptions. 
+<p><a href="/master-machine-learning-algorithms/">Click to Get Started Now!</a><br/>
+<a href="/master-machine-learning-algorithms/"><img alt="Master Machine Learning Algorithms" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/03/MasterMachineLearningAlgorithms-small.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

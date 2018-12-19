@@ -1,0 +1,1256 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Tune the Number and Size of Decision Trees with XGBoost in Python</title>
+<link href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Tune the Number and Size of Decision Trees with XGBoost in Python" property="og:title"/>
+<meta content="Gradient boosting involves the creation and addition of decision trees sequentially, each attempting to correct the mistakes of the learners that came before it. This raises the question as to how many trees (weak learners or estimators) to configure in your gradient boosting model and how big each tree should be. In this post you will …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="XGBoost" property="article:section"/>
+<meta content="2016-09-06T19:00:53+00:00" property="article:published_time"/>
+<meta content="2017-03-16T21:32:09+00:00" property="article:modified_time"/>
+<meta content="2017-03-16T21:32:09+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/How-to-Tune-the-Number-and-Size-of-Decision-Trees-with-XGBoost-in-Python.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/How-to-Tune-the-Number-and-Size-of-Decision-Trees-with-XGBoost-in-Python.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="How to Tune the Number and Size of Decision Trees with XGBoost in Python" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/feed/" rel="alternate" title="Machine Learning Mastery » How to Tune the Number and Size of Decision Trees with XGBoost in Python Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=3014" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Ftune-number-size-decision-trees-xgboost-python%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Ftune-number-size-decision-trees-xgboost-python%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-3014 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-34"> <div class="textwidget"><p>Want help with XGBoost? <a href="https://machinelearningmastery.lpages.co/xgboost-with-python-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-3014 post type-post status-publish format-standard has-post-thumbnail hentry category-xgboost">
+<header>
+<h1 class="title entry-title">How to Tune the Number and Size of Decision Trees with XGBoost in Python</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2016-09-07T05:00:53+1100">September 7, 2016</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/xgboost/" title="View all items in XGBoost">XGBoost</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3014 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Tune+the+Number+and+Size+of+Decision+Trees+with+XGBoost+in+Python&amp;url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Gradient boosting involves the creation and addition of decision trees sequentially, each attempting to correct the mistakes of the learners that came before it.</p>
+<p>This raises the question as to how many trees (weak learners or estimators) to configure in your gradient boosting model and how big each tree should be.</p>
+<p>In this post you will discover how to design a systematic experiment to select the number and size of decision trees to use on your problem.</p>
+<p>After reading this post you will know:</p>
+<ul>
+<li>How to evaluate the effect of adding more decision trees to your XGBoost model.</li>
+<li>How to evaluate the effect of creating larger decision trees to your XGBoost model.</li>
+<li>How to investigate the relationship between the number and depth of trees on your problem.</li>
+</ul>
+<p>Let’s get started.</p>
+<ul>
+<li><strong>Update Jan/2017</strong>: Updated to reflect changes in scikit-learn API version 0.18.1.</li>
+</ul>
+<div class="wp-caption aligncenter" id="attachment_3018" style="width: 650px"><img alt="How to Tune the Number and Size of Decision Trees with XGBoost in Python" class="size-full wp-image-3018" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/How-to-Tune-the-Number-and-Size-of-Decision-Trees-with-XGBoost-in-Python.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/How-to-Tune-the-Number-and-Size-of-Decision-Trees-with-XGBoost-in-Python.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/How-to-Tune-the-Number-and-Size-of-Decision-Trees-with-XGBoost-in-Python-300x200.jpg 300w" width="640"/><p class="wp-caption-text">How to Tune the Number and Size of Decision Trees with XGBoost in Python<br/>Photo by <a href="https://www.flickr.com/photos/usfwsmidwest/15857830226/">USFWSmidwest</a>, some rights reserved.</p></div>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with XGBoost in Python?</h3>
+<p>Take my free 7-day email course and discover configuration, tuning and more (with sample code).</p>
+<p>Click to sign-up now and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/1431f1e73f72a2%3A164f8be4f346dc/5662543133540352/" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Start Your FREE Mini-Course Now!</a> <script data-config="%7B%7D" data-leadbox="1431f1e73f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/1431f1e73f72a2%3A164f8be4f346dc/5662543133540352/" src="https://machinelearningmastery.leadpages.co/leadbox-1034.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Problem Description: Otto Dataset</h2>
+<p>In this tutorial we will use the <a href="https://www.kaggle.com/c/otto-group-product-classification-challenge">Otto Group Product Classification Challenge</a> dataset.</p>
+<p>This dataset is available for free from Kaggle (you will need to sign-up to Kaggle to be able to download this dataset). You can download the training dataset <strong>train.csv.zip</strong> from the <a href="https://www.kaggle.com/c/otto-group-product-classification-challenge/data">Data page</a> and place the unzipped <strong>train.csv</strong> file into your working directory.</p>
+<p>This dataset describes the 93 obfuscated details of more than 61,000 products grouped into 10 product categories (e.g. fashion, electronics, etc.). Input attributes are counts of different events of some kind.</p>
+<p>The goal is to make predictions for new products as an array of probabilities for each of the 10 categories and models are evaluated using multiclass logarithmic loss (also called cross entropy).</p>
+<p>This competition was completed in May 2015 and this dataset is a good challenge for XGBoost because of the nontrivial number of examples, the difficulty of the problem and the fact that little data preparation is required (other than encoding the string class variables as integers).</p>
+<h2>Tune the Number of Decision Trees in XGBoost</h2>
+<p>Most implementations of gradient boosting are configured by default with a relatively small number of trees, such as hundreds or thousands.</p>
+<p>The general reason is that on most problems, adding more trees beyond a limit does not improve the performance of the model.</p>
+<p>The reason is in the way that the boosted tree model is constructed, sequentially where each new tree attempts to model and correct for the errors made by the sequence of previous trees. Quickly, the model reaches a point of diminishing returns.</p>
+<p>We can demonstrate this point of diminishing returns easily on the Otto dataset.</p>
+<p>The number of trees (or rounds) in an XGBoost model is specified to the XGBClassifier or XGBRegressor class in the n_estimators argument. The default in the XGBoost library is 100.</p>
+<p>Using scikit-learn we can perform a grid search of the <strong>n_estimators</strong> model parameter, evaluating a series of values from 50 to 350 with a step size of 50 (50, 150, 200, 250, 300, 350).</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd75018842855" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# grid search
+model = XGBClassifier()
+n_estimators = range(50, 400, 50)
+param_grid = dict(n_estimators=n_estimators)
+kfold = StratifiedKFold(n_splits scoring="neg_log_loss", n_jobs=-1, cv=kfold)
+result = grid_search.fit(X, label_encoded_y)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd75018842855-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd75018842855-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd75018842855-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd75018842855-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd75018842855-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd75018842855-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd75018842855-1"><span class="crayon-p"># grid search</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd75018842855-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">XGBClassifier</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd75018842855-3"><span class="crayon-v">n_estimators</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">50</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">400</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">50</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd75018842855-4"><span class="crayon-v">param_grid</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">dict</span><span class="crayon-sy">(</span><span class="crayon-v">n_estimators</span><span class="crayon-o">=</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd75018842855-5"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">StratifiedKFold</span><span class="crayon-sy">(</span><span class="crayon-e">n_splits </span><span class="crayon-v">scoring</span><span class="crayon-o">=</span><span class="crayon-s">"neg_log_loss"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">n_jobs</span><span class="crayon-o">=</span><span class="crayon-o">-</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">cv</span><span class="crayon-o">=</span><span class="crayon-v">kfold</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd75018842855-6"><span class="crayon-v">result</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_search</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">label_encoded_y</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>We can perform this grid search on the Otto dataset, using 10-fold cross validation, requiring 60 models to be trained (6 configurations * 10 folds).</p>
+<p>The full code listing is provided below for completeness.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd7e228430150" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# XGBoost on Otto dataset, Tune n_estimators
+from pandas import read_csv
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot
+# load data
+data = read_csv('train.csv')
+dataset = data.values
+# split data into X and y
+X = dataset[:,0:94]
+y = dataset[:,94]
+# encode string class values as integers
+label_encoded_y = LabelEncoder().fit_transform(y)
+# grid search
+model = XGBClassifier()
+n_estimators = range(50, 400, 50)
+param_grid = dict(n_estimators=n_estimators)
+kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=7)
+grid_search = GridSearchCV(model, param_grid, scoring="neg_log_loss", n_jobs=-1, cv=kfold)
+grid_result = grid_search.fit(X, label_encoded_y)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+	print("%f (%f) with: %r" % (mean, stdev, param))
+# plot
+pyplot.errorbar(n_estimators, means, yerr=stds)
+pyplot.title("XGBoost n_estimators vs Log Loss")
+pyplot.xlabel('n_estimators')
+pyplot.ylabel('Log Loss')
+pyplot.savefig('n_estimators.png')</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-6">6</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-8">8</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-10">10</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-12">12</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-14">14</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-16">16</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-18">18</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-20">20</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-22">22</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-24">24</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-26">26</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-28">28</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-30">30</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-32">32</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-34">34</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd7e228430150-36">36</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd7e228430150-37">37</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-1"><span class="crayon-p"># XGBoost on Otto dataset, Tune n_estimators</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-3"><span class="crayon-e">from </span><span class="crayon-e">xgboost </span><span class="crayon-e">import </span><span class="crayon-e">XGBClassifier</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-4"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">GridSearchCV</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-5"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">StratifiedKFold</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-6"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">preprocessing </span><span class="crayon-e">import </span><span class="crayon-e">LabelEncoder</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-7"><span class="crayon-e">import </span><span class="crayon-e">matplotlib</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-8"><span class="crayon-v">matplotlib</span><span class="crayon-sy">.</span><span class="crayon-st">use</span><span class="crayon-sy">(</span><span class="crayon-s">'Agg'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-9"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-v">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-10"><span class="crayon-p"># load data</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-11"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'train.csv'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-12"><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">data</span><span class="crayon-sy">.</span><span class="crayon-v">values</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-13"><span class="crayon-p"># split data into X and y</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-14"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-o">:</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-15"><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-16"><span class="crayon-p"># encode string class values as integers</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-17"><span class="crayon-v">label_encoded_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LabelEncoder</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">.</span><span class="crayon-e">fit_transform</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-18"><span class="crayon-p"># grid search</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-19"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">XGBClassifier</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-20"><span class="crayon-v">n_estimators</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">50</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">400</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">50</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-21"><span class="crayon-v">param_grid</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">dict</span><span class="crayon-sy">(</span><span class="crayon-v">n_estimators</span><span class="crayon-o">=</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-22"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">StratifiedKFold</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-o">=</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">shuffle</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">random_state</span><span class="crayon-o">=</span><span class="crayon-cn">7</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-23"><span class="crayon-v">grid_search</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">GridSearchCV</span><span class="crayon-sy">(</span><span class="crayon-v">model</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param_grid</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">scoring</span><span class="crayon-o">=</span><span class="crayon-s">"neg_log_loss"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">n_jobs</span><span class="crayon-o">=</span><span class="crayon-o">-</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">cv</span><span class="crayon-o">=</span><span class="crayon-v">kfold</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-24"><span class="crayon-v">grid_result</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_search</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">label_encoded_y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-25"><span class="crayon-p"># summarize results</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-26"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"Best: %f using %s"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_score_</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_params_</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-27"><span class="crayon-v">means</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'mean_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-28"><span class="crayon-v">stds</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'std_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-29"><span class="crayon-v">params</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'params'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-30"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">param </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">zip</span><span class="crayon-sy">(</span><span class="crayon-v">means</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stds</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">params</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-31"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"%f (%f) with: %r"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-32"><span class="crayon-p"># plot</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-33"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">errorbar</span><span class="crayon-sy">(</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">means</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yerr</span><span class="crayon-o">=</span><span class="crayon-v">stds</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-34"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">title</span><span class="crayon-sy">(</span><span class="crayon-s">"XGBoost n_estimators vs Log Loss"</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-35"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">xlabel</span><span class="crayon-sy">(</span><span class="crayon-s">'n_estimators'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd7e228430150-36"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">ylabel</span><span class="crayon-sy">(</span><span class="crayon-s">'Log Loss'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd7e228430150-37"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">savefig</span><span class="crayon-sy">(</span><span class="crayon-s">'n_estimators.png'</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0020 seconds] -->
+<p>Running this example prints the following results.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd81641682793" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Best: -0.001152 using {'n_estimators': 250}
+-0.010970 (0.001083) with: {'n_estimators': 50}
+-0.001239 (0.001730) with: {'n_estimators': 100}
+-0.001163 (0.001715) with: {'n_estimators': 150}
+-0.001153 (0.001702) with: {'n_estimators': 200}
+-0.001152 (0.001702) with: {'n_estimators': 250}
+-0.001152 (0.001704) with: {'n_estimators': 300}
+-0.001153 (0.001706) with: {'n_estimators': 350}</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd81641682793-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd81641682793-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd81641682793-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd81641682793-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd81641682793-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd81641682793-6">6</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd81641682793-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd81641682793-8">8</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd81641682793-1">Best: -0.001152 using {'n_estimators': 250}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd81641682793-2">-0.010970 (0.001083) with: {'n_estimators': 50}</div><div class="crayon-line" id="crayon-5c0c9f8adbd81641682793-3">-0.001239 (0.001730) with: {'n_estimators': 100}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd81641682793-4">-0.001163 (0.001715) with: {'n_estimators': 150}</div><div class="crayon-line" id="crayon-5c0c9f8adbd81641682793-5">-0.001153 (0.001702) with: {'n_estimators': 200}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd81641682793-6">-0.001152 (0.001702) with: {'n_estimators': 250}</div><div class="crayon-line" id="crayon-5c0c9f8adbd81641682793-7">-0.001152 (0.001704) with: {'n_estimators': 300}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd81641682793-8">-0.001153 (0.001706) with: {'n_estimators': 350}</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>We can see that the cross validation log loss scores are negative. This is because the scikit-learn cross validation framework inverted them. The reason is that internally, the framework requires that all metrics that are being optimized are to be maximized, whereas log loss is a minimization metric. It can easily be made maximizing by inverting the scores.</p>
+<p>The best number of trees was <strong>n_estimators=250</strong> resulting in a log loss of 0.001152, but really not a significant difference from <strong>n_estimators=200</strong>. In fact, there is not a large relative difference in the number of trees between 100 and 350 if we plot the results.</p>
+<p>Below is line graph showing the relationship between the number of trees and mean (inverted) logarithmic loss, with the standard deviation shown as error bars.</p>
+<div class="wp-caption aligncenter" id="attachment_3015" style="width: 810px"><img alt="Tune The Number of Trees in XGBoost" class="size-full wp-image-3015" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-in-XGBoost.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-in-XGBoost.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-in-XGBoost-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-in-XGBoost-768x576.png 768w" width="800"/><p class="wp-caption-text">Tune The Number of Trees in XGBoost</p></div>
+<h2>Tune the Size of Decision Trees in XGBoost</h2>
+<p>In gradient boosting, we can control the size of decision trees, also called the number of layers or the depth.</p>
+<p>Shallow trees are expected to have poor performance because they capture few details of the problem and are generally referred to as weak learners. Deeper trees generally capture too many details of the problem and overfit the training dataset, limiting the ability to make good predictions on new data.</p>
+<p>Generally, boosting algorithms are configured with weak learners, decision trees with few layers, sometimes as simple as just a root node, also called a decision stump rather than a decision tree.</p>
+<p>The maximum depth can be specified in the <strong>XGBClassifier</strong> and <strong>XGBRegressor</strong> wrapper classes for XGBoost in the <strong>max_depth</strong> parameter. This parameter takes an integer value and defaults to a value of 3.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd83363775150" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+model = XGBClassifier(max_depth=3)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd83363775150-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd83363775150-1"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">XGBClassifier</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-o">=</span><span class="crayon-cn">3</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>We can tune this hyperparameter of XGBoost using the grid search infrastructure in scikit-learn on the Otto dataset. Below we evaluate odd values for <strong>max_depth</strong> between 1 and 9 (1, 3, 5, 7, 9).</p>
+<p>Each of the 5 configurations is evaluated using 10-fold cross validation, resulting in 50 models being constructed. The full code listing is provided below for completeness.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd88337310669" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# XGBoost on Otto dataset, Tune max_depth
+from pandas import read_csv
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot
+# load data
+data = read_csv('train.csv')
+dataset = data.values
+# split data into X and y
+X = dataset[:,0:94]
+y = dataset[:,94]
+# encode string class values as integers
+label_encoded_y = LabelEncoder().fit_transform(y)
+# grid search
+model = XGBClassifier()
+max_depth = range(1, 11, 2)
+print(max_depth)
+param_grid = dict(max_depth=max_depth)
+kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=7)
+grid_search = GridSearchCV(model, param_grid, scoring="neg_log_loss", n_jobs=-1, cv=kfold, verbose=1)
+grid_result = grid_search.fit(X, label_encoded_y)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+	print("%f (%f) with: %r" % (mean, stdev, param))
+# plot
+pyplot.errorbar(max_depth, means, yerr=stds)
+pyplot.title("XGBoost max_depth vs Log Loss")
+pyplot.xlabel('max_depth')
+pyplot.ylabel('Log Loss')
+pyplot.savefig('max_depth.png')</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-6">6</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-8">8</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-10">10</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-12">12</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-14">14</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-16">16</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-18">18</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-20">20</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-22">22</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-24">24</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-26">26</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-28">28</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-30">30</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-32">32</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-34">34</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-36">36</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd88337310669-37">37</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd88337310669-38">38</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-1"><span class="crayon-p"># XGBoost on Otto dataset, Tune max_depth</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-3"><span class="crayon-e">from </span><span class="crayon-e">xgboost </span><span class="crayon-e">import </span><span class="crayon-e">XGBClassifier</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-4"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">GridSearchCV</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-5"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">StratifiedKFold</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-6"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">preprocessing </span><span class="crayon-e">import </span><span class="crayon-e">LabelEncoder</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-7"><span class="crayon-e">import </span><span class="crayon-e">matplotlib</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-8"><span class="crayon-v">matplotlib</span><span class="crayon-sy">.</span><span class="crayon-st">use</span><span class="crayon-sy">(</span><span class="crayon-s">'Agg'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-9"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-v">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-10"><span class="crayon-p"># load data</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-11"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'train.csv'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-12"><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">data</span><span class="crayon-sy">.</span><span class="crayon-v">values</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-13"><span class="crayon-p"># split data into X and y</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-14"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-o">:</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-15"><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-16"><span class="crayon-p"># encode string class values as integers</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-17"><span class="crayon-v">label_encoded_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LabelEncoder</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">.</span><span class="crayon-e">fit_transform</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-18"><span class="crayon-p"># grid search</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-19"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">XGBClassifier</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-20"><span class="crayon-v">max_depth</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">11</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">2</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-21"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-22"><span class="crayon-v">param_grid</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">dict</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-o">=</span><span class="crayon-v">max_depth</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-23"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">StratifiedKFold</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-o">=</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">shuffle</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">random_state</span><span class="crayon-o">=</span><span class="crayon-cn">7</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-24"><span class="crayon-v">grid_search</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">GridSearchCV</span><span class="crayon-sy">(</span><span class="crayon-v">model</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param_grid</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">scoring</span><span class="crayon-o">=</span><span class="crayon-s">"neg_log_loss"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">n_jobs</span><span class="crayon-o">=</span><span class="crayon-o">-</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">cv</span><span class="crayon-o">=</span><span class="crayon-v">kfold</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-25"><span class="crayon-v">grid_result</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_search</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">label_encoded_y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-26"><span class="crayon-p"># summarize results</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-27"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"Best: %f using %s"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_score_</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_params_</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-28"><span class="crayon-v">means</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'mean_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-29"><span class="crayon-v">stds</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'std_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-30"><span class="crayon-v">params</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'params'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-31"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">param </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">zip</span><span class="crayon-sy">(</span><span class="crayon-v">means</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stds</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">params</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-32"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"%f (%f) with: %r"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-33"><span class="crayon-p"># plot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-34"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">errorbar</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">means</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yerr</span><span class="crayon-o">=</span><span class="crayon-v">stds</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-35"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">title</span><span class="crayon-sy">(</span><span class="crayon-s">"XGBoost max_depth vs Log Loss"</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-36"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">xlabel</span><span class="crayon-sy">(</span><span class="crayon-s">'max_depth'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd88337310669-37"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">ylabel</span><span class="crayon-sy">(</span><span class="crayon-s">'Log Loss'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd88337310669-38"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">savefig</span><span class="crayon-sy">(</span><span class="crayon-s">'max_depth.png'</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0021 seconds] -->
+<p>Running this example prints the log loss for each <strong>max_depth</strong>.</p>
+<p>The optimal configuration was <strong>max_depth=5</strong> resulting in a log loss of 0.001236.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd8a932036361" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Best: -0.001236 using {'max_depth': 5}
+-0.026235 (0.000898) with: {'max_depth': 1}
+-0.001239 (0.001730) with: {'max_depth': 3}
+-0.001236 (0.001701) with: {'max_depth': 5}
+-0.001237 (0.001701) with: {'max_depth': 7}
+-0.001237 (0.001701) with: {'max_depth': 9}</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd8a932036361-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8a932036361-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8a932036361-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8a932036361-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8a932036361-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8a932036361-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd8a932036361-1">Best: -0.001236 using {'max_depth': 5}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8a932036361-2">-0.026235 (0.000898) with: {'max_depth': 1}</div><div class="crayon-line" id="crayon-5c0c9f8adbd8a932036361-3">-0.001239 (0.001730) with: {'max_depth': 3}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8a932036361-4">-0.001236 (0.001701) with: {'max_depth': 5}</div><div class="crayon-line" id="crayon-5c0c9f8adbd8a932036361-5">-0.001237 (0.001701) with: {'max_depth': 7}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8a932036361-6">-0.001237 (0.001701) with: {'max_depth': 9}</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Reviewing the plot of log loss scores, we can see a marked jump from <strong>max_depth=1</strong> to <strong>max_depth=3</strong> then pretty even performance for the rest the values of <strong>max_depth</strong>.</p>
+<p>Although the best score was observed for <strong>max_depth=5</strong>, it is interesting to note that there was practically little difference between using <strong>max_depth=3</strong> or <strong>max_depth=7</strong>.</p>
+<p>This suggests a point of diminishing returns in <strong>max_depth</strong> on a problem that you can tease out using grid search. A graph of <strong>max_depth</strong> values is plotted against (inverted) logarithmic loss below.</p>
+<div class="wp-caption aligncenter" id="attachment_3016" style="width: 810px"><img alt="Tune Max Tree Depth in XGBoost" class="size-full wp-image-3016" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-Max-Tree-Depth-in-XGBoost.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-Max-Tree-Depth-in-XGBoost.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-Max-Tree-Depth-in-XGBoost-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-Max-Tree-Depth-in-XGBoost-768x576.png 768w" width="800"/><p class="wp-caption-text">Tune Max Tree Depth in XGBoost</p></div>
+<h2>Tune The Number of Trees and Max Depth in XGBoost</h2>
+<p>There is a relationship between the number of trees in the model and the depth of each tree.</p>
+<p>We would expect that deeper trees would result in fewer trees being required in the model, and the inverse where simpler trees (such as decision stumps) require many more trees to achieve similar results.</p>
+<p>We can investigate this relationship by evaluating a grid of <strong>n_estimators</strong> and <strong>max_depth</strong> configuration values. To avoid the evaluation taking too long, we will limit the total number of configuration values evaluated. Parameters were chosen to tease out the relationship rather than optimize the model.</p>
+<p>We will create a grid of 4 different n_estimators values (50, 100, 150, 200) and 4 different max_depth values (2, 4, 6, 8) and each combination will be evaluated using 10-fold cross validation. A total of 4*4*10 or 160 models will be trained and evaluated.</p>
+<p>The full code listing is provided below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd8c979785948" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# XGBoost on Otto dataset, Tune n_estimators and max_depth
+from pandas import read_csv
+from xgboost import XGBClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import LabelEncoder
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot
+import numpy
+# load data
+data = read_csv('train.csv')
+dataset = data.values
+# split data into X and y
+X = dataset[:,0:94]
+y = dataset[:,94]
+# encode string class values as integers
+label_encoded_y = LabelEncoder().fit_transform(y)
+# grid search
+model = XGBClassifier()
+n_estimators = [50, 100, 150, 200]
+max_depth = [2, 4, 6, 8]
+print(max_depth)
+param_grid = dict(max_depth=max_depth, n_estimators=n_estimators)
+kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=7)
+grid_search = GridSearchCV(model, param_grid, scoring="neg_log_loss", n_jobs=-1, cv=kfold, verbose=1)
+grid_result = grid_search.fit(X, label_encoded_y)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+	print("%f (%f) with: %r" % (mean, stdev, param))
+# plot results
+scores = numpy.array(means).reshape(len(max_depth), len(n_estimators))
+for i, value in enumerate(max_depth):
+    pyplot.plot(n_estimators, scores[i], label='depth: ' + str(value))
+pyplot.legend()
+pyplot.xlabel('n_estimators')
+pyplot.ylabel('Log Loss')
+pyplot.savefig('n_estimators_vs_max_depth.png')</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-6">6</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-8">8</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-10">10</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-12">12</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-14">14</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-16">16</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-18">18</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-20">20</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-22">22</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-24">24</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-26">26</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-28">28</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-30">30</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-32">32</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-34">34</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-36">36</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-37">37</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-38">38</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-39">39</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-40">40</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd8c979785948-41">41</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd8c979785948-42">42</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-1"><span class="crayon-p"># XGBoost on Otto dataset, Tune n_estimators and max_depth</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">read_csv</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-3"><span class="crayon-e">from </span><span class="crayon-e">xgboost </span><span class="crayon-e">import </span><span class="crayon-e">XGBClassifier</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-4"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">GridSearchCV</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-5"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">model_selection </span><span class="crayon-e">import </span><span class="crayon-e">StratifiedKFold</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-6"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">preprocessing </span><span class="crayon-e">import </span><span class="crayon-e">LabelEncoder</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-7"><span class="crayon-e">import </span><span class="crayon-e">matplotlib</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-8"><span class="crayon-v">matplotlib</span><span class="crayon-sy">.</span><span class="crayon-st">use</span><span class="crayon-sy">(</span><span class="crayon-s">'Agg'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-9"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-10"><span class="crayon-e">import </span><span class="crayon-v">numpy</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-11"><span class="crayon-p"># load data</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-12"><span class="crayon-v">data</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">read_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'train.csv'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-13"><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">data</span><span class="crayon-sy">.</span><span class="crayon-v">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-14"><span class="crayon-p"># split data into X and y</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-15"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-o">:</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-16"><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">94</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-17"><span class="crayon-p"># encode string class values as integers</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-18"><span class="crayon-v">label_encoded_y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">LabelEncoder</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">.</span><span class="crayon-e">fit_transform</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-19"><span class="crayon-p"># grid search</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-20"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">XGBClassifier</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-21"><span class="crayon-v">n_estimators</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">50</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">100</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">150</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">200</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-22"><span class="crayon-v">max_depth</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">2</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">4</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">6</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">8</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-23"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-24"><span class="crayon-v">param_grid</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">dict</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-o">=</span><span class="crayon-v">max_depth</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">n_estimators</span><span class="crayon-o">=</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-25"><span class="crayon-v">kfold</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">StratifiedKFold</span><span class="crayon-sy">(</span><span class="crayon-v">n_splits</span><span class="crayon-o">=</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">shuffle</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">random_state</span><span class="crayon-o">=</span><span class="crayon-cn">7</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-26"><span class="crayon-v">grid_search</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">GridSearchCV</span><span class="crayon-sy">(</span><span class="crayon-v">model</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param_grid</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">scoring</span><span class="crayon-o">=</span><span class="crayon-s">"neg_log_loss"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">n_jobs</span><span class="crayon-o">=</span><span class="crayon-o">-</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">cv</span><span class="crayon-o">=</span><span class="crayon-v">kfold</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-27"><span class="crayon-v">grid_result</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_search</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">label_encoded_y</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-28"><span class="crayon-p"># summarize results</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-29"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"Best: %f using %s"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_score_</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">best_params_</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-30"><span class="crayon-v">means</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'mean_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-31"><span class="crayon-v">stds</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'std_test_score'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-32"><span class="crayon-v">params</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">grid_result</span><span class="crayon-sy">.</span><span class="crayon-v">cv_results_</span><span class="crayon-sy">[</span><span class="crayon-s">'params'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-33"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">param </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">zip</span><span class="crayon-sy">(</span><span class="crayon-v">means</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stds</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">params</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-34"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">"%f (%f) with: %r"</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">mean</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">stdev</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">param</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-35"><span class="crayon-p"># plot results</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-36"><span class="crayon-v">scores</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-t">array</span><span class="crayon-sy">(</span><span class="crayon-v">means</span><span class="crayon-sy">)</span><span class="crayon-sy">.</span><span class="crayon-e">reshape</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-37"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-v">i</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">value </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">enumerate</span><span class="crayon-sy">(</span><span class="crayon-v">max_depth</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-38"><span class="crayon-h">    </span><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">n_estimators</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">scores</span><span class="crayon-sy">[</span><span class="crayon-v">i</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">label</span><span class="crayon-o">=</span><span class="crayon-s">'depth: '</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-e">str</span><span class="crayon-sy">(</span><span class="crayon-v">value</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-39"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">legend</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-40"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">xlabel</span><span class="crayon-sy">(</span><span class="crayon-s">'n_estimators'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9f8adbd8c979785948-41"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">ylabel</span><span class="crayon-sy">(</span><span class="crayon-s">'Log Loss'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd8c979785948-42"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">savefig</span><span class="crayon-sy">(</span><span class="crayon-s">'n_estimators_vs_max_depth.png'</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0025 seconds] -->
+<p>Running the code produces a listing of the logloss for each parameter pair.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9f8adbd9d216676589" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Best: -0.001141 using {'n_estimators': 200, 'max_depth': 4}
+-0.012127 (0.001130) with: {'n_estimators': 50, 'max_depth': 2}
+-0.001351 (0.001825) with: {'n_estimators': 100, 'max_depth': 2}
+-0.001278 (0.001812) with: {'n_estimators': 150, 'max_depth': 2}
+-0.001266 (0.001796) with: {'n_estimators': 200, 'max_depth': 2}
+-0.010545 (0.001083) with: {'n_estimators': 50, 'max_depth': 4}
+-0.001226 (0.001721) with: {'n_estimators': 100, 'max_depth': 4}
+-0.001150 (0.001704) with: {'n_estimators': 150, 'max_depth': 4}
+-0.001141 (0.001693) with: {'n_estimators': 200, 'max_depth': 4}
+-0.010341 (0.001059) with: {'n_estimators': 50, 'max_depth': 6}
+-0.001237 (0.001701) with: {'n_estimators': 100, 'max_depth': 6}
+-0.001163 (0.001688) with: {'n_estimators': 150, 'max_depth': 6}
+-0.001154 (0.001679) with: {'n_estimators': 200, 'max_depth': 6}
+-0.010342 (0.001059) with: {'n_estimators': 50, 'max_depth': 8}
+-0.001237 (0.001701) with: {'n_estimators': 100, 'max_depth': 8}
+-0.001161 (0.001688) with: {'n_estimators': 150, 'max_depth': 8}
+-0.001153 (0.001679) with: {'n_estimators': 200, 'max_depth': 8}</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-2">2</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-4">4</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-6">6</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-8">8</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-10">10</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-12">12</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-14">14</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9f8adbd9d216676589-16">16</div><div class="crayon-num" data-line="crayon-5c0c9f8adbd9d216676589-17">17</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-1">Best: -0.001141 using {'n_estimators': 200, 'max_depth': 4}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-2">-0.012127 (0.001130) with: {'n_estimators': 50, 'max_depth': 2}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-3">-0.001351 (0.001825) with: {'n_estimators': 100, 'max_depth': 2}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-4">-0.001278 (0.001812) with: {'n_estimators': 150, 'max_depth': 2}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-5">-0.001266 (0.001796) with: {'n_estimators': 200, 'max_depth': 2}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-6">-0.010545 (0.001083) with: {'n_estimators': 50, 'max_depth': 4}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-7">-0.001226 (0.001721) with: {'n_estimators': 100, 'max_depth': 4}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-8">-0.001150 (0.001704) with: {'n_estimators': 150, 'max_depth': 4}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-9">-0.001141 (0.001693) with: {'n_estimators': 200, 'max_depth': 4}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-10">-0.010341 (0.001059) with: {'n_estimators': 50, 'max_depth': 6}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-11">-0.001237 (0.001701) with: {'n_estimators': 100, 'max_depth': 6}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-12">-0.001163 (0.001688) with: {'n_estimators': 150, 'max_depth': 6}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-13">-0.001154 (0.001679) with: {'n_estimators': 200, 'max_depth': 6}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-14">-0.010342 (0.001059) with: {'n_estimators': 50, 'max_depth': 8}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-15">-0.001237 (0.001701) with: {'n_estimators': 100, 'max_depth': 8}</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9f8adbd9d216676589-16">-0.001161 (0.001688) with: {'n_estimators': 150, 'max_depth': 8}</div><div class="crayon-line" id="crayon-5c0c9f8adbd9d216676589-17">-0.001153 (0.001679) with: {'n_estimators': 200, 'max_depth': 8}</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>We can see that the best result was achieved with a <strong>n_estimators=200</strong> and <strong>max_depth=4</strong>, similar to the best values found from the previous two rounds of standalone parameter tuning (<strong>n_estimators=250</strong>, <strong>max_depth=5</strong>).</p>
+<p>We can plot the relationship between each series of <strong>max_depth</strong> values for a given <strong>n_estimators</strong>.</p>
+<div class="wp-caption aligncenter" id="attachment_3017" style="width: 810px"><img alt="Tune The Number of Trees and Max Tree Depth in XGBoost" class="size-full wp-image-3017" height="600" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-and-Max-Tree-Depth-in-XGBoost.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-and-Max-Tree-Depth-in-XGBoost.png 800w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-and-Max-Tree-Depth-in-XGBoost-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/07/Tune-The-Number-of-Trees-and-Max-Tree-Depth-in-XGBoost-768x576.png 768w" width="800"/><p class="wp-caption-text">Tune The Number of Trees and Max Tree Depth in XGBoost</p></div>
+<p>The lines overlap making it hard to see the relationship, but generally we can see the interaction we expect. Fewer boosted trees are required with increased tree depth.</p>
+<p>Further, we would expect the increase complexity provided by deeper individual trees to result in greater overfitting of the training data which would be exacerbated by having more trees, in turn resulting in a lower cross validation score. We don’t see this here as our trees are not that deep nor do we have too many. Exploring this expectation  is left as an exercise you could explore yourself.</p>
+<h2>Summary</h2>
+<p>In this post, you discovered how to tune the number and depth of decision trees when using gradient boosting with XGBoost in Python.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>How to tune the number of decision trees in an XGBoost model.</li>
+<li>How to tune the depth of decision trees in an XGBoost model.</li>
+<li>How to jointly tune the number of trees and tree depth in an XGBoost model</li>
+</ul>
+<p>Do you have any questions about the number or size of decision trees in your gradient boosting model or about this post? Ask your questions in the comments and I will do my best to answer.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-41"> <div class="textwidget"><p></p><div class="woo-sc-hr"></div><br/>
+<center>
+<h2>Want To Learn The Algorithm Winning Competitions?</h2>
+<p><a href="/xgboost-with-python/"><img align="left" alt="XGBoost With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/XGBoostWithPython-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own XGBoost Models in Minutes</h4>
+<p>…with just a few lines of Python</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/xgboost-with-python/">XGBoost With Python</a></p>
+<p>It covers <strong>self-study tutorials</strong> like:<br/><em>Algorithm Fundamentals</em>, <em>Scaling</em>, <em>Hyperparameters</em>, and much more…</p>
+<h4>Bring The Power of XGBoost To<br/>Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/xgboost-with-python/">Click to learn more</a>.</p>
+<p></p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3014 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Tune+the+Number+and+Size+of+Decision+Trees+with+XGBoost+in+Python&amp;url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/best-tune-multithreading-support-xgboost-python/" rel="prev"><i class="fa fa-angle-left"></i> How to Best Tune Multithreading Support for XGBoost in Python</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/gentle-introduction-gradient-boosting-algorithm-machine-learning/" rel="next">A Gentle Introduction to the Gradient Boosting Algorithm for Machine Learning <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">22 Responses to <em>How to Tune the Number and Size of Decision Trees with XGBoost in Python</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-392960">
+<div class="comment-container" id="li-comment-392960">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/32142f79a7f63a3ec718047648ed7eae?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/32142f79a7f63a3ec718047648ed7eae?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mike</span>
+<span class="date">March 17, 2017 at 5:13 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-392960" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I love your teaching style. </p>
+<p>I’ll be purchasing your package after I complete a course I’m working on. </p>
+<p>Just a quick spelling error sir. (I read every single line) 🙂 </p>
+<p>“This dataset is available fro free”</p>
+<p>Thanks again for all your free content and your concise explanations.</p>
+<div class="reply">
+<a aria-label="Reply to Mike" class="comment-reply-link" href="#comment-392960" onclick='return addComment.moveForm( "comment-392960", "392960", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-392991">
+<div class="comment-container" id="li-comment-392991">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 17, 2017 at 8:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-392991" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Mike, fixed!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-392991" onclick='return addComment.moveForm( "comment-392991", "392991", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-396142">
+<div class="comment-container" id="li-comment-396142">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e29059cb076af0252ee300a76cad1061?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e29059cb076af0252ee300a76cad1061?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Swapnil</span>
+<span class="date">April 12, 2017 at 3:09 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-396142" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey, nice article. I have one doubt. What is the difference between “running using XGBoostClassifier( parameter)” and “creating DMatrix, parameter list and then doing xgb.train()”.</p>
+<p>Do these both methods yield same results .. why two ways of doing the same thing.<br/>
+I have always used second one  .. where n_estimators parameter is not there. You are using first method. Can you please explain ??</p>
+<div class="reply">
+<a aria-label="Reply to Swapnil" class="comment-reply-link" href="#comment-396142" onclick='return addComment.moveForm( "comment-396142", "396142", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-396172">
+<div class="comment-container" id="li-comment-396172">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 12, 2017 at 7:56 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-396172" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>They should give the same results, but I like to use xgboost with the tools from sklearn.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-396172" onclick='return addComment.moveForm( "comment-396172", "396172", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-420097">
+<div class="comment-container" id="li-comment-420097">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/b6aa4dd62807cee9ae6a8be54157c770?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/b6aa4dd62807cee9ae6a8be54157c770?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">jenny</span>
+<span class="date">November 15, 2017 at 9:09 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-420097" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Wonder tutorial on gridsearch for xgboost.</p>
+<p>I want to know how to pass the argument booster =’gbtree’ or bosster=’dart’.</p>
+<p>This how my code looks:</p>
+<p>model = XGBClassifier(booster=’gbtree’,objective=’binary:logistic’)<br/>
+n_estimators = [50, 100]<br/>
+max_depth = [2, 3]<br/>
+learning_rate=[0.05,0.15]<br/>
+param_grid = dict(max_depth=max_depth, n_estimators=n_estimators, learning_rate=learning_rate)</p>
+<p>kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)<br/>
+grid_search = GridSearchCV(model, param_grid, scoring=”roc_auc”, n_jobs=1, cv=kfold, verbose=1)<br/>
+grid_result = grid_search.fit(norm_X_train, y_train)<br/>
+print(“Best: %f using %s” % (grid_result.best_score_, grid_result.best_params_))<br/>
+means = grid_result.cv_results_[‘mean_test_score’]<br/>
+stds = grid_result.cv_results_[‘std_test_score’]<br/>
+params = grid_result.cv_results_[‘params’]</p>
+<p>TypeError: __init__() got an unexpected keyword argument ‘booster’</p>
+<p>I want to train the model with dart and gbtree seperately. How should i do it?</p>
+<p>In R it can be done easily . In python it is showing the above error. </p>
+<p>How can I save the best model from gridsearch?</p>
+<div class="reply">
+<a aria-label="Reply to jenny" class="comment-reply-link" href="#comment-420097" onclick='return addComment.moveForm( "comment-420097", "420097", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-420176">
+<div class="comment-container" id="li-comment-420176">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 16, 2017 at 10:28 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-420176" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Once you find the best set of parameters, you can train a new final model with those parameters.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-420176" onclick='return addComment.moveForm( "comment-420176", "420176", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-432258">
+<div class="comment-container" id="li-comment-432258">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fe0077b0afca2febc04614d170d3bdf4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fe0077b0afca2febc04614d170d3bdf4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rob</span>
+<span class="date">March 16, 2018 at 12:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-432258" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>Thanks for sharing all this. I have applied sklearn’s XGBoostClassifier with GridSearchCV, but I find that xgboost without tuning leads to better accuracy &amp; f1 score than after tuning.</p>
+<p>Any ideas why this could be happening? Is there any reason why this might be the case?</p>
+<div class="reply">
+<a aria-label="Reply to Rob" class="comment-reply-link" href="#comment-432258" onclick='return addComment.moveForm( "comment-432258", "432258", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-432302">
+<div class="comment-container" id="li-comment-432302">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 16, 2018 at 6:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-432302" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It could be overfitting the training data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-432302" onclick='return addComment.moveForm( "comment-432302", "432302", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-438131">
+<div class="comment-container" id="li-comment-438131">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6cbcafcafcce600eadb58f7702b92b1b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6cbcafcafcce600eadb58f7702b92b1b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">VISHESH SHARMA</span>
+<span class="date">May 21, 2018 at 6:09 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-438131" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey Jason,</p>
+<p>Great post.</p>
+<p>1. In industries, when data scientists use xgboost do they also roughly play around with these these limited factors only – n_estimators,depth,score, learning rate etc.</p>
+<p>2. If yes,then does not this tuning happen with a single Grid/random search on the model?</p>
+<p>3. Are there any advanced things we can tune ?</p>
+<p>Thanks</p>
+<div class="reply">
+<a aria-label="Reply to VISHESH SHARMA" class="comment-reply-link" href="#comment-438131" onclick='return addComment.moveForm( "comment-438131", "438131", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-438197">
+<div class="comment-container" id="li-comment-438197">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 22, 2018 at 6:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-438197" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, I recommend a grid search or random search of hyperparameter values to see what works best for your specific problem.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-438197" onclick='return addComment.moveForm( "comment-438197", "438197", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-439371">
+<div class="comment-container" id="li-comment-439371">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d4a8d79935328e726b7490c26a559047?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d4a8d79935328e726b7490c26a559047?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">DPV</span>
+<span class="date">June 1, 2018 at 1:28 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-439371" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What is the relation between number of predictors and depth of the tree.  If the depth of the tree is less than number of predictors,  does it mean I am not using all predictors to make decision?  Shall I keep tree depth = number of predictors?</p>
+<div class="reply">
+<a aria-label="Reply to DPV" class="comment-reply-link" href="#comment-439371" onclick='return addComment.moveForm( "comment-439371", "439371", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-439385">
+<div class="comment-container" id="li-comment-439385">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 1, 2018 at 2:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-439385" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It is specific to your data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-439385" onclick='return addComment.moveForm( "comment-439385", "439385", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-442448">
+<div class="comment-container" id="li-comment-442448">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7d1f714d801a9c3cdd77e6a727d204ee?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7d1f714d801a9c3cdd77e6a727d204ee?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">srujan</span>
+<span class="date">July 1, 2018 at 5:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-442448" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>How to set refit parameter for multi-metric scoring and make the best_* attributes available for that metric</p>
+<div class="reply">
+<a aria-label="Reply to srujan" class="comment-reply-link" href="#comment-442448" onclick='return addComment.moveForm( "comment-442448", "442448", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-442482">
+<div class="comment-container" id="li-comment-442482">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 2, 2018 at 6:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-442482" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It will select best for a single metric as far as I know.</p>
+<p>Perhaps you could write your own metric that combines other metrics and combine them in a way where raking results in a pareto-optimal finding across the metrics. </p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442482" onclick='return addComment.moveForm( "comment-442482", "442482", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-444040">
+<div class="comment-container" id="li-comment-444040">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1aee1005b34aa9561875e862e544f8f9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1aee1005b34aa9561875e862e544f8f9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">youness</span>
+<span class="date">July 21, 2018 at 8:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-444040" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>thank you very much you helped me a lot</p>
+<div class="reply">
+<a aria-label="Reply to youness" class="comment-reply-link" href="#comment-444040" onclick='return addComment.moveForm( "comment-444040", "444040", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-444085">
+<div class="comment-container" id="li-comment-444085">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 22, 2018 at 6:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-444085" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad to hear that.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-444085" onclick='return addComment.moveForm( "comment-444085", "444085", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-450797">
+<div class="comment-container" id="li-comment-450797">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/cffc22cb03d9add6aadb72d764ce4844?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/cffc22cb03d9add6aadb72d764ce4844?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ran Feldesh</span>
+<span class="date">October 6, 2018 at 2:34 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-450797" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>On a Dell XPS laptop with Win10, running sklearn’s grid_search with the code as-is outputs an error, due to failed parallelism. Error:<br/>
+“ImportError: [joblib] Attempting to do parallel computing without protecting your import on a system that does not support forking. To use parallel-computing in a script, you must protect your main loop using “if __name__ == ‘__main__'”. Please see the joblib documentation on Parallel for more information”</p>
+<p>This is a known issue (<a href="https://github.com/scikit-learn-contrib/hdbscan/issues/22" rel="nofollow">https://github.com/scikit-learn-contrib/hdbscan/issues/22</a>).<br/>
+To solve, need to wrap any non-function code or class with the standard: ‘if __name__ == “__main__”:’, as suggested in the error message.</p>
+<div class="reply">
+<a aria-label="Reply to Ran Feldesh" class="comment-reply-link" href="#comment-450797" onclick='return addComment.moveForm( "comment-450797", "450797", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-450819">
+<div class="comment-container" id="li-comment-450819">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 6, 2018 at 5:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-450819" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Nice catch, thanks. Sorry, I don’t know about windows.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-450819" onclick='return addComment.moveForm( "comment-450819", "450819", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-453988">
+<div class="comment-container" id="li-comment-453988">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ef89416b91e5e2e1688a40e68b7dd05a?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ef89416b91e5e2e1688a40e68b7dd05a?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Wali Mohammad</span>
+<span class="date">November 7, 2018 at 7:41 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-453988" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Fantastic article<br/>
+Really helpful</p>
+<div class="reply">
+<a aria-label="Reply to Wali Mohammad" class="comment-reply-link" href="#comment-453988" onclick='return addComment.moveForm( "comment-453988", "453988", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-454019">
+<div class="comment-container" id="li-comment-454019">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 8, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-454019" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-454019" onclick='return addComment.moveForm( "comment-454019", "454019", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-454964">
+<div class="comment-container" id="li-comment-454964">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/91780075a22e7be6ef5960835f7dc97d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/91780075a22e7be6ef5960835f7dc97d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">许君杰</span>
+<span class="date">November 16, 2018 at 1:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-454964" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello, I read many of your articles and learned a lot from them.</p>
+<p>As a stduent,I don’t have too much computation resource,and I wonder if the hyperparameter will still work well when the magnitude of data increases exponentially ? It will waste  me a lot of time tunning hyperparameters on original data.</p>
+<div class="reply">
+<a aria-label="Reply to 许君杰" class="comment-reply-link" href="#comment-454964" onclick='return addComment.moveForm( "comment-454964", "454964", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-454974">
+<div class="comment-container" id="li-comment-454974">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 16, 2018 at 1:58 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/tune-number-size-decision-trees-xgboost-python/#comment-454974" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good question. It is hard to know. </p>
+<p>Maybe…</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-454974" onclick='return addComment.moveForm( "comment-454974", "454974", "respond", "3014" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/tune-number-size-decision-trees-xgboost-python/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="3014"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="dcd2d1a4b9"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="89"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-4"> <div class="textwidget"><p></p><center><br/>
+<strong>XGBoost with Python</strong><br/>
+Discover the algorithm winning competitions.
+<p><a href="/xgboost-with-python/">Click to Get Started Now!</a><br/>
+<a href="/xgboost-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/06/XGBoostWithPython-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

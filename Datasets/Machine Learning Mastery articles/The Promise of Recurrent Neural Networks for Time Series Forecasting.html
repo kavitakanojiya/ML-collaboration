@@ -1,0 +1,1575 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>The Promise of Recurrent Neural Networks for Time Series Forecasting</title>
+<link href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="The Promise of Recurrent Neural Networks for Time Series Forecasting" property="og:title"/>
+<meta content="Recurrent neural networks are a type of neural network that add the explicit handling of order in input observations. This capability suggests that the promise of recurrent neural networks is to learn the temporal context of input sequences in order to make better predictions. That is, that the suite of lagged observations required to make …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Deep Learning for Time Series" property="article:section"/>
+<meta content="2017-05-21T19:00:25+00:00" property="article:published_time"/>
+<meta content="2018-08-30T00:27:37+00:00" property="article:modified_time"/>
+<meta content="2018-08-30T00:27:37+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/The-Promise-of-Recurrent-Neural-Networks-for-Time-Series-Forecasting.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/The-Promise-of-Recurrent-Neural-Networks-for-Time-Series-Forecasting.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="The Promise of Recurrent Neural Networks for Time Series Forecasting" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/feed/" rel="alternate" title="Machine Learning Mastery » The Promise of Recurrent Neural Networks for Time Series Forecasting Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4042" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpromise-recurrent-neural-networks-time-series-forecasting%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fpromise-recurrent-neural-networks-time-series-forecasting%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4042 single-format-standard unknown alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-53"> <div class="textwidget"><p>Want help with deep learning for time series? <a href="https://machinelearningmastery.lpages.co/deep-learning-for-time-series-forecasting-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4042 post type-post status-publish format-standard has-post-thumbnail hentry category-deep-learning-time-series">
+<header>
+<h1 class="title entry-title">The Promise of Recurrent Neural Networks for Time Series Forecasting</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-05-22T05:00:25+1100">May 22, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/" title="View all items in Deep Learning for Time Series">Deep Learning for Time Series</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4042 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=The+Promise+of+Recurrent+Neural+Networks+for+Time+Series+Forecasting&amp;url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Recurrent neural networks are a type of neural network that add the explicit handling of order in input observations.</p>
+<p>This capability suggests that the promise of recurrent neural networks is to learn the temporal context of input sequences in order to make better predictions. That is, that the suite of lagged observations required to make a prediction no longer must be diagnosed and specified as in traditional time series forecasting, or even forecasting with classical neural networks. Instead, the temporal dependence can be learned, and perhaps changes to this dependence can also be learned.</p>
+<p>In this post, you will discover the promised capability of recurrent neural networks for time series forecasting. After reading this post, you will know:</p>
+<ul>
+<li>The focus and implicit, if not explicit, limitations on traditional time series forecasting methods.</li>
+<li>The capabilities provided in using traditional feed-forward neural networks for time series forecasting.</li>
+<li>The additional promise that recurrent neural networks make on top of traditional neural nets and hints of what this may mean in practice.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4043" style="width: 650px"><img alt="The Promise of Recurrent Neural Networks for Time Series Forecasting" class="size-full wp-image-4043" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/The-Promise-of-Recurrent-Neural-Networks-for-Time-Series-Forecasting.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/The-Promise-of-Recurrent-Neural-Networks-for-Time-Series-Forecasting.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/The-Promise-of-Recurrent-Neural-Networks-for-Time-Series-Forecasting-300x200.jpg 300w" width="640"/><p class="wp-caption-text">The Promise of Recurrent Neural Networks for Time Series Forecasting<br/>Photo by <a href="https://www.flickr.com/photos/repomonkey/13909187181/">Andy Hutchinson</a>, some rights reserved.</p></div>
+<h2>Time Series Forecasting</h2>
+<p>Time series forecasting is difficult.</p>
+<p>Unlike the simpler problems of classification and regression, time series problems add the complexity of order or temporal dependence between observations.</p>
+<p>This can be difficult as the specialized handling of the data is required when fitting and evaluating models. It also aids in modeling, providing additional structure like trends and seasonality that can be leveraged to improve model skill.</p>
+<p>Traditionally, time series forecasting has been dominated by linear methods like ARIMA because they are well understood and effective on many problems. But these traditional methods also suffer from some limitations, such as:</p>
+<ul>
+<li><strong>Focus on complete data</strong>: missing or corrupt data is generally unsupported.</li>
+<li><strong>Focus on linear relationships</strong>: assuming a linear relationship excludes more complex joint distributions.</li>
+<li><strong>Focus on fixed temporal dependence</strong>: the relationship between observations at different times, and in turn the number of lag observations provided as input, must be diagnosed and specified.</li>
+<li><strong>Focus on univariate data</strong>: many real-world problems have multiple input variables.</li>
+<li><strong>Focus on one-step forecasts</strong>: many real-world problems require forecasts with a long time horizon.</li>
+</ul>
+<blockquote><p>Existing techniques often depended on hand-crafted features that were expensive to create and required expert knowledge of the field.</p></blockquote>
+<p>— John Gamboa, <a href="https://arxiv.org/abs/1701.01887">Deep Learning for Time-Series Analysis</a>, 2017</p>
+<p>Note that some specialized techniques have been developed to address some of these limitations.</p>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with Deep Learning for Time Series?</h3>
+<p>Take my free 7-day email crash course now (with sample code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/14531ee73f72a2%3A164f8be4f346dc/5630742793027584/" style="background: rgb(255, 206, 10); color: rgb(255, 255, 255); text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Download Your FREE Mini-Course</a><script data-config="%7B%7D" data-leadbox="14531ee73f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/14531ee73f72a2%3A164f8be4f346dc/5630742793027584/" src="https://machinelearningmastery.lpages.co/leadbox-1534880695.js" type="text/javascript"></script></p>
+</center>
+<p></p><div class="woo-sc-hr"></div>
+<h2>Neural Networks for Time Series</h2>
+<p>Neural networks approximate a mapping function from input variables to output variables.</p>
+<p>This general capability is valuable for time series for a number of reasons.</p>
+<ul>
+<li><strong>Robust to Noise</strong>. Neural networks are robust to noise in input data and in the mapping function and can even support learning and prediction in the presence of missing values.</li>
+<li><strong>Nonlinear</strong>. Neural networks do not make strong assumptions about the mapping function and readily learn linear and nonlinear relationships.</li>
+</ul>
+<blockquote><p>… one important contribution of neural networks – namely their elegant ability to approximate arbitrary non-linear functions. This property is of high value in time series processing and promises more powerful applications, especially in the subfeld of forecasting …</p></blockquote>
+<p>— Georg Dorffner, <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.45.5697">Neural Networks for Time Series Processing</a>, 1996.</p>
+<p>More specifically, neural networks can be configured to support an arbitrary defined but fixed number of inputs and outputs in the mapping function. This means that:</p>
+<ul>
+<li><strong>Multivariate Inputs</strong>. An arbitrary number of input features can be specified, providing direct support for multivariate forecasting.</li>
+<li><strong>Multi-Step Forecasts</strong>. An arbitrary number of output values can be specified, providing direct support for multi-step and even multivariate forecasting.</li>
+</ul>
+<p>For these capabilities alone, feed-forward neural networks are widely used for time series forecasting.</p>
+<p>Implicit in the usage of neural networks is the requirement that there is indeed a meaningful mapping from inputs to outputs to learn. Modeling a mapping of a random walk will perform no better than a persistence model (e.g. using the last seen observation as the forecast).</p>
+<p>This expectation of a learnable mapping function also makes one of the limitations clear: the mapping function is fixed or static.</p>
+<ul>
+<li><strong>Fixed inputs</strong>. The number of lag input variables is fixed, in the same way as traditional time series forecasting methods.</li>
+<li><strong>Fixed outputs</strong>. The number of output variables is also fixed; although a more subtle issue, it means that for each input pattern, one output must be produced.</li>
+</ul>
+<blockquote><p>Sequences pose a challenge for [deep neural networks] because they require that the dimensionality of the inputs and outputs is known and fixed.</p></blockquote>
+<p>— Ilya Sutskever, Oriol Vinyals, Quoc V. Le, <a href="https://arxiv.org/abs/1409.3215">Sequence to Sequence Learning with Neural Networks</a>, 2014</p>
+<p>Feed-forward neural networks do offer great capability but still suffer from this key limitation of having to specify the temporal dependence upfront in the design of the model.</p>
+<p>This dependence is almost always unknown and must be discovered and teased out from detailed analysis in a fixed form.</p>
+<h2>Recurrent Neural Networks for Time Series</h2>
+<p>Recurrent neural networks like the Long Short-Term Memory network add the explicit handling of order between observations when learning a mapping function from inputs to outputs.</p>
+<p>The addition of sequence is a new dimension to the function being approximated. Instead of mapping inputs to outputs alone, the network is capable of learning a mapping function for the inputs over time to an output.</p>
+<p>This capability unlocks time series for neural networks.</p>
+<blockquote><p>Long Short-Term Memory (LSTM) is able to solve many time series tasks unsolvable by feed-forward networks using fixed size time windows.</p></blockquote>
+<p>— Felix A. Gers, Douglas Eck, Jürgen Schmidhuber, <a href="https://link.springer.com/chapter/10.1007/3-540-44668-0_93">Applying LSTM to Time Series Predictable through Time-Window Approaches</a>, 2001</p>
+<p>In addition to the general benefits of using neural networks for time series forecasting, recurrent neural networks can also learn the temporal dependence from the data.</p>
+<ul>
+<li><strong>Learned Temporal Dependence</strong>. The context of observations over time is learned.</li>
+</ul>
+<p>That is, in the simplest case, the network is shown one observation at a time from a sequence and can learn what observations it has seen previously are relevant and how they are relevant to forecasting.</p>
+<blockquote><p>Because of this ability to learn long term correlations in a sequence, LSTM networks obviate the need for a pre-specified time window and are capable of accurately modelling complex multivariate sequences.</p></blockquote>
+<p>— Pankaj Malhotra, et al., <a href="https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2015-56.pdf">Long Short Term Memory Networks for Anomaly Detection in Time Series</a>, 2015</p>
+<p>The promise of recurrent neural networks is that the temporal dependence in the input data can be learned. That a fixed set of lagged observations does not need to be specified.</p>
+<p>Implicit within this promise is that a temporal dependence that varies with circumstance can also be learned.</p>
+<p>But, recurrent neural networks may be capable of more.</p>
+<p>It is good practice to manually identify and remove such systematic structures from time series data to make the problem easier to model (e.g. make the series stationary), and this may still be a best practice when using recurrent neural networks. But, the general capability of these networks suggests that this may not be a requirement for a skillful model.</p>
+<p>Technically, the available context may allow recurrent neural networks to learn:</p>
+<ul>
+<li><strong>Trend</strong>. An increasing or decreasing level to a time series and even variation in these changes.</li>
+<li><strong>Seasonality</strong>. Consistently repeating patterns over time.</li>
+</ul>
+<p>What do you think the promise is for LSTMs on time series forecasting problems?</p>
+<h2>Summary</h2>
+<p>In this post, you discovered the promise of recurrent neural networks for time series forecasting.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>Traditional time series forecasting methods focus on univariate data with linear relationships and fixed and manually-diagnosed temporal dependence.</li>
+<li>Neural networks add the capability to learn possibly noisy and nonlinear relationships with arbitrarily defined but fixed numbers of inputs and outputs supporting multivariate and multi-step forecasting.</li>
+<li>Recurrent neural networks add the explicit handling of ordered observations and the promise of learning temporal dependence from context.</li>
+</ul>
+<p>Do you disagree with my thoughts on the promise of LSTMs for time series forecasting?<br/>
+Leave a comment below and join the discussion.</p>
+<div class="awac-wrapper"><div class="awac widget text-52"> <div class="textwidget"><p></p><center><br/>
+<div class="woo-sc-hr"></div>
+<h2>Develop Deep Learning models for Time Series Today!</h2>
+<p><a href="/deep-learning-for-time-series-forecasting/"><img align="left" alt="Deep Learning for Time Series Forecasting" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Forecasting models in Minutes</h4>
+<p>…with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/deep-learning-for-time-series-forecasting/">Deep Learning for Time Series Forecasting</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like: <em>CNNs</em>, <em>LSTMs</em>,<br/>
+<em>Multivariate Forecasting</em>, <em>Multi-Step Forecasting</em> and much more…</p>
+<h4>Finally Bring Deep Learning to your Time Series Forecasting Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/deep-learning-for-time-series-forecasting/">Click to learn more</a>.<br/>
+</p><div class="woo-sc-hr"></div><br/>
+</center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4042 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=The+Promise+of+Recurrent+Neural+Networks+for+Time+Series+Forecasting&amp;url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/learn-add-numbers-seq2seq-recurrent-neural-networks/" rel="prev"><i class="fa fa-angle-left"></i> Learn to Add Numbers with an Encoder-Decoder LSTM Recurrent Neural Network</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/gentle-introduction-long-short-term-memory-networks-experts/" rel="next">A Gentle Introduction to Long Short-Term Memory Networks by the Experts <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">53 Responses to <em>The Promise of Recurrent Neural Networks for Time Series Forecasting</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-400231">
+<div class="comment-container" id="li-comment-400231">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1ff42a39e189b2df74dfe312c5008e30?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1ff42a39e189b2df74dfe312c5008e30?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Benson Dube</span>
+<span class="date">May 22, 2017 at 7:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400231" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you Jason for sharing. I am making a gentle start in Deep Learning. Currently gathering very generic information.</p>
+<div class="reply">
+<a aria-label="Reply to Benson Dube" class="comment-reply-link" href="#comment-400231" onclick='return addComment.moveForm( "comment-400231", "400231", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-400244">
+<div class="comment-container" id="li-comment-400244">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 22, 2017 at 7:56 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400244" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great, stick with it Benson.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-400244" onclick='return addComment.moveForm( "comment-400244", "400244", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-400280">
+<div class="comment-container" id="li-comment-400280">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/99810ae20dad869049d68f6f57aaf862?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/99810ae20dad869049d68f6f57aaf862?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sander de Winter</span>
+<span class="date">May 22, 2017 at 10:23 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400280" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great article! I am currently working on my thesis and this very similar to what I am writing but only a bit better. Thank you for the clear summary of a somewhat complex theory about time series predictions!</p>
+<div class="reply">
+<a aria-label="Reply to Sander de Winter" class="comment-reply-link" href="#comment-400280" onclick='return addComment.moveForm( "comment-400280", "400280", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-400304">
+<div class="comment-container" id="li-comment-400304">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 23, 2017 at 7:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400304" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Sander, I’m glad to hear that.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-400304" onclick='return addComment.moveForm( "comment-400304", "400304", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-400343">
+<div class="comment-container" id="li-comment-400343">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/5d565014c01152aa00266d6ff091d638?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/5d565014c01152aa00266d6ff091d638?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Samuel</span>
+<span class="date">May 23, 2017 at 1:02 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400343" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the helpful article Jason.  I used RNN in classification with the same random seed on the same data. But running the same code multiple times gives me different results. So far, most results are the same except for maybe 1 or 2 times. But the resutls are drastically different (76% accruacy vs. 48%). Have you had similar experience? If so, what did you do to mitigate it?</p>
+<div class="reply">
+<a aria-label="Reply to Samuel" class="comment-reply-link" href="#comment-400343" onclick='return addComment.moveForm( "comment-400343", "400343", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-400350">
+<div class="comment-container" id="li-comment-400350">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 23, 2017 at 1:58 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400350" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If you are using the tensorflow backend, you will also need to seed the tensorflow random number generator.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-400350" onclick='return addComment.moveForm( "comment-400350", "400350", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-400453">
+<div class="comment-container" id="li-comment-400453">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c591b3aa78239d67786996bca4485c78?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c591b3aa78239d67786996bca4485c78?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Peter Marelas</span>
+<span class="date">May 24, 2017 at 10:29 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400453" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>If you are using Keras turn off shuffling in the fit method.</p>
+<div class="reply">
+<a aria-label="Reply to Peter Marelas" class="comment-reply-link" href="#comment-400453" onclick='return addComment.moveForm( "comment-400453", "400453", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-400359">
+<div class="comment-container" id="li-comment-400359">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d6c9c132a8e164b6b2f5eb12dc4c859b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d6c9c132a8e164b6b2f5eb12dc4c859b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Gerrit Govaerts</span>
+<span class="date">May 23, 2017 at 5:13 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400359" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>With all the recent posts on time series forecasting , I would like to remind you that there are numerous time series that will  not bow to even the most sophisticated RNN LSTM approach , no matter what you try . Sometimes the necessary data to make an accurate prediction are not contained in the time series data , but rather in exogenous variables . If you think you can predict the oil price of tomorrow based on historical oil price data , I have a bridge in Brooklyn for sale for you . As always , there is no “free lunch” here , no black magick</p>
+<div class="reply">
+<a aria-label="Reply to Gerrit Govaerts" class="comment-reply-link" href="#comment-400359" onclick='return addComment.moveForm( "comment-400359", "400359", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-400397">
+<div class="comment-container" id="li-comment-400397">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 24, 2017 at 4:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400397" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great point Gerrit.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-400397" onclick='return addComment.moveForm( "comment-400397", "400397", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt depth-2" id="comment-400529">
+<div class="comment-container" id="li-comment-400529">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/5c8592b9ca7a073874054d0c1b233003?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/5c8592b9ca7a073874054d0c1b233003?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Dave</span>
+<span class="date">May 25, 2017 at 11:10 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400529" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>On the other hand – if oil prices trade at $50.0 for a few years we can safely assume that they will not start trading at “Microwave Oven” or “Wisp of sentient hydrogen gas at the peripheries of a white dwarf” or “The abstract concept of self identity as characterized by a lonely internet message” – in short one must certainly temper expectations and assume in part that life can be rather unpredictable and yet also understand that often it is not and within certain tolerances can be almost outright boring.</p>
+<div class="reply">
+<a aria-label="Reply to Dave" class="comment-reply-link" href="#comment-400529" onclick='return addComment.moveForm( "comment-400529", "400529", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-400468">
+<div class="comment-container" id="li-comment-400468">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c9467a681625c911498de7d472484732?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c9467a681625c911498de7d472484732?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="https://financeboards.com" rel="external nofollow">Atanas Stoyanov</a></span>
+<span class="date">May 25, 2017 at 3:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-400468" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>Have you had a chance to evaluate HTM models (<a href="https://numenta.org" rel="nofollow">https://numenta.org</a>), they seem to fly under the radar. Maybe a future article?</p>
+<p>&gt;&gt;Technically, the available context may allow recurrent neural networks to learn ..</p>
+<p>Any actual measurements or research you can point to, I notice most of your recent articles you are differencing the series</p>
+<p>&gt;&gt;Scaling</p>
+<p>Also – any measurements or references?</p>
+<p>Thanks again, please keep the great work going – I am an avid customer for your PDF books as well.</p>
+<div class="reply">
+<a aria-label="Reply to Atanas Stoyanov" class="comment-reply-link" href="#comment-400468" onclick='return addComment.moveForm( "comment-400468", "400468", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-401115">
+<div class="comment-container" id="li-comment-401115">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 2, 2017 at 11:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-401115" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, I dived deep into HTM back when they were first “launched”, 2008 or 09 perhaps.</p>
+<p>Sorry, not sure I understand your questions. Perhaps you could restate them?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-401115" onclick='return addComment.moveForm( "comment-401115", "401115", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-401240">
+<div class="comment-container" id="li-comment-401240">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c9467a681625c911498de7d472484732?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c9467a681625c911498de7d472484732?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://Financeboards.com" rel="external nofollow">Atanas</a></span>
+<span class="date">June 2, 2017 at 1:02 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-401240" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Jason, would love to see your input on HTMs</p>
+<p>Sorry about my questions , i meant can you point me to research or tests/measurements on the exact influence on differencing(and if its beneficial at all in LSTMs) and feature scaling.</p>
+<div class="reply">
+<a aria-label="Reply to Atanas" class="comment-reply-link" href="#comment-401240" onclick='return addComment.moveForm( "comment-401240", "401240", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-401243">
+<div class="comment-container" id="li-comment-401243">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 2, 2017 at 1:03 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-401243" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No, I have not seen this literature. Time series with LSTMs is a very new area.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-401243" onclick='return addComment.moveForm( "comment-401243", "401243", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-404934">
+<div class="comment-container" id="li-comment-404934">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/b99435511f77a1d54750bc7e2e5bd7ee?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/b99435511f77a1d54750bc7e2e5bd7ee?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Chris</span>
+<span class="date">July 6, 2017 at 6:12 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-404934" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I am currently doing my final year masters project using LSTM for battery life cycle prediction, your posts on LSTM for time series have been so helpful.</p>
+<p>At the moment I am trying to determine how my model is affected by window size, but I want to approach it more systematically than just running empirical tests. I was just wondering, when you say “the temporal dependence in the input data can be learned,” how would this relate to the window size? Could you expand on this a little for me and maybe direct me to some papers.</p>
+<p>Thank you 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Chris" class="comment-reply-link" href="#comment-404934" onclick='return addComment.moveForm( "comment-404934", "404934", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-405225">
+<div class="comment-container" id="li-comment-405225">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 9, 2017 at 10:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-405225" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, see this post on autocorrelation:<br/>
+<a href="http://machinelearningmastery.com/gentle-introduction-autocorrelation-partial-autocorrelation/" rel="nofollow">http://machinelearningmastery.com/gentle-introduction-autocorrelation-partial-autocorrelation/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-405225" onclick='return addComment.moveForm( "comment-405225", "405225", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-406390">
+<div class="comment-container" id="li-comment-406390">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4825b69a0da1f2f5ff3945998a517869?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4825b69a0da1f2f5ff3945998a517869?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Thibault</span>
+<span class="date">July 18, 2017 at 11:09 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-406390" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>I am currently working for my internship on forecasting time series using neural networks, with Keras. Your blog blog has been has been so helpful so far.</p>
+<p>But I still have one big question that I have some trouble to deal with; when you say “the promise of recurrent neural networks is that the temporal dependence in the input data can be learned. That a fixed set of lagged observations does not need to be specified”, I feel a contradiction on how we train the model.<br/>
+For instance, let’s suppose we have a univariate time series x1, x2, …<br/>
+The goal is to predict at the current time the next two values. In several of your posts using Keras, you shape your inputs/ouputs in this way : </p>
+<p>[x1, x2, x3, … , xt] -&gt; [xt+1, xt+2]<br/>
+[x2, x3, x4, … , xt+1] -&gt; [xt+2, xt+1]<br/>
+.<br/>
+.<br/>
+.</p>
+<p>But we are clearly using a time window to predict the next values ? I think I have some troubles to understand the difference between the temporal dependence you are talking about, and the temporal dependence induced by the size of the window …</p>
+<p>Thank you</p>
+<div class="reply">
+<a aria-label="Reply to Thibault" class="comment-reply-link" href="#comment-406390" onclick='return addComment.moveForm( "comment-406390", "406390", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-406439">
+<div class="comment-container" id="li-comment-406439">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 19, 2017 at 8:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-406439" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Not really.</p>
+<p>We must provide sequence data to the model to learn. The vectorization of the data required by the lib imposes some limit. In fact, BPTT imposes a reasonable limit of 200-400 time steps anyway. These are not a window, but a limit on the number of time steps show to the model before updating weights during training.</p>
+<p>It is different to a window of 5 or 10 time steps.</p>
+<p>That being said, LSTMs may not be the best choice for autoregression problems:<br/>
+<a href="http://machinelearningmastery.com/suitability-long-short-term-memory-networks-time-series-forecasting/" rel="nofollow">http://machinelearningmastery.com/suitability-long-short-term-memory-networks-time-series-forecasting/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-406439" onclick='return addComment.moveForm( "comment-406439", "406439", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-407268">
+<div class="comment-container" id="li-comment-407268">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4825b69a0da1f2f5ff3945998a517869?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4825b69a0da1f2f5ff3945998a517869?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Thibault</span>
+<span class="date">July 25, 2017 at 7:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-407268" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi,</p>
+<p>Thank you for you answer Jason, it’s starting getting a little clearer ! </p>
+<p>Concerning your last remark; LSTM’s would not be the best choice for autoregression problems, but many of your blog posts are related to time series forecasting with LSTMs. Is it a recent analysis you made ? Or am I missing something here ?</p>
+<p>Thank you, Thibault</p>
+<div class="reply">
+<a aria-label="Reply to Thibault" class="comment-reply-link" href="#comment-407268" onclick='return addComment.moveForm( "comment-407268", "407268", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-407319">
+<div class="comment-container" id="li-comment-407319">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2017 at 7:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-407319" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, both experience and some research turned me against LSTMs for autoregression.</p>
+<p>This is the rationale why my latest book on LSTMs is not focused on time series, but instead on LSTM architectures.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-407319" onclick='return addComment.moveForm( "comment-407319", "407319", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-408188">
+<div class="comment-container" id="li-comment-408188">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1694978619b4f5f65aab7abcd73d02a7?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1694978619b4f5f65aab7abcd73d02a7?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Akash</span>
+<span class="date">August 2, 2017 at 4:09 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-408188" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, this is one of the best article I read about LSTM and got most out of it.</p>
+<div class="reply">
+<a aria-label="Reply to Akash" class="comment-reply-link" href="#comment-408188" onclick='return addComment.moveForm( "comment-408188", "408188", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-408229">
+<div class="comment-container" id="li-comment-408229">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 2, 2017 at 7:56 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-408229" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Akash.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-408229" onclick='return addComment.moveForm( "comment-408229", "408229", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-408986">
+<div class="comment-container" id="li-comment-408986">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/885a23159eb4ce073573c0ef3e031cff?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/885a23159eb4ce073573c0ef3e031cff?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Javier</span>
+<span class="date">August 8, 2017 at 10:36 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-408986" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, firstly I’d like to thank you for sharing as much knowledge as you do in all of your blog posts, I’ve read many of them and they’ve been tramendously helpful.</p>
+<p>I’m currently trying to come up with a model to predict the power output from a wind turbine. My dataset has about 35,000 entries with 3 input variables and 1 output variable. I’m using a 5 layer LSTM network since it’s the one that’s been giving me the best results so far.</p>
+<p>My doubt is the following: I understand there’s “trends” in the output, in the sense that, the speed of the wind for instance doesn’t suddenly go from 100mph to 0mph in 1 second. Therefore the power being generated at time t will depend on the value of the input variables at time t, but it will also depend partly on the power generated at t-1, and t-2, and so on…</p>
+<p>How can I account for this in my neural network? Does using LSTM layers already account for this or is there a way for me to improve the results of my model? Thanks in advance!!</p>
+<div class="reply">
+<a aria-label="Reply to Javier" class="comment-reply-link" href="#comment-408986" onclick='return addComment.moveForm( "comment-408986", "408986", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-409039">
+<div class="comment-container" id="li-comment-409039">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 9, 2017 at 6:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-409039" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Javier, you are describing “serial dependence” which is a core concept in time series problems.</p>
+<p>Consider reading up a little on autocorrelation and other time series concepts here:<br/>
+<a href="http://machinelearningmastery.com/start-here/#timeseries" rel="nofollow">http://machinelearningmastery.com/start-here/#timeseries</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-409039" onclick='return addComment.moveForm( "comment-409039", "409039", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-412622">
+<div class="comment-container" id="li-comment-412622">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c2f57b7029f344b156988c899674f757?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c2f57b7029f344b156988c899674f757?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ghaith</span>
+<span class="date">September 5, 2017 at 5:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-412622" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi,</p>
+<p>Could you please try to help me if it’s possible.<br/>
+I am training my data using RNN, how can I give an evidence the I found the best network?<br/>
+for example, can ensure obtaining best network by checking its prediction or can plot regression or MSE?</p>
+<p>regards,</p>
+<div class="reply">
+<a aria-label="Reply to Ghaith" class="comment-reply-link" href="#comment-412622" onclick='return addComment.moveForm( "comment-412622", "412622", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-412944">
+<div class="comment-container" id="li-comment-412944">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 7, 2017 at 12:39 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-412944" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Evaluate lots of other models and configurations will give you evidence that perhaps you have a good model.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-412944" onclick='return addComment.moveForm( "comment-412944", "412944", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-413676">
+<div class="comment-container" id="li-comment-413676">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c6d11edce28b38fa2ed324d573a3c2f3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c6d11edce28b38fa2ed324d573a3c2f3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Ali</span>
+<span class="date">September 13, 2017 at 5:52 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-413676" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the nice blog post. I am just wondering, since there are some linear models such as seasonal ARIMA that model data not only based on previous observations but also previous seasonal pattern, are RNNs capable of using seasonal information such as SARIMA models to model data? Are they able to remember all those patterns if they occur long time ago that does not fit into its training window?</p>
+<div class="reply">
+<a aria-label="Reply to Ali" class="comment-reply-link" href="#comment-413676" onclick='return addComment.moveForm( "comment-413676", "413676", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-413875">
+<div class="comment-container" id="li-comment-413875">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 15, 2017 at 12:01 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-413875" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Yes, it is possible. I do not have a good example though. </p>
+<p>I have found MLPs outperform LSTMs on autoregression problems during my own testing.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-413875" onclick='return addComment.moveForm( "comment-413875", "413875", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-427578">
+<div class="comment-container" id="li-comment-427578">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3834a732e86f9814dd7d6710415686db?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3834a732e86f9814dd7d6710415686db?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shruti</span>
+<span class="date">January 25, 2018 at 5:41 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427578" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, Thank you for your post. I am implementing LSTM for time series forecasting. The length of my series is 300. I have applied vanilla LSTM, stacked LSTM, MLP, and ARIMA to forecast my weekly time series data but LSTM is not performing better than ARIMA and MLP. I have used ‘adam’ optimizer as discussed in your post to train LSTM. Can you please give me some tips to optimize it better. I have also applied regularization and varied the number of epochs.<br/>
+ However, In my another data set which has time series of length 60, then LSTM performed better but just marginally.</p>
+<div class="reply">
+<a aria-label="Reply to Shruti" class="comment-reply-link" href="#comment-427578" onclick='return addComment.moveForm( "comment-427578", "427578", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-427611">
+<div class="comment-container" id="li-comment-427611">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 26, 2018 at 5:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427611" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Generally I find MLPs outperform LSTMs on time series forecasting. Stick with the MLP.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427611" onclick='return addComment.moveForm( "comment-427611", "427611", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-427761">
+<div class="comment-container" id="li-comment-427761">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">January 28, 2018 at 6:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427761" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,<br/>
+I’ve data for patients with some inputs(demographics etc) and 1 or more outputs for each of their visits to the hospital. I’ve done some experiments using NN in Matlab by considering all patients together which may not make more sense. Now I would like to do some time series analysis for each patient and seeing their behavior. I’ve some problems though </p>
+<p>1. The data is not enough like many patients have for example 2 or 3 visits and I’ve only few patients<br/>
+2. Each patient has different no. of visits</p>
+<p>I’m still trying to think how could I make a time series out of it? Which model to use? ARMAX, NarxNet, etc. and several others.</p>
+<p>I would be glad if you could guide me to some solutions.</p>
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Faisal" class="comment-reply-link" href="#comment-427761" onclick='return addComment.moveForm( "comment-427761", "427761", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-427783">
+<div class="comment-container" id="li-comment-427783">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 28, 2018 at 8:28 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427783" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>There is no single best answer. I would recommend testing a suite of different methods to see what works for your specific data.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427783" onclick='return addComment.moveForm( "comment-427783", "427783", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-427816">
+<div class="comment-container" id="li-comment-427816">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">January 29, 2018 at 4:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427816" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the reply but …<br/>
+Assume a simple and hypothetical scenario (similar to my problem) like</p>
+<p>ID     VisitDate          Weight   Height   LowBP   HighBP<br/>
+1      Jan 1, 2010         76           5            76           119<br/>
+1      Mar 10, 2010       77           5            73           119<br/>
+1      July 1, 2010         76           5            76           120<br/>
+2      Feb 2, 2009         55           5.5         70            132<br/>
+2      Mar 5, 2009         60           5.5         70            132<br/>
+2      Aug 2, 2009         57           5.5         71            130<br/>
+….</p>
+<p>I would like to predict LowBP and HighBP after 1 month, 2 months, etc.</p>
+<p>As you can see the baseline for each patient will be different and the interval is not equal as well. In addition to that I’ve less data and also some missing data.</p>
+<p>I would like your opinion about tackling this problem especially the initial stage of preparing the data. How could I make it a time series?</p>
+<p>Do I need to create 2 more columns as future values of LowBP and HighBP and copy the next record of each patient as a future value. In that case the last record will have no future value and I may need to delete it. </p>
+<p>After that how could I split for train and test data. Do I need to keep all the last records of each patient as test data.</p>
+<p>Once I get some initial start I can then try to apply different techniques and models. I was reading your post about time series and also somewhere about LSTM. I’ve Matlab 2016 and LSTM I believe supported from 2017. If needed I’ll try to update.</p>
+<p>Thanks again.</p>
+<div class="reply">
+<a aria-label="Reply to Faisal" class="comment-reply-link" href="#comment-427816" onclick='return addComment.moveForm( "comment-427816", "427816", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-427831">
+<div class="comment-container" id="li-comment-427831">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 29, 2018 at 8:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427831" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Maybe this post will help:<br/>
+<a href="https://machinelearningmastery.com/convert-time-series-supervised-learning-problem-python/" rel="nofollow">https://machinelearningmastery.com/convert-time-series-supervised-learning-problem-python/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-427831" onclick='return addComment.moveForm( "comment-427831", "427831", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-5" id="comment-427897">
+<div class="comment-container" id="li-comment-427897">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">January 30, 2018 at 8:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427897" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks again. In addition to that post I also read this<br/>
+<a href="https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/" rel="nofollow">https://machinelearningmastery.com/backtest-machine-learning-models-time-series-forecasting/</a></p>
+<p>and for sure will try to apply windows method and also walk-forward.</p>
+<p>Just trying to remove one confusion regarding prediction whether it will be for each ID or for all. What I mean whether I take for example first ID and try to create different models using walk forward say for 15 times. Then I take second ID and do the same for it. Correct me if I’m wrong doing this way I’ll get predictive models that are dependent on IDs. So what about if a new patient comes in? How do we predict for him? Do we need previous values for this patient and need to create again new models for this patient?</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-5" id="comment-427932">
+<div class="comment-container" id="li-comment-427932">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 30, 2018 at 10:00 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427932" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You have options. You can choose to model per patient, per patient group, across all patients or some other variation.</p>
+<p>There is no one way, so I’d encourage you to explore a few different framings of your problem and see what works best for your specific data.</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-427968">
+<div class="comment-container" id="li-comment-427968">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">January 31, 2018 at 12:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-427968" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Ok I’ll try these different options.</p>
+<p>Do you have any post for increasing the amount of data. I was thinking of copula or with some regression coefficients. What is your opinion?</p>
+<p>As I mentioned earlier I’ve less data and per patient maybe around 3 to 4 records. I’m not sure whether I understand correctly and clear in my previous reply that when I use walk around to predict the next value and then use this value to predict the other next value. Are we actually increasing the amount of data? If yes then how the model can be validated?</p>
+<div class="reply">
+<a aria-label="Reply to Faisal" class="comment-reply-link" href="#comment-427968" onclick='return addComment.moveForm( "comment-427968", "427968", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-428016">
+<div class="comment-container" id="li-comment-428016">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">January 31, 2018 at 9:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-428016" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps it would be worth taking some time to really nail down what you want to predict and what data could be used:<br/>
+<a href="http://machinelearningmastery.com/how-to-define-your-machine-learning-problem/" rel="nofollow">http://machinelearningmastery.com/how-to-define-your-machine-learning-problem/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-428016" onclick='return addComment.moveForm( "comment-428016", "428016", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-429730">
+<div class="comment-container" id="li-comment-429730">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/86f52ed51c387d1caf9a66dcb2221480?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faisal</span>
+<span class="date">February 17, 2018 at 2:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-429730" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’ve generated some synthetic data using uniform distribution with same mean and variance. Also I use copula fit to generate with Gaussian distribution. Now how do I verify that it is not biased. Is there any post?</p>
+<p>Another thing regarding creating the model patient wise. When I create model (for example NarNet) and predict for one patient and then move to next patient, how to merge the previous model with this patient. Or if I create separate model for each patient then how to merge to create a final single model?</p>
+<div class="reply">
+<a aria-label="Reply to Faisal" class="comment-reply-link" href="#comment-429730" onclick='return addComment.moveForm( "comment-429730", "429730", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-429758">
+<div class="comment-container" id="li-comment-429758">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 17, 2018 at 8:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-429758" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You can plot the residual errors to see if they are Gaussian.</p>
+<p>Perhaps ensemble, or perhaps combine data and train one large model. You are only limited by your imagination.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-429758" onclick='return addComment.moveForm( "comment-429758", "429758", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-430633">
+<div class="comment-container" id="li-comment-430633">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6627c8d65884462271e73dacde1297a3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6627c8d65884462271e73dacde1297a3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">navish</span>
+<span class="date">February 27, 2018 at 6:21 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-430633" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+           i am new to neural network. I have got closing prices of a market index. I want to model volatility using LSTM neural network. How to implement  LSTM in r to forecast the volatility of that index. what are the steps i should undertake to get a good out of sample forecast( prevent over/under fitting and robust method). Is there any r codes on how to model univariate times series using LSTM?</p>
+<div class="reply">
+<a aria-label="Reply to navish" class="comment-reply-link" href="#comment-430633" onclick='return addComment.moveForm( "comment-430633", "430633", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-430678">
+<div class="comment-container" id="li-comment-430678">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 28, 2018 at 6:02 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-430678" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have a few posts on time series forecasting with LSTMs in Python that might help, start here:<br/>
+<a href="https://machinelearningmastery.com/start-here/#lstm" rel="nofollow">https://machinelearningmastery.com/start-here/#lstm</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-430678" onclick='return addComment.moveForm( "comment-430678", "430678", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-432373">
+<div class="comment-container" id="li-comment-432373">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6dae0b9d9dfccdf1f8f88f1f5197c475?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6dae0b9d9dfccdf1f8f88f1f5197c475?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Siddu</span>
+<span class="date">March 17, 2018 at 12:58 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-432373" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason, Nice article.. I have a question.. Can I use RNNs for multi sensor data fusion?..I have data in the form of distances, velocities and acceleration</p>
+<div class="reply">
+<a aria-label="Reply to Siddu" class="comment-reply-link" href="#comment-432373" onclick='return addComment.moveForm( "comment-432373", "432373", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-432412">
+<div class="comment-container" id="li-comment-432412">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 17, 2018 at 8:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-432412" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Perhaps. I am not familiar with the domain sorry. I would recommend searching on google scholar for some similar examples.</p>
+<p>RNNs are suited to sequence prediction generally:<br/>
+<a href="https://machinelearningmastery.com/sequence-prediction/" rel="nofollow">https://machinelearningmastery.com/sequence-prediction/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-432412" onclick='return addComment.moveForm( "comment-432412", "432412", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-434001">
+<div class="comment-container" id="li-comment-434001">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/988e4094d73ac1bbfcfcee019a6dc6ab?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/988e4094d73ac1bbfcfcee019a6dc6ab?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">GE</span>
+<span class="date">April 3, 2018 at 4:41 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-434001" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason. I am trying to wrap my head around the different activation methods for neurons and how that can be useful for a more complex LSTM-based RNN. I am building a market close price predictor using OHLC, volume, # trades, RSI values, and SMAs. SMA’s and OHLC are all prices, but I am still struggling on how to tell the LSTM that a high RSI value has an inverse relationship to price. All my data points are normalized to a 0-1 scale but it feels like the LSTM just grabs all the numbers and treats them the same because the predictions are too far off. Im thinking maybe feeding the price inputs to one LSTM, and the RSI to another that uses inverse activation or something might help. Any thoughts? Thank you. GE</p>
+<div class="reply">
+<a aria-label="Reply to GE" class="comment-reply-link" href="#comment-434001" onclick='return addComment.moveForm( "comment-434001", "434001", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-434057">
+<div class="comment-container" id="li-comment-434057">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 4, 2018 at 6:08 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-434057" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You might need a lot more data or a lot more training.</p>
+<p>Perhaps start with an MLP and move to LSTM only if it can outperform the MLP. Often for time series problems, the LSTMs is not the right tool.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-434057" onclick='return addComment.moveForm( "comment-434057", "434057", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-442279">
+<div class="comment-container" id="li-comment-442279">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8288f13b2c89a609679f6d15610dbaaa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8288f13b2c89a609679f6d15610dbaaa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tushar Sinha</span>
+<span class="date">June 29, 2018 at 5:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-442279" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m working on a project to predict the usage of all the files in a filesystem in near future based on the metadata of the file system for past 6 months. I’ve got the following attributes about the files with me :<br/>
+1. The temporal sequence of file usage for last 6 months(whenever the file was read/written/modified and by whom)<br/>
+2. All the users who are on the server and can access the files.<br/>
+3. Last modified/written/read epoch time and by whom<br/>
+4. File creation epoch time and by whom<br/>
+5. Any compliance regulations on the file(whether the file contains any confidential data)<br/>
+6. Size, name, extension, version, type of the file<br/>
+7. Number of users who can access the file<br/>
+8. File path<br/>
+9. Total number of times accessed<br/>
+10. Permitted users</p>
+<p>Now, I plan to use LSTM but for standard LSTMs, the input is temporal sequence only. However, all the attributes that I have seem significant in predicting the future usage of the file.<br/>
+How should I also make use of the attributes of the file that I have? Should I train a Feedforward Neural Network, disregarding the fact that it usually fails on temporal sequences? How should I proceed?<br/>
+Does a variant of LSTM exist that can take into account the attributes of the file as well and predict the usage of the file in near future?</p>
+<p>Thanks in advance 🙂 !!</p>
+<div class="reply">
+<a aria-label="Reply to Tushar Sinha" class="comment-reply-link" href="#comment-442279" onclick='return addComment.moveForm( "comment-442279", "442279", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-442305">
+<div class="comment-container" id="li-comment-442305">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 29, 2018 at 6:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-442305" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>You could provide all features each time step or have a multi-headed model, with one head the sequence with an LSTM and another head a Dense with the vector.</p>
+<p>Try both and see which works best.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442305" onclick='return addComment.moveForm( "comment-442305", "442305", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-442314">
+<div class="comment-container" id="li-comment-442314">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8288f13b2c89a609679f6d15610dbaaa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8288f13b2c89a609679f6d15610dbaaa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tushar Sinha</span>
+<span class="date">June 29, 2018 at 9:07 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-442314" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for the reply Jason. Can you please point me to any research paper/ other resources which solve a similar problem?<br/>
+That can help me immensely in working my way out.</p>
+<div class="reply">
+<a aria-label="Reply to Tushar Sinha" class="comment-reply-link" href="#comment-442314" onclick='return addComment.moveForm( "comment-442314", "442314", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-442333">
+<div class="comment-container" id="li-comment-442333">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 29, 2018 at 3:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-442333" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This might help as a start:<br/>
+<a href="https://machinelearningmastery.com/keras-functional-api-deep-learning/" rel="nofollow">https://machinelearningmastery.com/keras-functional-api-deep-learning/</a></p>
+<p>I do have a few more examples of multi-headed models on the blog.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442333" onclick='return addComment.moveForm( "comment-442333", "442333", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-443486">
+<div class="comment-container" id="li-comment-443486">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/44937572c6053622b30924ab5ff30695?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/44937572c6053622b30924ab5ff30695?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Bi JW</span>
+<span class="date">July 14, 2018 at 9:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-443486" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>Great article!  Thank you your for sharing!! </p>
+<p>You said that “Feed-forward neural networks do offer great capability but still suffer from this key limitation of having to specify the temporal dependence upfront in the design of the model. And LSTM can overcome this limitation”<br/>
+However, it seems that the parameter ‘timestep’ should be selected when using LSTM. Therefore, I wonder whether the ‘timestep’ is related to the ‘ temporal dependence’ or ‘the number of lag observations’? And how to select the ‘timestep’ when using LSTM?</p>
+<p>Thank you!!</p>
+<div class="reply">
+<a aria-label="Reply to Bi JW" class="comment-reply-link" href="#comment-443486" onclick='return addComment.moveForm( "comment-443486", "443486", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-443520">
+<div class="comment-container" id="li-comment-443520">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 15, 2018 at 6:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-443520" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It is the number of lag observations, but it can vary from sample to sample via zero-padding. The network processes one time step at a time.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443520" onclick='return addComment.moveForm( "comment-443520", "443520", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-450930">
+<div class="comment-container" id="li-comment-450930">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/38fad5c19b9f971dbd2b25b324bda3f8?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/38fad5c19b9f971dbd2b25b324bda3f8?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">JG</span>
+<span class="date">October 7, 2018 at 10:10 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/#comment-450930" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Some times words in language used to define a methodology or techniques is hard for new incomers…so how to express your ideas and concept employing  words such as  “Recurrent”, “Recursive”, “Iterate”, Interact”, etc. to express the idea to repeating …so until you do not practice with this new tool and ideas you really do not get the “essence” of the concepts and methodology…because those words used to labeled a methods could be interchange without problems…only operating with them give you the real clue of it …but not necessary the words used for tech people !</p>
+<div class="reply">
+<a aria-label="Reply to JG" class="comment-reply-link" href="#comment-450930" onclick='return addComment.moveForm( "comment-450930", "450930", "respond", "4042" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/promise-recurrent-neural-networks-time-series-forecasting/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4042"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="72a1eb3f41"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="198"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-51"> <div class="textwidget"><p></p><center><br/>
+<strong>Deep Learning for Time Series</strong><br/>
+Forecast the future with MLPs, CNNs, and LSTMs.
+<p><a href="/deep-learning-for-time-series-forecasting/">Click to Get Started Now!</a><br/>
+<a href="/deep-learning-for-time-series-forecasting/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

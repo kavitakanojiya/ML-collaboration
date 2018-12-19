@@ -1,0 +1,1182 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python</title>
+<link href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python" property="og:title"/>
+<meta content="How much history is required for a time series forecast model? This is a problem-specific question that we can investigate by designing an experiment. In this tutorial, you will discover the effect that history size has on the skill of an ARIMA forecast model in Python. Specifically, in this tutorial, you will: Load a standard …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Time Series" property="article:section"/>
+<meta content="2017-03-26T18:00:02+00:00" property="article:published_time"/>
+<meta content="2018-06-11T20:38:56+00:00" property="article:modified_time"/>
+<meta content="2018-06-11T20:38:56+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Sensitivity-Analysis-of-History-Size-to-Forecast-Skill-with-ARIMA-in-Python.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Sensitivity-Analysis-of-History-Size-to-Forecast-Skill-with-ARIMA-in-Python.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="480" property="og:image:height"/>
+<meta content="Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/feed/" rel="alternate" title="Machine Learning Mastery » Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=3845" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fsensitivity-analysis-history-size-forecast-skill-arima-python%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fsensitivity-analysis-history-size-forecast-skill-arima-python%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-3845 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-55"> <div class="textwidget"><p>Want help with time series? <a href="https://machinelearningmastery.lpages.co/tsfwp-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-3845 post type-post status-publish format-standard has-post-thumbnail hentry category-time-series">
+<header>
+<h1 class="title entry-title">Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-03-27T05:00:02+1100">March 27, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/time-series/" title="View all items in Time Series">Time Series</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3845 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Sensitivity+Analysis+of+History+Size+to+Forecast+Skill+with+ARIMA+in+Python&amp;url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>How much history is required for a time series forecast model?</p>
+<p>This is a problem-specific question that we can investigate by designing an experiment.</p>
+<p>In this tutorial, you will discover the effect that history size has on the skill of an ARIMA forecast model in Python.</p>
+<p>Specifically, in this tutorial, you will:</p>
+<ul>
+<li>Load a standard dataset and fit an ARIMA model.</li>
+<li>Design and execute a sensitivity analysis of the number of years of historic data to model skill.</li>
+<li>Analyze the results of the sensitivity analysis.</li>
+</ul>
+<p>This will provide a template for performing a similar sensitivity analysis of historical data set size on your own time series forecasting problems.</p>
+<p>Let’s get started.</p>
+<ul>
+<li><strong>Update Aug/2017</strong>: Fixed a bug where the models were constructed on the raw data instead of the seasonally differenced version of the data. Thanks David Ravnsborg!</li>
+<li><strong>Update Jun/2018</strong>: Removed duplicated sentence. Thanks Rahul!</li>
+</ul>
+<div class="wp-caption aligncenter" id="attachment_3848" style="width: 650px"><img alt="Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python" class="size-full wp-image-3848" height="480" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Sensitivity-Analysis-of-History-Size-to-Forecast-Skill-with-ARIMA-in-Python.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Sensitivity-Analysis-of-History-Size-to-Forecast-Skill-with-ARIMA-in-Python.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Sensitivity-Analysis-of-History-Size-to-Forecast-Skill-with-ARIMA-in-Python-300x225.jpg 300w" width="640"/><p class="wp-caption-text">Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python<br/>Photo by <a href="https://www.flickr.com/photos/smemon/14375447955/">Sean MacEntee</a>, some rights reserved.</p></div>
+<h2>Minimum Daily Temperatures Dataset</h2>
+<p>This dataset describes the minimum daily temperatures over 10 years (1981-1990) in the city of Melbourne, Australia.</p>
+<p>The units are in degrees Celsius and there are 3,650 observations. The source of the data is credited as the Australian Bureau of Meteorology.</p>
+<p><a href="https://datamarket.com/data/set/2324/daily-minimum-temperatures-in-melbourne-australia-1981-1990">Download the dataset</a> and save it in your current working directory with the filename “<em>daily-minimum-temperatures.csv</em>“.</p>
+<p>Note: The downloaded file contains some question mark (“?”) characters that must be removed before you can use the dataset. Open the file in a text editor and remove the “?” characters. Also, remove any footer information in the file.</p>
+<p>The example below loads the dataset as a Pandas Series.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e48e792390916" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# line plot of time series
+from pandas import Series
+from matplotlib import pyplot
+# load dataset
+series = Series.from_csv('daily-minimum-temperatures.csv', header=0)
+# display first few rows
+print(series.head(20))
+# line plot of dataset
+series.plot()
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e48e792390916-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e48e792390916-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e48e792390916-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e48e792390916-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e48e792390916-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e48e792390916-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e48e792390916-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e48e792390916-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e48e792390916-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e48e792390916-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e48e792390916-1"><span class="crayon-p"># line plot of time series</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e48e792390916-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line" id="crayon-5c0c9c455e48e792390916-3"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-v">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e48e792390916-4"><span class="crayon-p"># load dataset</span></div><div class="crayon-line" id="crayon-5c0c9c455e48e792390916-5"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'daily-minimum-temperatures.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e48e792390916-6"><span class="crayon-p"># display first few rows</span></div><div class="crayon-line" id="crayon-5c0c9c455e48e792390916-7"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">head</span><span class="crayon-sy">(</span><span class="crayon-cn">20</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e48e792390916-8"><span class="crayon-p"># line plot of dataset</span></div><div class="crayon-line" id="crayon-5c0c9c455e48e792390916-9"><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e48e792390916-10"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>Running the example prints the first 20 rows of the loaded file.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e496988119408" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+Date
+1981-01-01 20.7
+1981-01-02 17.9
+1981-01-03 18.8
+1981-01-04 14.6
+1981-01-05 15.8
+1981-01-06 15.8
+1981-01-07 15.8
+1981-01-08 17.4
+1981-01-09 21.8
+1981-01-10 20.0
+1981-01-11 16.2
+1981-01-12 13.3
+1981-01-13 16.7
+1981-01-14 21.5
+1981-01-15 25.0
+1981-01-16 20.7
+1981-01-17 20.6
+1981-01-18 24.8
+1981-01-19 17.7
+1981-01-20 15.5
+Name: Temp, dtype: float64</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-16">16</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-18">18</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-20">20</div><div class="crayon-num" data-line="crayon-5c0c9c455e496988119408-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e496988119408-22">22</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e496988119408-1">Date</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-2">1981-01-01 20.7</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-3">1981-01-02 17.9</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-4">1981-01-03 18.8</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-5">1981-01-04 14.6</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-6">1981-01-05 15.8</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-7">1981-01-06 15.8</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-8">1981-01-07 15.8</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-9">1981-01-08 17.4</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-10">1981-01-09 21.8</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-11">1981-01-10 20.0</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-12">1981-01-11 16.2</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-13">1981-01-12 13.3</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-14">1981-01-13 16.7</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-15">1981-01-14 21.5</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-16">1981-01-15 25.0</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-17">1981-01-16 20.7</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-18">1981-01-17 20.6</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-19">1981-01-18 24.8</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-20">1981-01-19 17.7</div><div class="crayon-line" id="crayon-5c0c9c455e496988119408-21">1981-01-20 15.5</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e496988119408-22">Name: Temp, dtype: float64</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>Then the data is graphed as a line plot showing the seasonal pattern.</p>
+<div class="wp-caption aligncenter" id="attachment_3846" style="width: 650px"><img alt="Minimum Daily Temperatures Dataset Line Plot" class="size-full wp-image-3846" height="480" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Minimum-Daily-Temperatures-Dataset-Line-Plot-1.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Minimum-Daily-Temperatures-Dataset-Line-Plot-1.png 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/Minimum-Daily-Temperatures-Dataset-Line-Plot-1-300x225.png 300w" width="640"/><p class="wp-caption-text">Minimum Daily Temperatures Dataset Line Plot</p></div>
+<h2>ARIMA Forecast Model</h2>
+<p>In this section, we will fit an ARIMA forecast model to the data.</p>
+<p>The parameters of the model will not be tuned, but will be skillful.</p>
+<p>The data contains a one-year seasonal component that must be removed to make the data stationary and suitable for use with an ARIMA model.</p>
+<p>We can take the seasonal difference by subtracting the observation from one year ago (365 days). This is rough in that it does not account for leap years. It also means that the first year of data will be unavailable for modeling as there is no data one year before to difference the data.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e498866549747" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# seasonal difference
+differenced = series.diff(365)
+# trim off the first year of empty data
+differenced = differenced[365:]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e498866549747-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e498866549747-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e498866549747-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e498866549747-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e498866549747-1"><span class="crayon-p"># seasonal difference</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e498866549747-2"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">diff</span><span class="crayon-sy">(</span><span class="crayon-cn">365</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e498866549747-3"><span class="crayon-p"># trim off the first year of empty data</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e498866549747-4"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-cn">365</span><span class="crayon-o">:</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>We will fit an ARIMA(7,0,0) model to the data and print the summary information. This demonstrates that the model is stable.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e49a032919782" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# fit model
+model = ARIMA(differenced, order=(7,0,0))
+model_fit = model.fit(trend='nc', disp=0)
+print(model_fit.summary())</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e49a032919782-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49a032919782-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e49a032919782-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49a032919782-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e49a032919782-1"><span class="crayon-p"># fit model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49a032919782-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">ARIMA</span><span class="crayon-sy">(</span><span class="crayon-v">differenced</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">order</span><span class="crayon-o">=</span><span class="crayon-sy">(</span><span class="crayon-cn">7</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e49a032919782-3"><span class="crayon-v">model_fit</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">trend</span><span class="crayon-o">=</span><span class="crayon-s">'nc'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">disp</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49a032919782-4"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">model_fit</span><span class="crayon-sy">.</span><span class="crayon-e">summary</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>Putting this all together, the complete example is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e49c685495632" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# fit an ARIMA model
+from pandas import Series
+from matplotlib import pyplot
+from statsmodels.tsa.arima_model import ARIMA
+# load dataset
+series = Series.from_csv('daily-minimum-temperatures.csv', header=0)
+# seasonal difference
+differenced = series.diff(365)
+# trim off the first year of empty data
+differenced = series[365:]
+# fit model
+model = ARIMA(differenced, order=(7,0,0))
+model_fit = model.fit(trend='nc', disp=0)
+print(model_fit.summary())</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c455e49c685495632-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e49c685495632-14">14</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-1"><span class="crayon-p"># fit an ARIMA model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-3"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-4"><span class="crayon-e">from </span><span class="crayon-v">statsmodels</span><span class="crayon-sy">.</span><span class="crayon-v">tsa</span><span class="crayon-sy">.</span><span class="crayon-e">arima_model </span><span class="crayon-e">import </span><span class="crayon-v">ARIMA</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-5"><span class="crayon-p"># load dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-6"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'daily-minimum-temperatures.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-7"><span class="crayon-p"># seasonal difference</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-8"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">diff</span><span class="crayon-sy">(</span><span class="crayon-cn">365</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-9"><span class="crayon-p"># trim off the first year of empty data</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-10"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">series</span><span class="crayon-sy">[</span><span class="crayon-cn">365</span><span class="crayon-o">:</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-11"><span class="crayon-p"># fit model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-12"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">ARIMA</span><span class="crayon-sy">(</span><span class="crayon-v">differenced</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">order</span><span class="crayon-o">=</span><span class="crayon-sy">(</span><span class="crayon-cn">7</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e49c685495632-13"><span class="crayon-v">model_fit</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">trend</span><span class="crayon-o">=</span><span class="crayon-s">'nc'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">disp</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e49c685495632-14"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">model_fit</span><span class="crayon-sy">.</span><span class="crayon-e">summary</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0011 seconds] -->
+<p>Running the example provides a summary of the fit ARIMA model.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4a0481328685" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+                              ARMA Model Results                              
+==============================================================================
+Dep. Variable:                   Temp   No. Observations:                 3285
+Model:                     ARMA(7, 0)   Log Likelihood               -8690.089
+Method:                       css-mle   S.D. of innovations              3.409
+Date:                Fri, 25 Aug 2017   AIC                          17396.178
+Time:                        15:02:59   BIC                          17444.955
+Sample:                    01-01-1982   HQIC                         17413.643
+                         - 12-31-1990                                         
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+ar.L1.Temp     0.5278      0.017     30.264      0.000       0.494       0.562
+ar.L2.Temp    -0.1099      0.020     -5.576      0.000      -0.149      -0.071
+ar.L3.Temp     0.0286      0.020      1.441      0.150      -0.010       0.067
+ar.L4.Temp     0.0307      0.020      1.549      0.122      -0.008       0.070
+ar.L5.Temp     0.0090      0.020      0.456      0.648      -0.030       0.048
+ar.L6.Temp     0.0164      0.020      0.830      0.407      -0.022       0.055
+ar.L7.Temp     0.0272      0.017      1.557      0.120      -0.007       0.061
+                                    Roots                                    
+=============================================================================
+                 Real           Imaginary           Modulus         Frequency
+-----------------------------------------------------------------------------
+AR.1            1.3305           -0.0000j            1.3305           -0.0000
+AR.2            0.9936           -1.1966j            1.5553           -0.1397
+AR.3            0.9936           +1.1966j            1.5553            0.1397
+AR.4           -0.2067           -1.7061j            1.7186           -0.2692
+AR.5           -0.2067           +1.7061j            1.7186            0.2692
+AR.6           -1.7536           -0.8938j            1.9683           -0.4250
+AR.7           -1.7536           +0.8938j            1.9683            0.4250
+-----------------------------------------------------------------------------</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-16">16</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-18">18</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-20">20</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-22">22</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-24">24</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-26">26</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-28">28</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a0481328685-30">30</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a0481328685-31">31</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-1">                              ARMA Model Results                              </div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-2">==============================================================================</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-3">Dep. Variable:                   Temp   No. Observations:                 3285</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-4">Model:                     ARMA(7, 0)   Log Likelihood               -8690.089</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-5">Method:                       css-mle   S.D. of innovations              3.409</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-6">Date:                Fri, 25 Aug 2017   AIC                          17396.178</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-7">Time:                        15:02:59   BIC                          17444.955</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-8">Sample:                    01-01-1982   HQIC                         17413.643</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-9">                         - 12-31-1990                                         </div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-10">==============================================================================</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-11">                 coef    std err          z      P&gt;|z|      [0.025      0.975]</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-12">------------------------------------------------------------------------------</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-13">ar.L1.Temp     0.5278      0.017     30.264      0.000       0.494       0.562</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-14">ar.L2.Temp    -0.1099      0.020     -5.576      0.000      -0.149      -0.071</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-15">ar.L3.Temp     0.0286      0.020      1.441      0.150      -0.010       0.067</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-16">ar.L4.Temp     0.0307      0.020      1.549      0.122      -0.008       0.070</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-17">ar.L5.Temp     0.0090      0.020      0.456      0.648      -0.030       0.048</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-18">ar.L6.Temp     0.0164      0.020      0.830      0.407      -0.022       0.055</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-19">ar.L7.Temp     0.0272      0.017      1.557      0.120      -0.007       0.061</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-20">                                    Roots                                    </div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-21">=============================================================================</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-22">                 Real           Imaginary           Modulus         Frequency</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-23">-----------------------------------------------------------------------------</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-24">AR.1            1.3305           -0.0000j            1.3305           -0.0000</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-25">AR.2            0.9936           -1.1966j            1.5553           -0.1397</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-26">AR.3            0.9936           +1.1966j            1.5553            0.1397</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-27">AR.4           -0.2067           -1.7061j            1.7186           -0.2692</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-28">AR.5           -0.2067           +1.7061j            1.7186            0.2692</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-29">AR.6           -1.7536           -0.8938j            1.9683           -0.4250</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a0481328685-30">AR.7           -1.7536           +0.8938j            1.9683            0.4250</div><div class="crayon-line" id="crayon-5c0c9c455e4a0481328685-31">-----------------------------------------------------------------------------</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p></p>
+<h2>Model History Sensitivity Analysis</h2>
+<p>In this section, we will explore the effect that history size has on the skill of the fit model.</p>
+<p>The original data has 10 years of data. Seasonal differencing leaves us with 9 years of data. We will hold back the final year of data as test data and perform walk-forward validation across this final year.</p>
+<p>The day-by-day forecasts will be collected and a root mean squared error (RMSE) score will be calculated to indicate the skill of the model.</p>
+<p>The snippet below separates the seasonally adjusted data into training and test datasets.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4a2856692053" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+train, test = differenced[differenced.index &lt; '1990'], differenced['1990']</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4a2856692053-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4a2856692053-1"><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-v">differenced</span><span class="crayon-sy">.</span><span class="crayon-v">index</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-h"> </span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>It is important to choose an interval that makes sense for your own forecast problem.</p>
+<p>We will evaluate the skill of the model with the previous 1 year of data, then 2 years, all the way back through the 8 available years of historical data.</p>
+<p>A year is a good interval to test for this dataset given the seasonal nature of the data, but other intervals could be tested, such as month-wise or multi-year intervals.</p>
+<p>The snippet below shows how we can step backwards by year and cumulatively select all available observations.</p>
+<p>For example</p>
+<ul>
+<li>Test 1: All data in 1989</li>
+<li>Test 2: All data in 1988 to 1989</li>
+</ul>
+<p>And so on.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4a4008038252" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# split
+train, test = differenced[differenced.index &lt; '1990'], differenced['1990']
+years = ['1989', '1988', '1987', '1986', '1985', '1984', '1983', '1982']
+for year in years:
+	# select data from 'year' cumulative to 1989
+	dataset = train[train.index &gt;= year]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4a4008038252-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a4008038252-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a4008038252-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a4008038252-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a4008038252-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a4008038252-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4a4008038252-1"><span class="crayon-p"># split</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a4008038252-2"><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-v">differenced</span><span class="crayon-sy">.</span><span class="crayon-v">index</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-h"> </span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a4008038252-3"><span class="crayon-v">years</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'1989'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1988'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1987'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1986'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1985'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1984'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1983'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1982'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a4008038252-4"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-e">year </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">years</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a4008038252-5"><span class="crayon-h"> </span><span class="crayon-p"># select data from 'year' cumulative to 1989</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a4008038252-6"><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-v">train</span><span class="crayon-sy">.</span><span class="crayon-v">index</span><span class="crayon-h"> </span><span class="crayon-o">&gt;=</span><span class="crayon-h"> </span><span class="crayon-v">year</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>The next step is to evaluate an ARIMA model.</p>
+<p>We will use walk-forward validation. This means that a model will be constructed on the selected historic data and forecast the next time step (Jan 1st 1990). The real observation for that time step will be added to the history, a new model constructed, and the next time step predicted.</p>
+<p>The forecasts will be collected together and compared to the final year of observations to give an error score. In this case, RMSE will be used as the scores and will be in the same scale as the observations themselves.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4a6364824413" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# walk forward over time steps in test
+values = dataset.values
+history = [values[i] for i in range(len(values))]
+predictions = list()
+test_values = test.values
+for t in range(len(test_values)):
+	# fit model
+	model = ARIMA(history, order=(7,0,0))
+	model_fit = model.fit(trend='nc', disp=0)
+	# make prediction
+	yhat = model_fit.forecast()[0]
+	predictions.append(yhat)
+	history.append(test_values[t])
+rmse = sqrt(mean_squared_error(test_values, predictions))
+print('%s-%s (%d values) RMSE: %.3f' % (years[0], year, len(values), rmse))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a6364824413-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a6364824413-15">15</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-1"><span class="crayon-p"># walk forward over time steps in test</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-2"><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-3"><span class="crayon-v">history</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-v">i</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">values</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-4"><span class="crayon-v">predictions</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">list</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-5"><span class="crayon-v">test_values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-6"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">t</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-7"><span class="crayon-h"> </span><span class="crayon-p"># fit model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-8"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">ARIMA</span><span class="crayon-sy">(</span><span class="crayon-v">history</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">order</span><span class="crayon-o">=</span><span class="crayon-sy">(</span><span class="crayon-cn">7</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-9"><span class="crayon-h"> </span><span class="crayon-v">model_fit</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">trend</span><span class="crayon-o">=</span><span class="crayon-s">'nc'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">disp</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-10"><span class="crayon-h"> </span><span class="crayon-p"># make prediction</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-11"><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model_fit</span><span class="crayon-sy">.</span><span class="crayon-e">forecast</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-12"><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-13"><span class="crayon-h"> </span><span class="crayon-v">history</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">[</span><span class="crayon-v">t</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a6364824413-14"><span class="crayon-v">rmse</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a6364824413-15"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'%s-%s (%d values) RMSE: %.3f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">years</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">year</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">values</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">rmse</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0017 seconds] -->
+<p>Putting this all together, the complete example is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4a8624348510" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# fit an ARIMA model
+from pandas import Series
+from matplotlib import pyplot
+from statsmodels.tsa.arima_model import ARIMA
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+# load dataset
+series = Series.from_csv('daily-minimum-temperatures.csv', header=0)
+# seasonal difference
+differenced = series.diff(365)
+# trim off the first year of empty data
+differenced = differenced[365:]
+# split
+train, test = differenced[differenced.index &lt; '1990'], differenced['1990']
+years = ['1989', '1988', '1987', '1986', '1985', '1984', '1983', '1982']
+for year in years:
+	# select data from 'year' cumulative to 1989
+	dataset = train[train.index &gt;= year]
+	# walk forward over time steps in test
+	values = dataset.values
+	history = [values[i] for i in range(len(values))]
+	predictions = list()
+	test_values = test.values
+	for t in range(len(test_values)):
+		# fit model
+		model = ARIMA(history, order=(7,0,0))
+		model_fit = model.fit(trend='nc', disp=0)
+		# make prediction
+		yhat = model_fit.forecast()[0]
+		predictions.append(yhat)
+		history.append(test_values[t])
+	rmse = sqrt(mean_squared_error(test_values, predictions))
+	print('%s-%s (%d values) RMSE: %.3f' % (years[0], year, len(values), rmse))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-8">8</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-10">10</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-12">12</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-14">14</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-16">16</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-18">18</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-20">20</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-22">22</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-24">24</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-26">26</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-28">28</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-30">30</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4a8624348510-32">32</div><div class="crayon-num" data-line="crayon-5c0c9c455e4a8624348510-33">33</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-1"><span class="crayon-p"># fit an ARIMA model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">Series</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-3"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-e">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-4"><span class="crayon-e">from </span><span class="crayon-v">statsmodels</span><span class="crayon-sy">.</span><span class="crayon-v">tsa</span><span class="crayon-sy">.</span><span class="crayon-e">arima_model </span><span class="crayon-e">import </span><span class="crayon-e">ARIMA</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-5"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">metrics </span><span class="crayon-e">import </span><span class="crayon-e">mean_squared_error</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-6"><span class="crayon-e">from </span><span class="crayon-e">math </span><span class="crayon-e">import </span><span class="crayon-v">sqrt</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-7"><span class="crayon-p"># load dataset</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-8"><span class="crayon-v">series</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">Series</span><span class="crayon-sy">.</span><span class="crayon-e">from_csv</span><span class="crayon-sy">(</span><span class="crayon-s">'daily-minimum-temperatures.csv'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">header</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-9"><span class="crayon-p"># seasonal difference</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-10"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">series</span><span class="crayon-sy">.</span><span class="crayon-e">diff</span><span class="crayon-sy">(</span><span class="crayon-cn">365</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-11"><span class="crayon-p"># trim off the first year of empty data</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-12"><span class="crayon-v">differenced</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-cn">365</span><span class="crayon-o">:</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-13"><span class="crayon-p"># split</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-14"><span class="crayon-v">train</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-v">differenced</span><span class="crayon-sy">.</span><span class="crayon-v">index</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-h"> </span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">differenced</span><span class="crayon-sy">[</span><span class="crayon-s">'1990'</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-15"><span class="crayon-v">years</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-s">'1989'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1988'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1987'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1986'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1985'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1984'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1983'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">'1982'</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-16"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-e">year </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-v">years</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-17"><span class="crayon-h"> </span><span class="crayon-p"># select data from 'year' cumulative to 1989</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-18"><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">train</span><span class="crayon-sy">[</span><span class="crayon-v">train</span><span class="crayon-sy">.</span><span class="crayon-v">index</span><span class="crayon-h"> </span><span class="crayon-o">&gt;=</span><span class="crayon-h"> </span><span class="crayon-v">year</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-19"><span class="crayon-h"> </span><span class="crayon-p"># walk forward over time steps in test</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-20"><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">dataset</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-21"><span class="crayon-e"> </span><span class="crayon-v">history</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-v">i</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">values</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-22"><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">list</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-23"><span class="crayon-h"> </span><span class="crayon-v">test_values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">test</span><span class="crayon-sy">.</span><span class="crayon-e">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-24"><span class="crayon-e"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">t</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-25"><span class="crayon-h"> </span><span class="crayon-p"># fit model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-26"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">ARIMA</span><span class="crayon-sy">(</span><span class="crayon-v">history</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">order</span><span class="crayon-o">=</span><span class="crayon-sy">(</span><span class="crayon-cn">7</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-27"><span class="crayon-h"> </span><span class="crayon-v">model_fit</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">trend</span><span class="crayon-o">=</span><span class="crayon-s">'nc'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">disp</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-28"><span class="crayon-h"> </span><span class="crayon-p"># make prediction</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-29"><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model_fit</span><span class="crayon-sy">.</span><span class="crayon-e">forecast</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-30"><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-31"><span class="crayon-h"> </span><span class="crayon-v">history</span><span class="crayon-sy">.</span><span class="crayon-e">append</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">[</span><span class="crayon-v">t</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4a8624348510-32"><span class="crayon-h"> </span><span class="crayon-v">rmse</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">sqrt</span><span class="crayon-sy">(</span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">test_values</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">predictions</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4a8624348510-33"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-s">'%s-%s (%d values) RMSE: %.3f'</span><span class="crayon-h"> </span><span class="crayon-o">%</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">years</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">year</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">values</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">rmse</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0021 seconds] -->
+<p>Running the example prints the interval of history, number of observations in the history, and the RMSE skill of the model trained with that history.</p>
+<p>The example does take awhile to run as 365 ARIMA models are created for each cumulative interval of historic training data.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4aa418399446" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+1989-1989 (365 values) RMSE: 3.120
+1989-1988 (730 values) RMSE: 3.109
+1989-1987 (1095 values) RMSE: 3.104
+1989-1986 (1460 values) RMSE: 3.108
+1989-1985 (1825 values) RMSE: 3.107
+1989-1984 (2190 values) RMSE: 3.103
+1989-1983 (2555 values) RMSE: 3.099
+1989-1982 (2920 values) RMSE: 3.096</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4aa418399446-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4aa418399446-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4aa418399446-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4aa418399446-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4aa418399446-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4aa418399446-6">6</div><div class="crayon-num" data-line="crayon-5c0c9c455e4aa418399446-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4aa418399446-8">8</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4aa418399446-1">1989-1989 (365 values) RMSE: 3.120</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4aa418399446-2">1989-1988 (730 values) RMSE: 3.109</div><div class="crayon-line" id="crayon-5c0c9c455e4aa418399446-3">1989-1987 (1095 values) RMSE: 3.104</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4aa418399446-4">1989-1986 (1460 values) RMSE: 3.108</div><div class="crayon-line" id="crayon-5c0c9c455e4aa418399446-5">1989-1985 (1825 values) RMSE: 3.107</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4aa418399446-6">1989-1984 (2190 values) RMSE: 3.103</div><div class="crayon-line" id="crayon-5c0c9c455e4aa418399446-7">1989-1983 (2555 values) RMSE: 3.099</div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4aa418399446-8">1989-1982 (2920 values) RMSE: 3.096</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>The results show that as the size of the available history is increased, there is a decrease in model error, but the trend is not purely linear.</p>
+<p>We do see that there may be a point of diminishing returns at 2-3 years. Knowing that you can use fewer years of data is useful in domains where data availability or long model training time is an issue.</p>
+<p>We can plot the relationship between ARIMA model error and the number of training observations.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9c455e4ab895551716" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from matplotlib import pyplot
+x = [365, 730, 1095, 1460, 1825, 2190, 2555, 2920]
+y = [3.120, 3.109, 3.104, 3.108, 3.107, 3.103, 3.099, 3.096]
+pyplot.plot(x, y)
+pyplot.show()</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9c455e4ab895551716-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4ab895551716-2">2</div><div class="crayon-num" data-line="crayon-5c0c9c455e4ab895551716-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9c455e4ab895551716-4">4</div><div class="crayon-num" data-line="crayon-5c0c9c455e4ab895551716-5">5</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9c455e4ab895551716-1"><span class="crayon-e">from </span><span class="crayon-e">matplotlib </span><span class="crayon-e">import </span><span class="crayon-i">pyplot</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4ab895551716-2"><span class="crayon-v">x</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">365</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">730</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1095</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1460</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1825</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">2190</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">2555</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">2920</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9c455e4ab895551716-3"><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">3.120</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.109</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.104</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.108</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.107</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.103</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.099</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">3.096</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9c455e4ab895551716-4"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">plot</span><span class="crayon-sy">(</span><span class="crayon-v">x</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9c455e4ab895551716-5"><span class="crayon-v">pyplot</span><span class="crayon-sy">.</span><span class="crayon-e">show</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>Running the example creates a plot that almost shows a linear trend down in error as training samples increases.</p>
+<div class="wp-caption aligncenter" id="attachment_4410" style="width: 1290px"><img alt="History Size vs ARIMA Model Error" class="size-full wp-image-4410" height="960" sizes="(max-width: 1280px) 100vw, 1280px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/History-Size-vs-ARIMA-Model-Error.png" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/History-Size-vs-ARIMA-Model-Error.png 1280w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/History-Size-vs-ARIMA-Model-Error-300x225.png 300w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/History-Size-vs-ARIMA-Model-Error-768x576.png 768w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/03/History-Size-vs-ARIMA-Model-Error-1024x768.png 1024w" width="1280"/><p class="wp-caption-text">History Size vs ARIMA Model Error</p></div>
+<p>This is generally expected, as more historical data means that the coefficients may be better optimized to describe what happens with the variability from more years of data, for the most part.</p>
+<p>There is also a counter-intuition. One may expect the performance of the model to increase with more history, as the data from the most recent years may be more like the data next year. This intuition is perhaps more valid in domains subjected to greater concept drift.</p>
+<h2>Extensions</h2>
+<p>This section discusses limitations and extensions to the sensitivity analysis.</p>
+<ul>
+<li><strong>Untuned Model</strong>. The ARIMA model used in the example is by no means tuned to the problem. Ideally, a sensitivity analysis of the size of training history would be performed with an already tuned ARIMA model or a model tuned to each case.</li>
+<li><strong>Statistical Significance</strong>. It is not clear whether the difference in model skill is statistically significant. Pairwise statistical significance tests can be used to tease out whether differences in RMSE are meaningful.</li>
+<li><strong>Alternate Models</strong>. The ARIMA uses historical data to fit coefficients. Other models may use the increasing historical data in other ways. Alternate nonlinear machine learning models may be investigated.</li>
+<li><strong>Alternate Intervals</strong>. A year was chosen to joint the historical data, but other intervals may be used. A good interval might be weeks or months within one or two years of historical data for this dataset, as the extreme recency may bias the coefficients in useful ways.</li>
+</ul>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered how you can design, execute, and analyze a sensitivity analysis of the amount of history used to fit a time series forecast model.</p>
+<p>Do you have any questions?<br/>
+Ask your questions in the comments and I’ll do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-26"> <div class="textwidget"><p></p><center>
+<div class="woo-sc-hr"></div>
+<h2>Want to Develop Time Series Forecasts with Python?</h2>
+<p><a href="/introduction-to-time-series-forecasting-with-python/"><img align="left" alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Forecasts in Minutes</h4>
+<p>...with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/introduction-to-time-series-forecasting-with-python/">Introduction to Time Series Forecasting With Python</a></p>
+<p>It covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> on topics like:<br/>
+<em>Loading data, visualization, modeling, algorithm tuning,</em> and much more...</p>
+<h4>Finally Bring Time Series Forecasting to<br/>
+Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to learn more</a>.</p>
+<div class="woo-sc-hr"></div>
+<p></p></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-3845 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Sensitivity+Analysis+of+History+Size+to+Forecast+Skill+with+ARIMA+in+Python&amp;url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/make-sample-forecasts-arima-python/" rel="prev"><i class="fa fa-angle-left"></i> How to Make Out-of-Sample Forecasts with ARIMA in Python</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/feature-selection-time-series-forecasting-python/" rel="next">Feature Selection for Time Series Forecasting with Python <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">13 Responses to <em>Sensitivity Analysis of History Size to Forecast Skill with ARIMA in Python</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-395565">
+<div class="comment-container" id="li-comment-395565">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2a5d3867e5d5b51cd7eb94ba63191da6?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2a5d3867e5d5b51cd7eb94ba63191da6?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">sura</span>
+<span class="date">April 7, 2017 at 3:39 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-395565" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>thank you ! but, can you give me a download address of dataset? i want to try again!<br/>
+thank!</p>
+<div class="reply">
+<a aria-label="Reply to sura" class="comment-reply-link" href="#comment-395565" onclick='return addComment.moveForm( "comment-395565", "395565", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-395806">
+<div class="comment-container" id="li-comment-395806">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 9, 2017 at 2:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-395806" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, here it is:<br/>
+<a href="https://datamarket.com/data/set/2324/daily-minimum-temperatures-in-melbourne-australia-1981-1990" rel="nofollow">https://datamarket.com/data/set/2324/daily-minimum-temperatures-in-melbourne-australia-1981-1990</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-395806" onclick='return addComment.moveForm( "comment-395806", "395806", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-398649">
+<div class="comment-container" id="li-comment-398649">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/43f65ba1f0dc2196c68ec6068481bbfd?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/43f65ba1f0dc2196c68ec6068481bbfd?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Eugeniy</span>
+<span class="date">May 5, 2017 at 6:44 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-398649" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good afternoon!<br/>
+Thank you for your article.<br/>
+Tell me please, if there are more formal and mathematical definitions of sensitivity analysis of history size to forecast?<br/>
+Or is this usually only an experimental way of determining?<br/>
+Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to Eugeniy" class="comment-reply-link" href="#comment-398649" onclick='return addComment.moveForm( "comment-398649", "398649", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-398734">
+<div class="comment-container" id="li-comment-398734">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 6, 2017 at 7:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-398734" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m sure you can analyze the effect of history size on the model analytically.</p>
+<p>A sensitivity analysis seeks to answer the question empirically.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-398734" onclick='return addComment.moveForm( "comment-398734", "398734", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-410046">
+<div class="comment-container" id="li-comment-410046">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4e307f351f0a8662c5895fe652b05189?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4e307f351f0a8662c5895fe652b05189?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">David Ravnsborg</span>
+<span class="date">August 18, 2017 at 9:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-410046" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Why do you declare “differenced” and then immediately write over it without using it?</p>
+<div class="reply">
+<a aria-label="Reply to David Ravnsborg" class="comment-reply-link" href="#comment-410046" onclick='return addComment.moveForm( "comment-410046", "410046", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-410091">
+<div class="comment-container" id="li-comment-410091">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 18, 2017 at 4:37 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-410091" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Good question, that looks like a bug to me. I’ll add a note to trello to fix it up.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-410091" onclick='return addComment.moveForm( "comment-410091", "410091", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-410104">
+<div class="comment-container" id="li-comment-410104">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4e307f351f0a8662c5895fe652b05189?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4e307f351f0a8662c5895fe652b05189?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">David Ravnsborg</span>
+<span class="date">August 18, 2017 at 5:48 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-410104" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I looked into it a little further on my end. I think it was just a typo where:<br/>
+# seasonal difference<br/>
+differenced = series.diff(365)<br/>
+# trim off the first year of empty data<br/>
+differenced = series[365:]</p>
+<p>should have been…</p>
+<p># seasonal difference<br/>
+differenced = series.diff(365)<br/>
+# trim off the first year of empty data<br/>
+differenced = differenced[365:]</p>
+<p>But it completely changes the results for the worse 🙁 Any chance you could cover this? It would make a great follow-up. Here are the results I get:<br/>
+model.py:496: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals<br/>
+  “Check mle_retvals”, ConvergenceWarning)<br/>
+1989-1989 (365 values) RMSE: 3.120<br/>
+1989-1988 (730 values) RMSE: 3.109<br/>
+model.py:496: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals<br/>
+  “Check mle_retvals”, ConvergenceWarning)<br/>
+1989-1987 (1095 values) RMSE: 3.104<br/>
+1989-1986 (1460 values) RMSE: 3.108<br/>
+1989-1985 (1825 values) RMSE: 3.107<br/>
+model.py:496: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals<br/>
+  “Check mle_retvals”, ConvergenceWarning)<br/>
+1989-1984 (2190 values) RMSE: 3.103<br/>
+1989-1983 (2555 values) RMSE: 3.099<br/>
+1989-1982 (2920 values) RMSE: 3.096<br/>
+￼</p>
+<div class="reply">
+<a aria-label="Reply to David Ravnsborg" class="comment-reply-link" href="#comment-410104" onclick='return addComment.moveForm( "comment-410104", "410104", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-411056">
+<div class="comment-container" id="li-comment-411056">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 25, 2017 at 3:15 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-411056" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have updated the post, thanks again David.</p>
+<p>We still see the same linearly downward trend in error.</p>
+<p>Remember that the RMSE scores are in fact in the units of seasonally differenced temperatures. This may make a difference.</p>
+<p>If you’re interested in better results, you can try using a grid search on the ARIMA parameters to see if we can do better than ARIMA(7,0,0) or whether performing a seasonal difference results in better final RMSE on this problem.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-411056" onclick='return addComment.moveForm( "comment-411056", "411056", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-440474">
+<div class="comment-container" id="li-comment-440474">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a578c5f50fb4250a0baa4507366a885d?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a578c5f50fb4250a0baa4507366a885d?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Rahul</span>
+<span class="date">June 11, 2018 at 7:04 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-440474" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey Jason,</p>
+<p>Just a minor edit.</p>
+<p>Ctrl+F “The day-by-day forecasts will be collected and a root” and the sentence has been repeated twice. Not an issue but thought you’d like to know.</p>
+<p>Awesome posts, I really enjoy reading your work 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Rahul" class="comment-reply-link" href="#comment-440474" onclick='return addComment.moveForm( "comment-440474", "440474", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440518">
+<div class="comment-container" id="li-comment-440518">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 12, 2018 at 6:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-440518" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks, fixed.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440518" onclick='return addComment.moveForm( "comment-440518", "440518", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-451494">
+<div class="comment-container" id="li-comment-451494">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/aa397cdcd160af50616787f70647adef?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/aa397cdcd160af50616787f70647adef?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Raghu</span>
+<span class="date">October 13, 2018 at 1:16 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-451494" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I checked Stationarity test for the provided dataset using Augmented Dickey-Fuller method and below is the result<br/>
+Test Statistic                   -4.445747<br/>
+p-value                           0.000246<br/>
+#Lags Used                       20.000000<br/>
+Number of Observations Used    3629.000000<br/>
+Critical Value (1%)              -3.432153<br/>
+Critical Value (5%)              -2.862337<br/>
+Critical Value (10%)             -2.567194</p>
+<p>based on the result i conclude that data looks very much stationary and<br/>
+I have a question that even though data is stationary Why did you apply Seasonality dereference ?</p>
+<div class="reply">
+<a aria-label="Reply to Raghu" class="comment-reply-link" href="#comment-451494" onclick='return addComment.moveForm( "comment-451494", "451494", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451520">
+<div class="comment-container" id="li-comment-451520">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 13, 2018 at 6:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-451520" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What dataset did you evaluate exactly?</p>
+<p>The temperature dataset clearly has a time dependent structure.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451520" onclick='return addComment.moveForm( "comment-451520", "451520", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-451689">
+<div class="comment-container" id="li-comment-451689">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/aa397cdcd160af50616787f70647adef?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/aa397cdcd160af50616787f70647adef?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Raghu</span>
+<span class="date">October 15, 2018 at 7:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/sensitivity-analysis-history-size-forecast-skill-arima-python/#comment-451689" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I evaluated “daily-minimum-temperatures.csv” dataset (same dataset used in this article).<br/>
+but ADF result (copied in last comment) shows data looks stationary.</p>
+<div class="reply">
+<a aria-label="Reply to Raghu" class="comment-reply-link" href="#comment-451689" onclick='return addComment.moveForm( "comment-451689", "451689", "respond", "3845" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/sensitivity-analysis-history-size-forecast-skill-arima-python/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="3845"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="4d00f707cb"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="185"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-27"> <div class="textwidget"><p></p><center><br/>
+<strong>Time Series Forecasting with Python</strong><br/>
+Explore time series data and predict the future.
+<p><a href="/introduction-to-time-series-forecasting-with-python/">Click to Get Started Now!</a><br/>
+<a href="/introduction-to-time-series-forecasting-with-python/"><img alt="Introduction to Time Series Forecasting With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/02/Introduction-to-Time-Series-Forecasting-With-Python-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1312 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Using OpenCV, Python and Template Matching to play "Where's Waldo?"</title>
+<link href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="Using OpenCV, Python and Template Matching to play &quot;Where's Waldo?&quot;" property="og:title"/>
+<meta content="This is a guest post by Adrian Rosebrock from PyImageSearch, a blog all about computer vision, image processing, and building image search engines. Take a look at the Where’s Waldo puzzle above. How long does it take you to find Waldo? 10 seconds? 30 seconds? Over a minute? Waldo is the ultimate game of hide …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Python Machine Learning" property="article:section"/>
+<meta content="2014-05-15T19:00:31+00:00" property="article:published_time"/>
+<meta content="2016-09-21T06:10:32+00:00" property="article:modified_time"/>
+<meta content="2016-09-21T06:10:32+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small.jpg" property="og:image:secure_url"/>
+<meta content="1000" property="og:image:width"/>
+<meta content="707" property="og:image:height"/>
+<meta content="Where's Waldo" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/feed/" rel="alternate" title="Machine Learning Mastery » Using OpenCV, Python and Template Matching to play “Where’s Waldo?” Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=1128" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fusing-opencv-python-and-template-matching-to-play-wheres-waldo%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fusing-opencv-python-and-template-matching-to-play-wheres-waldo%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-1128 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-33"> <div class="textwidget"><p>Want help with Python and scikit-learn? <a href="https://machinelearningmastery.lpages.co/python-machine-learning-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-1128 post type-post status-publish format-standard has-post-thumbnail hentry category-python-machine-learning">
+<header>
+<h1 class="title entry-title">Using OpenCV, Python and Template Matching to play “Where’s Waldo?”</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2014-05-16T05:00:31+1100">May 16, 2014</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/python-machine-learning/" title="View all items in Python Machine Learning">Python Machine Learning</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-1128 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Using+OpenCV%2C+Python+and+Template+Matching+to+play+%E2%80%9CWhere%E2%80%99s+Waldo%3F%E2%80%9D&amp;url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p><strong><em>This is a guest post by Adrian Rosebrock from <a href="http://www.pyimagesearch.com">PyImageSearch</a>, a blog all about computer vision, image processing, and building image search engines.</em></strong></p>
+<div class="wp-caption aligncenter" id="attachment_1130" style="width: 810px"><a href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small.jpg"><img alt="Where's Waldo" class="wp-image-1130" height="566" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small.jpg 1000w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_small-300x212.jpg 300w" width="800"/></a><p class="wp-caption-text">Figure 1: How long does it take you to find Waldo in this puzzle?</p></div>
+<p>Take a look at the Where’s Waldo puzzle above. How long does it take you to find Waldo? 10 seconds? 30 seconds? Over a minute?</p>
+<p>Waldo is the ultimate game of hide and seek for the human eye. He’s actually “hiding” in plain sight — but due to all the noise and distraction, we can’t pick him out immediately!</p>
+<p>At the core, Waldo is just a visual pattern. He wears glasses. A hat. And his classic white and red horizontally striped shirt. It might take us a little bit of time to scan up and down and left to right across the page, but our brain is able to pick out this pattern, even amongst all the distraction.</p>
+<p>The question is, can computers do better? Can we create a program that can <strong><em>automatically</em></strong> find Waldo?</p>
+<p>In fact, we can.</p>
+<p>Using computer vision techniques we can find Waldo in under a second, much faster than any of us could!</p>
+<p>In this blog post I’ll show you how to use the OpenCV and template matching functions to find that pesky Waldo who is always hiding in plain sight.</p>
+<p>Here’s a quick overview of what we’re going to do:</p>
+<ul>
+<li><strong>What we’re going to do:</strong> Build a Python script using OpenCV that can find Waldo in a “Where’s Waldo?” puzzle.</li>
+<li><strong>What you’ll learn:</strong> How to utilize Python, OpenCV, and template matching using <code>cv2.matchTemplate</code> and <code>cv2.minMaxLoc</code>. Using these functions we will be able to find Waldo in our puzzle image.</li>
+<li><strong>What you need:</strong> Python, NumPy, and OpenCV. A little knowledge of basic image processing concepts would help, but is <em>definitely not a requirement</em>. This how-to guide is meant to be hands on and show you how to apply template matching using OpenCV. Don’t have these libraries installed? No problem. I created a pre-configured virtual machine with all the necessary computer vision, image processing, and machine learning packages pre-installed. <a href="https://www.pyimagesearch.com/practical-python-opencv/" target="_blank">Click here to learn more</a>.</li>
+<li><strong>Assumptions:</strong> I’ll assume that you have <a href="http://www.numpy.org/" target="_blank">NumPy</a> and <a href="http://opencv.org/" target="_blank">OpenCV</a> installed in either the python2.6 or python2.7 environment. Again, you can download a pre-configured virtual machine with all the necessary packages installed <a href="https://www.pyimagesearch.com/practical-python-opencv/" target="_blank">here</a>.</li>
+</ul>
+<p></p><div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with Machine Learning in Python?</h3>
+<p>Take my free 2-week email course and discover data prep, algorithms and more (with code).</p>
+<p>Click to sign-up now and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.leadpages.co/leadbox/146d399f3f72a2%3A164f8be4f346dc/5655869022797824/" rel="noopener" style="color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.247059) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.498039) 0px 1px 3px inset, rgba(0, 0, 0, 0.498039) 0px 1px 3px; background: #ffce0a;" target="_blank">Start Your FREE Mini-Course Now!</a> <script data-config="%7B%7D" data-leadbox="146d399f3f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.leadpages.co/leadbox/146d399f3f72a2%3A164f8be4f346dc/5655869022797824/" src="https://machinelearningmastery.leadpages.co/leadbox-1001.js" type="text/javascript"></script></p></center>
+<p style="text-align: center;"></p>
+<p></p><div class="woo-sc-hr"></div>
+<h2>The Goal:</h2>
+<p>So what’s the overall goal of the Python script we are going to create?</p>
+<p><strong>The goal, given a query image of Waldo and the puzzle image, is to find Waldo in in the puzzle image and highlight his location.</strong></p>
+<p>As you’ll see later in this post, we’ll be able to accomplish this in <em>only two lines of Python code</em>. The rest of the code simply handles logic such as argument parsing and displaying the solved puzzle to our screen.</p>
+<h2>Our Puzzle and Query Image</h2>
+<p>We require two images to build our Python script to perform template matching.</p>
+<p>The first image is the Where’s Waldo puzzle that we are going to solve. You can see our puzzle image in <strong>Figure 1</strong> at the top of this post.</p>
+<p>The second image is our query image of Waldo:</p>
+<div class="wp-caption aligncenter" id="attachment_1131" style="width: 224px"><a href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/waldo_query.jpg"><img alt="Our Waldo query image" class="size-full wp-image-1131" height="137" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/waldo_query.jpg" width="214"/></a><p class="wp-caption-text">Figure 2: Our Waldo query image</p></div>
+<p>Using our Waldo query image we are going to find him in the original puzzle.</p>
+<p>Unfortunately, here is where the practicality of our approach breaks down.</p>
+<p>In order to find Waldo in our puzzle image, we first need the image of Waldo himself. And you may be asking, if I already have the image of Waldo, why I am I playing the puzzle?</p>
+<p>Good point.</p>
+<p>Using computer vision and image processing techniques to find Waldo in a image <em>is certainly possible</em>.</p>
+<p>However, it requires some slightly more advanced techniques such as:</p>
+<ol>
+<li>Filtering out colors that are not red.</li>
+<li>Calculating the correlation of a striped pattern to match the red and white transitions of Waldo’s shirt.</li>
+<li>Binarization of the regions of the image that have high correlation with a striped pattern.</li>
+</ol>
+<p>This post is meant to be an <em>introduction</em> to basic computer vision techniques such as template matching. Later on we can dive into more advanced techniques. Where’s Waldo was just a cool and simple way to perform template matching that I <em>just had</em> to share with you!</p>
+<h2>Getting Our Hands Dirty</h2>
+<p>Ready to see some code? Alright, let’s do this:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9e82022cb437771435" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title">A How-To Guide to Template Matching with OpenCV and Python</span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div><span class="crayon-language">Python</span></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# import the necessary packages
+import numpy as np
+import argparse
+import imutils
+import cv2
+
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--puzzle", required = True,
+	help = "Path to the puzzle image")
+ap.add_argument("-w", "--waldo", required = True,
+	help = "Path to the waldo image")
+args = vars(ap.parse_args())
+
+# load the puzzle and waldo images
+puzzle = cv2.imread(args["puzzle"])
+waldo = cv2.imread(args["waldo"])
+(waldoHeight, waldoWidth) = waldo.shape[:2]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-2">2</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-4">4</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-6">6</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-8">8</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-10">10</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-12">12</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-14">14</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-16">16</div><div class="crayon-num" data-line="crayon-5c0c9e82022cb437771435-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022cb437771435-18">18</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-1"><span class="crayon-c"># import the necessary packages</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-2"><span class="crayon-r">import</span><span class="crayon-h"> </span><span class="crayon-e">numpy </span><span class="crayon-st">as</span><span class="crayon-h"> </span><span class="crayon-e">np</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-3"><span class="crayon-r">import</span><span class="crayon-h"> </span><span class="crayon-k ">argparse</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-4"><span class="crayon-r">import</span><span class="crayon-h"> </span><span class="crayon-e">imutils</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-5"><span class="crayon-r">import</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-6"> </div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-7"><span class="crayon-c"># construct the argument parser and parse the arguments</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-8"><span class="crayon-v">ap</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-k ">argparse</span><span class="crayon-sy">.</span><span class="crayon-e">ArgumentParser</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-9"><span class="crayon-v">ap</span><span class="crayon-sy">.</span><span class="crayon-e">add_argument</span><span class="crayon-sy">(</span><span class="crayon-s">"-p"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">"--puzzle"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">required</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">True</span><span class="crayon-sy">,</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-10"><span class="crayon-h"> </span><span class="crayon-k ">help</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-s">"Path to the puzzle image"</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-11"><span class="crayon-v">ap</span><span class="crayon-sy">.</span><span class="crayon-e">add_argument</span><span class="crayon-sy">(</span><span class="crayon-s">"-w"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-s">"--waldo"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">required</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">True</span><span class="crayon-sy">,</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-12"><span class="crayon-h"> </span><span class="crayon-k ">help</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-s">"Path to the waldo image"</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-13"><span class="crayon-v">args</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-k ">vars</span><span class="crayon-sy">(</span><span class="crayon-v">ap</span><span class="crayon-sy">.</span><span class="crayon-e">parse_args</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-14"> </div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-15"><span class="crayon-c"># load the puzzle and waldo images</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-16"><span class="crayon-v">puzzle</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">imread</span><span class="crayon-sy">(</span><span class="crayon-v">args</span><span class="crayon-sy">[</span><span class="crayon-s">"puzzle"</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022cb437771435-17"><span class="crayon-v">waldo</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">imread</span><span class="crayon-sy">(</span><span class="crayon-v">args</span><span class="crayon-sy">[</span><span class="crayon-s">"waldo"</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022cb437771435-18"><span class="crayon-sy">(</span><span class="crayon-v">waldoHeight</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">waldoWidth</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">waldo</span><span class="crayon-sy">.</span><span class="crayon-v">shape</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-cn">2</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0026 seconds] -->
+<p><strong>Lines 1-13</strong> simply imports the packages we are going to use and configures our argument parser. We’ll use NumPy for array manipulations, <code>argparse</code> to parse our command line arguments, and <code>cv2</code> for our OpenCV bindings. The package <code>imutils</code> is actually a set of convenience functions to handle basic image manipulations such as rotation, resizing, and translation. You can read more about these types of basic image operations <a href="http://www.pyimagesearch.com/2014/01/20/basic-image-manipulations-in-python-and-opencv-resizing-scaling-rotating-and-cropping/" target="_blank">here</a>.</p>
+<p>From there, we need to setup our two command line arguments. The first, <code>--puzzle</code> is the path to our Where’s Waldo puzzle image and <code>--waldo</code> is the path to Waldo query image.</p>
+<p>Again, our goal here is to find the query image in the puzzle image using template matching.</p>
+<p>Now that we have the paths to our images, we load them off of disk on <strong>Line 16 and 17</strong> using the <code>cv2.imread</code> function — this method simply reads the image off disk and then stores it as a multi-dimensional NumPy array.</p>
+<p>Since images are represented as NumPy arrays in OpenCV, we can easily access the dimensions of the image. On <strong>Line 18</strong> we grab the height and the width of the Waldo query image, respectively.</p>
+<p>We are now ready to perform our template matching:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9e82022d4915870847" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title">A How-To Guide to Template Matching with OpenCV and Python</span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div><span class="crayon-language">Python</span></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# import the necessary packages
+import numpy as np
+import argparse
+import imutils
+import cv2
+
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--puzzle", required = True,
+	help = "Path to the puzzle image")
+ap.add_argument("-w", "--waldo", required = True,
+	help = "Path to the waldo image")
+args = vars(ap.parse_args())
+
+# load the puzzle and waldo images
+puzzle = cv2.imread(args["puzzle"])
+waldo = cv2.imread(args["waldo"])
+(waldoHeight, waldoWidth) = waldo.shape[:2]
+
+# find the waldo in the puzzle
+result = cv2.matchTemplate(puzzle, waldo, cv2.TM_CCOEFF)
+(_, _, minLoc, maxLoc) = cv2.minMaxLoc(result)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d4915870847-20">20</div><div class="crayon-num" data-line="crayon-5c0c9e82022d4915870847-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d4915870847-22">22</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d4915870847-20"><span class="crayon-c"># find the waldo in the puzzle</span></div><div class="crayon-line" id="crayon-5c0c9e82022d4915870847-21"><span class="crayon-v">result</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">matchTemplate</span><span class="crayon-sy">(</span><span class="crayon-v">puzzle</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">waldo</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-v">TM_CCOEFF</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d4915870847-22"><span class="crayon-sy">(</span><span class="crayon-v">_</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">_</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">minLoc</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">maxLoc</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">minMaxLoc</span><span class="crayon-sy">(</span><span class="crayon-v">result</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0013 seconds] -->
+<p>We accomplish our template matching on <strong>Line 21</strong> by using the <code>cv2.matchTemplate function</code>. This method requires three parameters. The first is our <code>puzzle</code> image, the image that contains what we are searching for. The second is our query image, <code>waldo</code>. This image is contained within the puzzle image and we are looking to pinpoint its location. Finally, the third argument is our template matching method. There are a variety of methods to perform template matching, but in this case we are using the correlation coefficient which is specified by the flag <code>cv2.TM_CCOEFF</code>.</p>
+<p>So what exactly is the <code>cv2.matchTemplate</code> function doing?</p>
+<p>Essentially, this function takes a “sliding window” of our <code>waldo</code> query image and slides it across our puzzle image from left to right and top to bottom, one pixel at a time. Then, for each of these locations, we compute the correlation coefficient to determine how “good” or “bad” the match is. Regions with sufficiently high correlation can be considered “matches” for our waldo template.</p>
+<p>From there, all we need is a call to <code>cv2.minMaxLoc</code> on <strong>Line 22</strong> to find where our “good” matches are.</p>
+<p>That’s really all there is to template matching!</p>
+<p>And realistically, it only took us two lines of code.</p>
+<p>The rest of our source code involves extracting the region that contains Waldo and then highlighting him in the original puzzle image:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9e82022d6545914047" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title">A How-To Guide to Template Matching with OpenCV and Python</span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div><span class="crayon-language">Python</span></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# import the necessary packages
+import numpy as np
+import argparse
+import imutils
+import cv2
+
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--puzzle", required = True,
+	help = "Path to the puzzle image")
+ap.add_argument("-w", "--waldo", required = True,
+	help = "Path to the waldo image")
+args = vars(ap.parse_args())
+
+# load the puzzle and waldo images
+puzzle = cv2.imread(args["puzzle"])
+waldo = cv2.imread(args["waldo"])
+(waldoHeight, waldoWidth) = waldo.shape[:2]
+
+# find the waldo in the puzzle
+result = cv2.matchTemplate(puzzle, waldo, cv2.TM_CCOEFF)
+(_, _, minLoc, maxLoc) = cv2.minMaxLoc(result)
+
+# grab the bounding box of waldo and extract him from
+# the puzzle image
+topLeft = maxLoc
+botRight = (topLeft[0] + waldoWidth, topLeft[1] + waldoHeight)
+roi = puzzle[topLeft[1]:botRight[1], topLeft[0]:botRight[0]]
+
+# construct a darkened transparent 'layer' to darken everything
+# in the puzzle except for waldo
+mask = np.zeros(puzzle.shape, dtype = "uint8")
+puzzle = cv2.addWeighted(puzzle, 0.25, mask, 0.75, 0)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d6545914047-24">24</div><div class="crayon-num" data-line="crayon-5c0c9e82022d6545914047-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d6545914047-26">26</div><div class="crayon-num" data-line="crayon-5c0c9e82022d6545914047-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d6545914047-28">28</div><div class="crayon-num" data-line="crayon-5c0c9e82022d6545914047-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d6545914047-30">30</div><div class="crayon-num" data-line="crayon-5c0c9e82022d6545914047-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d6545914047-32">32</div><div class="crayon-num" data-line="crayon-5c0c9e82022d6545914047-33">33</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d6545914047-24"><span class="crayon-c"># grab the bounding box of waldo and extract him from</span></div><div class="crayon-line" id="crayon-5c0c9e82022d6545914047-25"><span class="crayon-c"># the puzzle image</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d6545914047-26"><span class="crayon-v">topLeft</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">maxLoc</span></div><div class="crayon-line" id="crayon-5c0c9e82022d6545914047-27"><span class="crayon-v">botRight</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">(</span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-v">waldoWidth</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">+</span><span class="crayon-h"> </span><span class="crayon-v">waldoHeight</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d6545914047-28"><span class="crayon-v">roi</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">puzzle</span><span class="crayon-sy">[</span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span><span class="crayon-o">:</span><span class="crayon-v">botRight</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-o">:</span><span class="crayon-v">botRight</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0c9e82022d6545914047-29"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d6545914047-30"><span class="crayon-c"># construct a darkened transparent 'layer' to darken everything</span></div><div class="crayon-line" id="crayon-5c0c9e82022d6545914047-31"><span class="crayon-c"># in the puzzle except for waldo</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d6545914047-32"><span class="crayon-v">mask</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">np</span><span class="crayon-sy">.</span><span class="crayon-e">zeros</span><span class="crayon-sy">(</span><span class="crayon-v">puzzle</span><span class="crayon-sy">.</span><span class="crayon-v">shape</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">dtype</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-s">"uint8"</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022d6545914047-33"><span class="crayon-v">puzzle</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">addWeighted</span><span class="crayon-sy">(</span><span class="crayon-v">puzzle</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.25</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">mask</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.75</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0019 seconds] -->
+<p><strong>Line 26</strong> grabs the top-left (x, y) coordinates of the image that contains the best match based on our sliding window. Then, we compute the bottom-right (x, y) coordinates based on the width and height of our <code>waldo</code> image on <strong>Line 27</strong>. Finally we extract this <code>roi</code> (Region of Interest) on <strong>Line 28</strong>.</p>
+<p>The next step is to construct a transparent layer that darkens everything in the image <em>but</em> Waldo. We do this by first initializing a <code>mask</code> on <strong>Line 32</strong> with the same shape as our puzzle filled with zeros. By filling the image with zeros we are creating an image filled with black.</p>
+<p>In order to create the transparent effect, we use the <code>cv2.addWeighted</code> function on <strong>Line 33</strong>. The first parameter is our <code>puzzle</code> image, and the second parameter indicates that we want it to contribute to 25% of our output image.  We then supply our <code>mask</code> as the third parameter, allowing it to contribute to 75% of our output image. By utilizing the <code>cv2.addWeighted</code> function we have been able to create the transparency effect.</p>
+<p>However, we still need to highlight the Waldo region! That’s simple enough:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9e82022d8249713308" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title">A How-To Guide to Template Matching with OpenCV and Python</span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div><span class="crayon-language">Python</span></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# import the necessary packages
+import numpy as np
+import argparse
+import imutils
+import cv2
+
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--puzzle", required = True,
+	help = "Path to the puzzle image")
+ap.add_argument("-w", "--waldo", required = True,
+	help = "Path to the waldo image")
+args = vars(ap.parse_args())
+
+# load the puzzle and waldo images
+puzzle = cv2.imread(args["puzzle"])
+waldo = cv2.imread(args["waldo"])
+(waldoHeight, waldoWidth) = waldo.shape[:2]
+
+# find the waldo in the puzzle
+result = cv2.matchTemplate(puzzle, waldo, cv2.TM_CCOEFF)
+(_, _, minLoc, maxLoc) = cv2.minMaxLoc(result)
+
+# grab the bounding box of waldo and extract him from
+# the puzzle image
+topLeft = maxLoc
+botRight = (topLeft[0] + waldoWidth, topLeft[1] + waldoHeight)
+roi = puzzle[topLeft[1]:botRight[1], topLeft[0]:botRight[0]]
+
+# construct a darkened transparent 'layer' to darken everything
+# in the puzzle except for waldo
+mask = np.zeros(puzzle.shape, dtype = "uint8")
+puzzle = cv2.addWeighted(puzzle, 0.25, mask, 0.75, 0)
+
+# put the original waldo back in the image so that he is
+# 'brighter' than the rest of the image
+puzzle[topLeft[1]:botRight[1], topLeft[0]:botRight[0]] = roi
+
+# display the images
+cv2.imshow("Puzzle", imutils.resize(puzzle, height = 650))
+cv2.imshow("Waldo", waldo)
+cv2.waitKey(0)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9e82022d8249713308-35">35</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d8249713308-36">36</div><div class="crayon-num" data-line="crayon-5c0c9e82022d8249713308-37">37</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d8249713308-38">38</div><div class="crayon-num" data-line="crayon-5c0c9e82022d8249713308-39">39</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d8249713308-40">40</div><div class="crayon-num" data-line="crayon-5c0c9e82022d8249713308-41">41</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0c9e82022d8249713308-42">42</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9e82022d8249713308-35"><span class="crayon-c"># put the original waldo back in the image so that he is</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d8249713308-36"><span class="crayon-c"># 'brighter' than the rest of the image</span></div><div class="crayon-line" id="crayon-5c0c9e82022d8249713308-37"><span class="crayon-v">puzzle</span><span class="crayon-sy">[</span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span><span class="crayon-o">:</span><span class="crayon-v">botRight</span><span class="crayon-sy">[</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">topLeft</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-o">:</span><span class="crayon-v">botRight</span><span class="crayon-sy">[</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">]</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">roi</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d8249713308-38"> </div><div class="crayon-line" id="crayon-5c0c9e82022d8249713308-39"><span class="crayon-c"># display the images</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d8249713308-40"><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">imshow</span><span class="crayon-sy">(</span><span class="crayon-s">"Puzzle"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">imutils</span><span class="crayon-sy">.</span><span class="crayon-e">resize</span><span class="crayon-sy">(</span><span class="crayon-v">puzzle</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">height</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">650</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0c9e82022d8249713308-41"><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">imshow</span><span class="crayon-sy">(</span><span class="crayon-s">"Waldo"</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">waldo</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0c9e82022d8249713308-42"><span class="crayon-v">cv2</span><span class="crayon-sy">.</span><span class="crayon-e">waitKey</span><span class="crayon-sy">(</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0025 seconds] -->
+<p>Here we are just placing the Waldo ROI back into the original image using some NumPy array slicing techniques on <strong>Line 37</strong>. Nothing to it.</p>
+<p>Finally, <strong>Lines 40-42</strong> display the results of our work by displaying our Waldo query and puzzle image on screen and waiting for a key press.</p>
+<p>To run our script, fire up your shell and execute the following command:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-mac print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0c9e82022dd055019527" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title">A How-To Guide to Template Matching with OpenCV and Python</span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div><span class="crayon-language">Shell</span></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+$ python find_waldo.py --puzzle puzzle.png --waldo waldo.png</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0c9e82022dd055019527-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0c9e82022dd055019527-1"><span class="crayon-sy">$</span><span class="crayon-h"> </span><span class="crayon-e">python </span><span class="crayon-v">find_waldo</span><span class="crayon-e">.py</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">puzzle </span><span class="crayon-v">puzzle</span><span class="crayon-e">.png</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">waldo </span><span class="crayon-v">waldo</span><span class="crayon-e">.png</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0009 seconds] -->
+<p>When your script is finished executing you should see something like this on your screen:</p>
+<div class="wp-caption aligncenter" id="attachment_1132" style="width: 810px"><a href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_found_waldo1.jpg"><img alt="We have successfully found Waldo" class="wp-image-1132" height="592" sizes="(max-width: 800px) 100vw, 800px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_found_waldo1.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_found_waldo1.jpg 937w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/05/puzzle_found_waldo1-300x221.jpg 300w" width="800"/></a><p class="wp-caption-text">Figure 3: We have successfully found Waldo!</p></div>
+<p>We have found Waldo at the bottom-left corner of the image!</p>
+<p>So there you have it!</p>
+<p>Template matching using Python and OpenCV is actually quite simple. To start, you just need two images — an image of the object you want to match and an image that contains the object. From there, you just need to make calls to cv2.matchTemplate and cv2.minMaxLaoc. The rest is just wrapper code to glue the output of these functions together.</p>
+<h2>Learn Computer Vision In A Single Weekend</h2>
+<p>Of course, we are only scratching the surface of computer vision and image processing. Template matching is just the start.</p>
+<p>Luckily, <em>I can teach you the basics of computer vision in a single weekend.</em></p>
+<p>I know, it sounds crazy.</p>
+<p>But my method really works.</p>
+<p>See, I just finished writing my new book, <em>Practical Python and OpenCV</em>. I wanted this book to be as hands-on as possible. I wanted something that you could easily learn from, without all the rigor and details associated with a college level computer vision and image processing course.</p>
+<p>The bottom line is that Practical Python and OpenCV is the <strong>best, guaranteed quick start guide</strong> to learning the fundamentals of computer vision and image processing.</p>
+<p>Plus, I have created a downloadable Ubuntu VirtualBox virtual machine with OpenCV, PIL, mahotas, scikit-image, scikit-learn, and many other computer vision and image processing libraries pre-configured and pre-installed.</p>
+<p>So go ahead, jump start your computer vision education. <strong>Don’t waste time installing packages…invest your time learning!</strong></p>
+<p>To learn more about my new book and downloadable virtual machine, <strong><a href="https://www.pyimagesearch.com/practical-python-opencv/" target="_blank">just click here</a></strong>.</p>
+<p><strong>UPDATE</strong>: Continue the <a href="http://www.reddit.com/r/computervision/comments/25p85i/play_wheres_waldo_with_opencv_and_python/">discussion on Reddit</a>.</p>
+<!-- Shortcoder conditions not met -->
+<div class="awac-wrapper"><div class="awac widget text-38"> <div class="textwidget"><p></p><div class="woo-sc-hr"></div><center>
+<h2>Frustrated With Python Machine Learning?</h2>
+<p><a href="/machine-learning-with-python/"><img align="left" alt="Master Machine Learning With Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/07/MachineLearningMasteryWithPython-220px.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own Models in Minutes</h4>
+<p>…with just a few lines of scikit-learn code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/machine-learning-with-python/">Machine Learning Mastery With Python</a></p>
+<p>Covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> like:<br/>
+<em>Loading data</em>, <em>visualization</em>, <em>modeling</em>, <em>tuning</em>, and much more…</p>
+<h4>Finally Bring Machine Learning To<br/>
+Your Own Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/machine-learning-with-python/">Click to learn more</a>.<br/>
+</p><div class="woo-sc-hr"></div></center>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-1128 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=Using+OpenCV%2C+Python+and+Template+Matching+to+play+%E2%80%9CWhere%E2%80%99s+Waldo%3F%E2%80%9D&amp;url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/the-data-analytics-handbook-ceos-and-managers/" rel="prev"><i class="fa fa-angle-left"></i> The Data Analytics Handbook: CEOs and Managers</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/lessons-for-machine-learning-from-econometrics/" rel="next">Lessons for Machine Learning from Econometrics <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">29 Responses to <em>Using OpenCV, Python and Template Matching to play “Where’s Waldo?”</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-3662">
+<div class="comment-container" id="li-comment-3662">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3460412f9d33845b9ca4a6c68f9a1704?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3460412f9d33845b9ca4a6c68f9a1704?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://aimotion.blogspot.com.br" rel="external nofollow">Marcel</a></span>
+<span class="date">May 18, 2014 at 10:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-3662" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Congratulations for your work! This example is fantastic for beginners in machine learning and practical image processing.</p>
+<p>By the way, I think you forgot to put at the article the code for the lines 14-20 ! Please check it again, I really would like to use this example at my classes.</p>
+<p>Are the code and photos available for download ?</p>
+<p>One more time,<br/>
+Keep going with this work!</p>
+<p>Marcel</p>
+<div class="reply">
+<a aria-label="Reply to Marcel" class="comment-reply-link" href="#comment-3662" onclick='return addComment.moveForm( "comment-3662", "3662", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-3905">
+<div class="comment-container" id="li-comment-3905">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">jasonb</a></span>
+<span class="date">May 21, 2014 at 7:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-3905" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have added the missing lines, thanks for pointing that out Marcel. I’ll talk to Adrian about getting the code as a project on github or something.</p>
+<div class="reply">
+<a aria-label="Reply to jasonb" class="comment-reply-link" href="#comment-3905" onclick='return addComment.moveForm( "comment-3905", "3905", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-4139">
+<div class="comment-container" id="li-comment-4139">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/221150afb693aedf94293380bfa883ed?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/221150afb693aedf94293380bfa883ed?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">jzkunlun</span>
+<span class="date">May 23, 2014 at 12:11 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-4139" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Does this work for all the rest of Waldo pages? If ‘Waldo’ image’s size is different than search picture’s one, does it matter? If Waldo’s layout in search picture is different than template one, can this method still find him?<br/>
+Thanks,</p>
+<div class="reply">
+<a aria-label="Reply to jzkunlun" class="comment-reply-link" href="#comment-4139" onclick='return addComment.moveForm( "comment-4139", "4139", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-26750">
+<div class="comment-container" id="li-comment-26750">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/684e2a88af74c15a8333968c055a9278?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/684e2a88af74c15a8333968c055a9278?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Johnny</span>
+<span class="date">August 20, 2014 at 10:22 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-26750" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Nice. I am brand new to ubuntu, opencv, ML, and cv.  I can’t wait to give this a try. Thank you for sharing.</p>
+<div class="reply">
+<a aria-label="Reply to Johnny" class="comment-reply-link" href="#comment-26750" onclick='return addComment.moveForm( "comment-26750", "26750", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-28479">
+<div class="comment-container" id="li-comment-28479">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2f6b03edbba5215bf3db8b8422871711?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2f6b03edbba5215bf3db8b8422871711?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Josh</span>
+<span class="date">September 3, 2014 at 10:10 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-28479" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have been trying really hard to understand this, but I am not quite getting it. I just want to create a function that returns true or false for a match, and gives me the x,y coodinates of the match. Ievery example i find wants to draw boxes around the match i just need to verify the match! The min/max val makes no sense. Please explain this! There must be a simple answer i just don’t see it! Thank you! Any help would be appreciated.</p>
+<div class="reply">
+<a aria-label="Reply to Josh" class="comment-reply-link" href="#comment-28479" onclick='return addComment.moveForm( "comment-28479", "28479", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-35763">
+<div class="comment-container" id="li-comment-35763">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/19800701a47e4b8c059b444727bb955c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/19800701a47e4b8c059b444727bb955c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">sahar</span>
+<span class="date">September 30, 2014 at 8:55 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-35763" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for your awesome work 😉<br/>
+I have a problem here,<br/>
+“ImportError: No module named imutils”<br/>
+I’ve searched a lot I couldn’t find this package to download, can you hel me with this please?</p>
+<div class="reply">
+<a aria-label="Reply to sahar" class="comment-reply-link" href="#comment-35763" onclick='return addComment.moveForm( "comment-35763", "35763", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-399963">
+<div class="comment-container" id="li-comment-399963">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/8a3cee5cb1175c31d5860e0f30f19dd3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/8a3cee5cb1175c31d5860e0f30f19dd3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Mehul B</span>
+<span class="date">May 18, 2017 at 6:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-399963" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>In your virtual environment of python simply type<br/>
+pip install imutils</p>
+<div class="reply">
+<a aria-label="Reply to Mehul B" class="comment-reply-link" href="#comment-399963" onclick='return addComment.moveForm( "comment-399963", "399963", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-154301">
+<div class="comment-container" id="li-comment-154301">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/56975e88dea52d1e60888bf0b2b16917?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/56975e88dea52d1e60888bf0b2b16917?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://youcont.com" rel="external nofollow">John</a></span>
+<span class="date">December 4, 2014 at 7:41 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-154301" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>what a chump. Creates an unfinished guide including the package he made “imutils” thayt he doesnt even provide info for or even a link to download it. Just a big scheme to get your to sign up to his other site for a monthly fee</p>
+<div class="reply">
+<a aria-label="Reply to John" class="comment-reply-link" href="#comment-154301" onclick='return addComment.moveForm( "comment-154301", "154301", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-172263">
+<div class="comment-container" id="li-comment-172263">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fb462f68bd3755ee93b8cb4e411cdd88?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fb462f68bd3755ee93b8cb4e411cdd88?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Chakku</span>
+<span class="date">December 12, 2014 at 10:50 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-172263" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I cannot find the package “imutils”. Can you please share the link.</p>
+<div class="reply">
+<a aria-label="Reply to Chakku" class="comment-reply-link" href="#comment-172263" onclick='return addComment.moveForm( "comment-172263", "172263", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-246987">
+<div class="comment-container" id="li-comment-246987">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9cb14b499be76bb04fdbef92f29c744b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9cb14b499be76bb04fdbef92f29c744b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Alan</span>
+<span class="date">February 17, 2015 at 1:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-246987" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>link for the “imutils” package:</p>
+<p><a href="https://github.com/jrosebr1/imutils" rel="nofollow">https://github.com/jrosebr1/imutils</a></p>
+<div class="reply">
+<a aria-label="Reply to Alan" class="comment-reply-link" href="#comment-246987" onclick='return addComment.moveForm( "comment-246987", "246987", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-247076">
+<div class="comment-container" id="li-comment-247076">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 17, 2015 at 7:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-247076" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Alan.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-247076" onclick='return addComment.moveForm( "comment-247076", "247076", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-306713">
+<div class="comment-container" id="li-comment-306713">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/861fc783cb26f8eefb26a527bff47b1f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/861fc783cb26f8eefb26a527bff47b1f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">mohamad</span>
+<span class="date">July 6, 2015 at 5:16 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-306713" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Dear.<br/>
+where is the path “imutils” after installation in raspberry pi?<br/>
+my install command “pip install imutils”</p>
+<div class="reply">
+<a aria-label="Reply to mohamad" class="comment-reply-link" href="#comment-306713" onclick='return addComment.moveForm( "comment-306713", "306713", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-336564">
+<div class="comment-container" id="li-comment-336564">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1812de2ce1628c01735c078b51c4aaa3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1812de2ce1628c01735c078b51c4aaa3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Prasanna</span>
+<span class="date">December 29, 2015 at 3:24 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-336564" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This one is too good Adrian! I’m going to use this example.</p>
+<div class="reply">
+<a aria-label="Reply to Prasanna" class="comment-reply-link" href="#comment-336564" onclick='return addComment.moveForm( "comment-336564", "336564", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-340165">
+<div class="comment-container" id="li-comment-340165">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3412deac2f2fb23871c17a8a775f0639?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3412deac2f2fb23871c17a8a775f0639?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">kishan</span>
+<span class="date">January 27, 2016 at 9:44 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-340165" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi ,</p>
+<p>really great Post,<br/>
+After seeing this post i tried something by myself  , I took an image with a lot of color full boxes present in the image and then i tried to find a blue color box in the image using a blue color box template. The output i got was completely wrong as all the boxes were getting marked in my image . Initially  when i tried passing the color image of the template and  the main image ,it gave me error . I then saw the opencv matchTemplate() method in opencv official site,There the images were converted to gray scale images and then passed to the matchTemplate method . Any suggestion as what should i do to find the blue color box in the main image using template matching .</p>
+<div class="reply">
+<a aria-label="Reply to kishan" class="comment-reply-link" href="#comment-340165" onclick='return addComment.moveForm( "comment-340165", "340165", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-369946">
+<div class="comment-container" id="li-comment-369946">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/060a4a080cdb7f01c49e8fb9d6be6329?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/060a4a080cdb7f01c49e8fb9d6be6329?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">karthik</span>
+<span class="date">November 8, 2016 at 11:27 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-369946" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Kishan,<br/>
+  Not sure if this is even required for you now. But, may help others visiting the site…. you can just use color filters to filter everything other than blue and us that as a mask to “find”. If you are using c++ version of opencv, you can use the inrange function to achieve this.</p>
+<div class="reply">
+<a aria-label="Reply to karthik" class="comment-reply-link" href="#comment-369946" onclick='return addComment.moveForm( "comment-369946", "369946", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-367449">
+<div class="comment-container" id="li-comment-367449">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/23b3d5bafab5cec16691be2d7aed69e5?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/23b3d5bafab5cec16691be2d7aed69e5?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Anton J Szilasi</span>
+<span class="date">October 19, 2016 at 5:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-367449" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Fortunately this didnt work for me, instead it returns an image of the basket ball hoop…</p>
+<div class="reply">
+<a aria-label="Reply to Anton J Szilasi" class="comment-reply-link" href="#comment-367449" onclick='return addComment.moveForm( "comment-367449", "367449", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-2" id="comment-386258">
+<div class="comment-container" id="li-comment-386258">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a87ef799ed015bfc7f83b7bdf84e7a80?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a87ef799ed015bfc7f83b7bdf84e7a80?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Yair</span>
+<span class="date">February 6, 2017 at 8:12 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-386258" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I also got the basketball hoop…any ideas?</p>
+<div class="reply">
+<a aria-label="Reply to Yair" class="comment-reply-link" href="#comment-386258" onclick='return addComment.moveForm( "comment-386258", "386258", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-380486">
+<div class="comment-container" id="li-comment-380486">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9d2c97e691df7d5d4c011fd8d9fb9cfc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9d2c97e691df7d5d4c011fd8d9fb9cfc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">nada</span>
+<span class="date">January 6, 2017 at 7:13 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-380486" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi,</p>
+<p>Can you post a link to the complete code?</p>
+<p>Thanks a lot!</p>
+<div class="reply">
+<a aria-label="Reply to nada" class="comment-reply-link" href="#comment-380486" onclick='return addComment.moveForm( "comment-380486", "380486", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-385726">
+<div class="comment-container" id="li-comment-385726">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/403e956020470954f98449491acd59c9?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/403e956020470954f98449491acd59c9?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Clinton Chard</span>
+<span class="date">February 3, 2017 at 5:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-385726" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have been over this example like a fine toothed comb, but I cannot find the links to download the ‘puzzle.png’ nor the ‘waldo.png’ files to test this code on… Am I blind and missing it in an obvious place on this page? Appreciate the help.</p>
+<div class="reply">
+<a aria-label="Reply to Clinton Chard" class="comment-reply-link" href="#comment-385726" onclick='return addComment.moveForm( "comment-385726", "385726", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-393834">
+<div class="comment-container" id="li-comment-393834">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/f33da1008b6fffb46069a36e71c744df?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/f33da1008b6fffb46069a36e71c744df?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">David</span>
+<span class="date">March 23, 2017 at 6:19 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-393834" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Nada, Clinton,</p>
+<p>The link is also in the article, but you can download the code and images at <a href="https://s3-us-west-2.amazonaws.com/static.pyimagesearch.com/wheres-waldo/waldo.zip" rel="nofollow">https://s3-us-west-2.amazonaws.com/static.pyimagesearch.com/wheres-waldo/waldo.zip</a></p>
+<div class="reply">
+<a aria-label="Reply to David" class="comment-reply-link" href="#comment-393834" onclick='return addComment.moveForm( "comment-393834", "393834", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-393852">
+<div class="comment-container" id="li-comment-393852">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 23, 2017 at 8:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-393852" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks David.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-393852" onclick='return addComment.moveForm( "comment-393852", "393852", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-402442">
+<div class="comment-container" id="li-comment-402442">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ef02fc32b00216259a24b6a040a9e0a1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ef02fc32b00216259a24b6a040a9e0a1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://robloxhack.1gamz.com/" rel="external nofollow">robloxhack.1gamz.com</a></span>
+<span class="date">June 14, 2017 at 6:35 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-402442" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I do not know whether it’s just me or if perhaps everybody<br/>
+else encountering issues with your blog. It looks like some<br/>
+of the written text in your content are running off the screen. Can someone else please<br/>
+comment and let me know if this is happening to them too?</p>
+<p>This might be a issue with my web browser because<br/>
+I’ve had this happen previously. Many thanks</p>
+<div class="reply">
+<a aria-label="Reply to robloxhack.1gamz.com" class="comment-reply-link" href="#comment-402442" onclick='return addComment.moveForm( "comment-402442", "402442", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-402471">
+<div class="comment-container" id="li-comment-402471">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 14, 2017 at 8:52 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-402471" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I do not see this.</p>
+<p>What browser and what size window are you using? Tablet or phone for example?</p>
+<p>My blog is best read on a workstation where you can copy-paste code into your IDE.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-402471" onclick='return addComment.moveForm( "comment-402471", "402471", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-414696">
+<div class="comment-container" id="li-comment-414696">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4705d66b5d10aa977eaad753c44a367c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4705d66b5d10aa977eaad753c44a367c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Vin</span>
+<span class="date">September 24, 2017 at 9:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-414696" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>How to recognize combination of two different objects like .if priority sign with left turn sign, instead of detecting each sign individually… Is there any possibility to say what is the meaning of both signs together ?? Combination of different signs were detected .. I just want to say what is stuation of that road like …how intersection is combination of different signs</p>
+<div class="reply">
+<a aria-label="Reply to Vin" class="comment-reply-link" href="#comment-414696" onclick='return addComment.moveForm( "comment-414696", "414696", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-414745">
+<div class="comment-container" id="li-comment-414745">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 25, 2017 at 5:34 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-414745" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I don’t see why not, but you would need to train your model on these types of examples.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-414745" onclick='return addComment.moveForm( "comment-414745", "414745", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-425635">
+<div class="comment-container" id="li-comment-425635">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/98541fd356b636c91048dc99172867ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/98541fd356b636c91048dc99172867ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">olivia</span>
+<span class="date">January 5, 2018 at 1:20 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-425635" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>hai jason<br/>
+thank you for this lesson<br/>
+can i use this code<br/>
+for recognizing road sign in edge mode?<br/>
+and i have multiple template on my direktori<br/>
+thank you..</p>
+<div class="reply">
+<a aria-label="Reply to olivia" class="comment-reply-link" href="#comment-425635" onclick='return addComment.moveForm( "comment-425635", "425635", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-434031">
+<div class="comment-container" id="li-comment-434031">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fc8c28af1e8f5d3c9b33bb6ccea980f3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fc8c28af1e8f5d3c9b33bb6ccea980f3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://www.datasmarts.net" rel="external nofollow">Jesús Martínez</a></span>
+<span class="date">April 4, 2018 at 12:49 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-434031" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>This is a very easy to follow and fun tutorial. Computer vision is really exciting and, for me, the most appealing subfield of AI nowadays!</p>
+<p>Thanks for sharing!</p>
+<div class="reply">
+<a aria-label="Reply to Jesús Martínez" class="comment-reply-link" href="#comment-434031" onclick='return addComment.moveForm( "comment-434031", "434031", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-434675">
+<div class="comment-container" id="li-comment-434675">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1620f90118570a17ba93a2a0bc5403e3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1620f90118570a17ba93a2a0bc5403e3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Juan L.</span>
+<span class="date">April 11, 2018 at 2:30 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-434675" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>First of all, thanks for the tutorial. </p>
+<p>I’m specifically looking for a method to do template matching, where the template is rotated (the angle is unknown). The scale is not modified: I just need to find the rigid body motion.<br/>
+The template is in fact a crop of the original image, rotated by an unknown angle.</p>
+<p>Could you suggest an approach to this problem?</p>
+<p>Thanks!</p>
+<div class="reply">
+<a aria-label="Reply to Juan L." class="comment-reply-link" href="#comment-434675" onclick='return addComment.moveForm( "comment-434675", "434675", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-442175">
+<div class="comment-container" id="li-comment-442175">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/4a5c17957637436c9eae11633ded03db?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/4a5c17957637436c9eae11633ded03db?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">amrith</span>
+<span class="date">June 27, 2018 at 11:04 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/#comment-442175" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>i have tried the example but the region gets highlighted even if there is no match does it mean the code doesnt work?</p>
+<div class="reply">
+<a aria-label="Reply to amrith" class="comment-reply-link" href="#comment-442175" onclick='return addComment.moveForm( "comment-442175", "442175", "respond", "1128" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/using-opencv-python-and-template-matching-to-play-wheres-waldo/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="1128"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="1d376a17be"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="56"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-10"> <div class="textwidget"><p></p><center><br/>
+<strong>Machine Learning with Python</strong><br/>
+Develop predictive models with scikit-learn.
+<p><a href="/machine-learning-with-python/">Click to Get Started Now!</a><br/>
+<a href="/machine-learning-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2014/07/MachineLearningMasteryWithPython-220px.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+<script type="text/javascript">		var ssb_admin_ajax = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+		var ssb_post_id = 1128 ;
+		var ssb_post_url = 'https://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/';
+		var ssb_alternate_post_url = 'http://machinelearningmastery.com/using-opencv-python-and-template-matching-to-play-wheres-waldo/';
+		jQuery( document ).ready(function(){
+		var is_ssb_used = jQuery('.simplesocialbuttons');
+		if( is_ssb_used ) {
+
+			var data = {
+			'action': 'ssb_fetch_data',
+			'postID': ssb_post_id
+		};
+			jQuery.post(ssb_admin_ajax, data, function(data, textStatus, xhr) {
+				var array = JSON.parse(data);
+
+				jQuery.each( array, function( index, value ){
+
+					if( index == 'total' ){
+						jQuery('.ssb_'+ index +'_counter').html(value + '<span>Shares</span>');
+					}else{
+						jQuery('.ssb_'+ index +'_counter').html(value);
+					}
+				});
+
+			});
+		}
+		})
+
+		document.addEventListener("DOMContentLoaded", function() {
+			var if_ssb_exist = document.getElementsByClassName( "simplesocialbuttons" ).length > 0;
+			if (if_ssb_exist) {
+				ssbPlugin.fetchFacebookShares();
+			}
+		});;
+		</script></body>
+</html>

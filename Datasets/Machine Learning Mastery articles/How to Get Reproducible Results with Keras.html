@@ -1,0 +1,1626 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Get Reproducible Results with Keras</title>
+<link href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Get Reproducible Results with Keras" property="og:title"/>
+<meta content="Neural network algorithms are stochastic. This means they make use of randomness, such as initializing to random weights, and in turn the same network trained on the same data can produce different results. This can be confusing to beginners as the algorithm appears unstable, and in fact they are by design. The random initialization allows …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Deep Learning" property="article:section"/>
+<meta content="2017-06-13T19:00:14+00:00" property="article:published_time"/>
+<meta content="2018-08-03T20:13:39+00:00" property="article:modified_time"/>
+<meta content="2018-08-03T20:13:39+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Get-Reproducible-Results-from-Neural-Networks-with-Keras.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Get-Reproducible-Results-from-Neural-Networks-with-Keras.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="400" property="og:image:height"/>
+<meta content="How to Get Reproducible Results from Neural Networks with Keras" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/feed/" rel="alternate" title="Machine Learning Mastery » How to Get Reproducible Results with Keras Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4078" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Freproducible-results-neural-networks-keras%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Freproducible-results-neural-networks-keras%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4078 single-format-standard gecko alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-32"> <div class="textwidget"><p>Want help with deep learning? <a href="https://machinelearningmastery.lpages.co/deep-learning-with-python-mini-course/">Take the FREE Mini-Course</a></p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4078 post type-post status-publish format-standard has-post-thumbnail hentry category-deep-learning">
+<header>
+<h1 class="title entry-title">How to Get Reproducible Results with Keras</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-06-14T05:00:14+1100">June 14, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/deep-learning/" title="View all items in Deep Learning">Deep Learning</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4078 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Get+Reproducible+Results+with+Keras&amp;url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>Neural network algorithms are stochastic.</p>
+<p>This means they make use of randomness, such as initializing to random weights, and in turn the same network trained on the same data can produce different results.</p>
+<p>This can be confusing to beginners as the algorithm appears unstable, and in fact they are by design. The random initialization allows the network to learn a good approximation for the function being learned.</p>
+<p>Nevertheless, there are times when you need the exact same result every time the same network is trained on the same data. Such as for a tutorial, or perhaps operationally.</p>
+<p>In this tutorial, you will discover how you can seed the random number generator so that you can get the same results from the same network on the same data, every time.</p>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4079" style="width: 650px"><img alt="How to Get Reproducible Results from Neural Networks with Keras" class="size-full wp-image-4079" height="400" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Get-Reproducible-Results-from-Neural-Networks-with-Keras.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Get-Reproducible-Results-from-Neural-Networks-with-Keras.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/How-to-Get-Reproducible-Results-from-Neural-Networks-with-Keras-300x188.jpg 300w" width="640"/><p class="wp-caption-text">How to Get Reproducible Results from Neural Networks with Keras<br/>Photo by <a href="https://www.flickr.com/photos/samueljohn/6129216625/">Samuel John</a>, some rights reserved.</p></div>
+<h2>Tutorial Overview</h2>
+<p>This tutorial is broken down into 6 parts. They are:</p>
+<ol>
+<li>Why do I Get Different Results Every Time?</li>
+<li>Demonstration of Different Results</li>
+<li>The Solutions</li>
+<li>Seed Random Numbers with the Theano Backend</li>
+<li>Seed Random Numbers with the TensorFlow Backend</li>
+<li>What if I Am Still Getting Different Results?</li>
+</ol>
+<h3>Environment</h3>
+<p>This tutorial assumes you have a Python SciPy environment installed. You can use either Python 2 or 3 with this example.</p>
+<p>This tutorial assumes you have Keras (v2.0.3+) installed with either the TensorFlow (v1.1.0+) or Theano (v0.9+) backend.</p>
+<p>This tutorial also assumes you have scikit-learn, Pandas, NumPy, and Matplotlib installed.</p>
+<p>If you need help setting up your Python environment, see this post:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Setup a Python Environment for Machine Learning and Deep Learning with Anaconda</a></li>
+</ul>
+<h2>Why do I Get Different Results Every Time?</h2>
+<p>This is a common question I see from beginners to the field of neural networks and deep learning.</p>
+<p>This misunderstanding may also come in the form of questions like:</p>
+<ul>
+<li><em>How do I get stable results?</em></li>
+<li><em>How do I get repeatable results?</em></li>
+<li><em>What seed should I use?</em></li>
+</ul>
+<p>Neural networks use randomness by design to ensure they effectively learn the function being approximated for the problem. Randomness is used because this class of machine learning algorithm performs better with it than without.</p>
+<p>The most common form of randomness used in neural networks is the random initialization of the network weights. Although randomness can be used in other areas, here is just a short list:</p>
+<ul>
+<li>Randomness in Initialization, such as weights.</li>
+<li>Randomness in Regularization, such as dropout.</li>
+<li>Randomness in Layers, such as word embedding.</li>
+<li>Randomness in Optimization, such as stochastic optimization.</li>
+</ul>
+<p>These sources of randomness, and more, mean that when you run the exact same neural network algorithm on the exact same data, you are guaranteed to get different results.</p>
+<p>For more on the why behind stochastic algorithms, see the post:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/randomness-in-machine-learning/">Embrace Randomness in Machine Learning</a></li>
+</ul>
+<h2>Demonstration of Different Results</h2>
+<p>We can demonstrate the stochastic nature of neural networks with a small example.</p>
+<p>In this section, we will develop a Multilayer Perceptron model to learn a short sequence of numbers increasing by 0.1 from 0.0 to 0.9. Given 0.0, the model must predict 0.1; given 0.1, the model must output 0.2; and so on.</p>
+<p>The code to prepare the data is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f18235406577" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# create sequence
+length = 10
+sequence = [i/float(length) for i in range(length)]
+# create X/y pairs
+df = DataFrame(sequence)
+df = concat([df.shift(1), df], axis=1)
+df.dropna(inplace=True)
+# convert to MLPfriendly format
+values = df.values
+X, y = values[:,0], values[:,1]</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f18235406577-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f18235406577-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f18235406577-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f18235406577-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f18235406577-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f18235406577-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f18235406577-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f18235406577-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f18235406577-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f18235406577-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f18235406577-1"><span class="crayon-p"># create sequence</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f18235406577-2"><span class="crayon-v">length</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">10</span></div><div class="crayon-line" id="crayon-5c0ca99b03f18235406577-3"><span class="crayon-v">sequence</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-v">i</span><span class="crayon-o">/</span><span class="crayon-t">float</span><span class="crayon-sy">(</span><span class="crayon-v">length</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-v">length</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f18235406577-4"><span class="crayon-p"># create X/y pairs</span></div><div class="crayon-line" id="crayon-5c0ca99b03f18235406577-5"><span class="crayon-v">df</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">sequence</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f18235406577-6"><span class="crayon-v">df</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">concat</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-e">shift</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">axis</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f18235406577-7"><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-e">dropna</span><span class="crayon-sy">(</span><span class="crayon-v">inplace</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f18235406577-8"><span class="crayon-p"># convert to MLPfriendly format</span></div><div class="crayon-line" id="crayon-5c0ca99b03f18235406577-9"><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-i">values</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f18235406577-10"><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p>We will use a network with 1 input, 10 neurons in the hidden layer, and 1 output. The network will use a mean squared error loss function and will be trained using the efficient ADAM algorithm.</p>
+<p>The network needs about 1,000 epochs to solve this problem effectively, but we will only train it for 100 epochs. This is to ensure we get a model that makes errors when making predictions.</p>
+<p>After the network is trained, we will make predictions on the dataset and print the mean squared error.</p>
+<p>The code for the network is listed below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f21499668827" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# design network
+model = Sequential()
+model.add(Dense(10, input_dim=1))
+model.add(Dense(1))
+model.compile(loss='mean_squared_error', optimizer='adam')
+# fit network
+model.fit(X, y, epochs=100, batch_size=len(X), verbose=0)
+# forecast
+yhat = model.predict(X, verbose=0)
+print(mean_squared_error(y, yhat[:,0]))</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f21499668827-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f21499668827-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f21499668827-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f21499668827-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f21499668827-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f21499668827-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f21499668827-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f21499668827-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f21499668827-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f21499668827-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f21499668827-1"><span class="crayon-p"># design network</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f21499668827-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f21499668827-3"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">input_dim</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f21499668827-4"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f21499668827-5"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-v">loss</span><span class="crayon-o">=</span><span class="crayon-s">'mean_squared_error'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">optimizer</span><span class="crayon-o">=</span><span class="crayon-s">'adam'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f21499668827-6"><span class="crayon-p"># fit network</span></div><div class="crayon-line" id="crayon-5c0ca99b03f21499668827-7"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">epochs</span><span class="crayon-o">=</span><span class="crayon-cn">100</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">batch_size</span><span class="crayon-o">=</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f21499668827-8"><span class="crayon-p"># forecast</span></div><div class="crayon-line" id="crayon-5c0ca99b03f21499668827-9"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f21499668827-10"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p>In the example, we will create the network 10 times and print 10 different network scores.</p>
+<p>The complete code listing is provided below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f23951611422" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from pandas import DataFrame
+from pandas import concat
+from keras.models import Sequential
+from keras.layers import Dense
+from sklearn.metrics import mean_squared_error
+
+# fit MLP to dataset and print error
+def fit_model(X, y):
+	# design network
+	model = Sequential()
+	model.add(Dense(10, input_dim=1))
+	model.add(Dense(1))
+	model.compile(loss='mean_squared_error', optimizer='adam')
+	# fit network
+	model.fit(X, y, epochs=100, batch_size=len(X), verbose=0)
+	# forecast
+	yhat = model.predict(X, verbose=0)
+	print(mean_squared_error(y, yhat[:,0]))
+
+# create sequence
+length = 10
+sequence = [i/float(length) for i in range(length)]
+# create X/y pairs
+df = DataFrame(sequence)
+df = concat([df.shift(1), df], axis=1)
+df.dropna(inplace=True)
+# convert to MLP friendly format
+values = df.values
+X, y = values[:,0], values[:,1]
+# repeat experiment
+repeats = 10
+for _ in range(repeats):
+	fit_model(X, y)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-10">10</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-12">12</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-14">14</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-16">16</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-18">18</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-20">20</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-22">22</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-24">24</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-26">26</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-28">28</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-30">30</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f23951611422-32">32</div><div class="crayon-num" data-line="crayon-5c0ca99b03f23951611422-33">33</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-1"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">DataFrame</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-2"><span class="crayon-e">from </span><span class="crayon-e">pandas </span><span class="crayon-e">import </span><span class="crayon-e">concat</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-3"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-e">Sequential</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-4"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">layers </span><span class="crayon-e">import </span><span class="crayon-e">Dense</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-5"><span class="crayon-e">from </span><span class="crayon-v">sklearn</span><span class="crayon-sy">.</span><span class="crayon-e">metrics </span><span class="crayon-e">import </span><span class="crayon-v">mean_squared_error</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-6"> </div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-7"><span class="crayon-p"># fit MLP to dataset and print error</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-8"><span class="crayon-e">def </span><span class="crayon-e">fit_model</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-9"><span class="crayon-h"> </span><span class="crayon-p"># design network</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-10"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-11"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">input_dim</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-12"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-13"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-v">loss</span><span class="crayon-o">=</span><span class="crayon-s">'mean_squared_error'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">optimizer</span><span class="crayon-o">=</span><span class="crayon-s">'adam'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-14"><span class="crayon-h"> </span><span class="crayon-p"># fit network</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-15"><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">epochs</span><span class="crayon-o">=</span><span class="crayon-cn">100</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">batch_size</span><span class="crayon-o">=</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-16"><span class="crayon-h"> </span><span class="crayon-p"># forecast</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-17"><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-18"><span class="crayon-h"> </span><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-e">mean_squared_error</span><span class="crayon-sy">(</span><span class="crayon-v">y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">yhat</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-19"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-20"><span class="crayon-p"># create sequence</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-21"><span class="crayon-v">length</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">10</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-22"><span class="crayon-v">sequence</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-v">i</span><span class="crayon-o">/</span><span class="crayon-t">float</span><span class="crayon-sy">(</span><span class="crayon-v">length</span><span class="crayon-sy">)</span><span class="crayon-h"> </span><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">i</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-v">length</span><span class="crayon-sy">)</span><span class="crayon-sy">]</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-23"><span class="crayon-p"># create X/y pairs</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-24"><span class="crayon-v">df</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">DataFrame</span><span class="crayon-sy">(</span><span class="crayon-v">sequence</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-25"><span class="crayon-v">df</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">concat</span><span class="crayon-sy">(</span><span class="crayon-sy">[</span><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-e">shift</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">axis</span><span class="crayon-o">=</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-26"><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-e">dropna</span><span class="crayon-sy">(</span><span class="crayon-v">inplace</span><span class="crayon-o">=</span><span class="crayon-t">True</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-27"><span class="crayon-p"># convert to MLP friendly format</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-28"><span class="crayon-v">values</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">df</span><span class="crayon-sy">.</span><span class="crayon-i">values</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-29"><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">values</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-30"><span class="crayon-p"># repeat experiment</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-31"><span class="crayon-v">repeats</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-cn">10</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f23951611422-32"><span class="crayon-st">for</span><span class="crayon-h"> </span><span class="crayon-i">_</span><span class="crayon-h"> </span><span class="crayon-st">in</span><span class="crayon-h"> </span><span class="crayon-e">range</span><span class="crayon-sy">(</span><span class="crayon-v">repeats</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca99b03f23951611422-33"><span class="crayon-h"> </span><span class="crayon-e">fit_model</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0018 seconds] -->
+<p>Running the example will print a different accuracy in each line.</p>
+<p>Your specific results will differ. A sample output is provided below.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f25706140977" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+0.0282584265697
+0.0457025913022
+0.145698137198
+0.0873461454407
+0.0309397604521
+0.046649185173
+0.0958450337178
+0.0130660263779
+0.00625176026631
+0.00296055161492</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f25706140977-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f25706140977-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f25706140977-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f25706140977-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f25706140977-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f25706140977-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f25706140977-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f25706140977-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f25706140977-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f25706140977-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f25706140977-1">0.0282584265697</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f25706140977-2">0.0457025913022</div><div class="crayon-line" id="crayon-5c0ca99b03f25706140977-3">0.145698137198</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f25706140977-4">0.0873461454407</div><div class="crayon-line" id="crayon-5c0ca99b03f25706140977-5">0.0309397604521</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f25706140977-6">0.046649185173</div><div class="crayon-line" id="crayon-5c0ca99b03f25706140977-7">0.0958450337178</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f25706140977-8">0.0130660263779</div><div class="crayon-line" id="crayon-5c0ca99b03f25706140977-9">0.00625176026631</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f25706140977-10">0.00296055161492</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p></p>
+<h2>The Solutions</h2>
+<p>The are two main solutions.</p>
+<h3>Solution #1: Repeat Your Experiment</h3>
+<p>The traditional and practical way to address this problem is to run your network many times (30+) and use statistics to summarize the performance of your model, and compare your model to other models.</p>
+<p>I strongly recommend this approach, but it is not always possible due to the very long training times of some models.</p>
+<p>For more on this approach, see:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/evaluate-skill-deep-learning-models/">How to Evaluate the Skill of Deep Learning Models</a></li>
+</ul>
+<h3>Solution #2: Seed the Random Number Generator</h3>
+<p>Alternately, another solution is to use a fixed seed for the random number generator.</p>
+<p>Random numbers are generated using a pseudo-random number generator. A random number generator is a mathematical function that will generate a long sequence of numbers that are random enough for general purpose use, such as in machine learning algorithms.</p>
+<p>Random number generators require a seed to kick off the process, and it is common to use the current time in milliseconds as the default in most implementations. This is to ensure different sequences of random numbers are generated each time the code is run, by default.</p>
+<p>This seed can also be specified with a specific number, such as “1”, to ensure that the same sequence of random numbers is generated each time the code is run.</p>
+<p>The specific seed value does not matter as long as it stays the same for each run of your code.</p>
+<p>The specific way to set the random number generator differs depending on the backend, and we will look at how to do this in Theano and TensorFlow.</p>
+<h2>Seed Random Numbers with the Theano Backend</h2>
+<p>Generally, Keras gets its source of randomness from the NumPy random number generator.</p>
+<p>For the most part, so does the Theano backend.</p>
+<p>We can seed the NumPy random number generator by calling the <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.random.seed.html">seed() function</a> from the random module, as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f27235243540" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from numpy.random import seed
+seed(1)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f27235243540-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f27235243540-2">2</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f27235243540-1"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">seed</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f27235243540-2"><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>The importing and calling of the seed function is best done at the top of your code file.</p>
+<p>This is a <a href="https://github.com/fchollet/keras/issues/439">best practice</a> because it is possible that some randomness is used when various Keras or Theano (or other) libraries are imported as part of their initialization, even before they are directly used.</p>
+<p>We can add the two lines to the top of our example above and run it two times.</p>
+<p>You should see the same list of mean squared error values each time you run the code (perhaps with some minor variation due to precision on different machines), as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f2a189267713" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+0.169326527063
+2.75750621228e-05
+0.0183287291562
+1.93553737255e-07
+0.0549871087449
+0.0906326807824
+0.00337575114075
+0.00414857518259
+8.14587362008e-08
+0.0522927019639</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f2a189267713-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2a189267713-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f2a189267713-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2a189267713-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f2a189267713-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2a189267713-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f2a189267713-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2a189267713-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f2a189267713-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2a189267713-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f2a189267713-1">0.169326527063</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2a189267713-2">2.75750621228e-05</div><div class="crayon-line" id="crayon-5c0ca99b03f2a189267713-3">0.0183287291562</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2a189267713-4">1.93553737255e-07</div><div class="crayon-line" id="crayon-5c0ca99b03f2a189267713-5">0.0549871087449</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2a189267713-6">0.0906326807824</div><div class="crayon-line" id="crayon-5c0ca99b03f2a189267713-7">0.00337575114075</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2a189267713-8">0.00414857518259</div><div class="crayon-line" id="crayon-5c0ca99b03f2a189267713-9">8.14587362008e-08</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2a189267713-10">0.0522927019639</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Your results should match mine (ignoring minor differences of precision).</p>
+<h2>Seed Random Numbers with the TensorFlow Backend</h2>
+<p>Keras does get its source of randomness from the NumPy random number generator, so this must be seeded regardless of whether you are using a Theano or TensorFlow backend.</p>
+<p>It must be seeded by calling the <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.random.seed.html">seed() function</a> at the top of the file before any other imports or other code.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f2c361446928" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from numpy.random import seed
+seed(1)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f2c361446928-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2c361446928-2">2</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f2c361446928-1"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">seed</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2c361446928-2"><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>In addition, TensorFlow has its own random number generator that must also be seeded by calling the <a href="https://www.tensorflow.org/api_docs/python/tf/set_random_seed">set_random_seed() function</a> immediately after the NumPy random number generator, as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f2d299862495" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from tensorflow import set_random_seed
+set_random_seed(2)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f2d299862495-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2d299862495-2">2</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f2d299862495-1"><span class="crayon-e">from </span><span class="crayon-e">tensorflow </span><span class="crayon-e">import </span><span class="crayon-e">set_random_seed</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2d299862495-2"><span class="crayon-e">set_random_seed</span><span class="crayon-sy">(</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0001 seconds] -->
+<p>To be crystal clear, the top of your code file must have the following 4 lines before any others;</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f2f755123545" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from numpy.random import seed
+seed(1)
+from tensorflow import set_random_seed
+set_random_seed(2)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f2f755123545-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2f755123545-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f2f755123545-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f2f755123545-4">4</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f2f755123545-1"><span class="crayon-e">from </span><span class="crayon-v">numpy</span><span class="crayon-sy">.</span><span class="crayon-e">random </span><span class="crayon-e">import </span><span class="crayon-e">seed</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2f755123545-2"><span class="crayon-e">seed</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca99b03f2f755123545-3"><span class="crayon-e">from </span><span class="crayon-e">tensorflow </span><span class="crayon-e">import </span><span class="crayon-e">set_random_seed</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f2f755123545-4"><span class="crayon-e">set_random_seed</span><span class="crayon-sy">(</span><span class="crayon-cn">2</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>You can use the same seed for both, or different seeds. I don’t think it makes much difference as the sources of randomness feed into different processes.</p>
+<p>Adding these 4 lines to the above example will allow the code to produce the same results every time it is run. You should see the same mean squared error values as those listed below (perhaps with some minor variation due to precision on different machines):</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca99b03f30692297315" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+0.224045112999
+0.00154879478823
+0.00387589994044
+0.0292376881968
+0.00945528404353
+0.013305765525
+0.0206255228201
+0.0359538356108
+0.00441943512128
+0.298706569397</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca99b03f30692297315-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f30692297315-2">2</div><div class="crayon-num" data-line="crayon-5c0ca99b03f30692297315-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f30692297315-4">4</div><div class="crayon-num" data-line="crayon-5c0ca99b03f30692297315-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f30692297315-6">6</div><div class="crayon-num" data-line="crayon-5c0ca99b03f30692297315-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f30692297315-8">8</div><div class="crayon-num" data-line="crayon-5c0ca99b03f30692297315-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca99b03f30692297315-10">10</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca99b03f30692297315-1">0.224045112999</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f30692297315-2">0.00154879478823</div><div class="crayon-line" id="crayon-5c0ca99b03f30692297315-3">0.00387589994044</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f30692297315-4">0.0292376881968</div><div class="crayon-line" id="crayon-5c0ca99b03f30692297315-5">0.00945528404353</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f30692297315-6">0.013305765525</div><div class="crayon-line" id="crayon-5c0ca99b03f30692297315-7">0.0206255228201</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f30692297315-8">0.0359538356108</div><div class="crayon-line" id="crayon-5c0ca99b03f30692297315-9">0.00441943512128</div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca99b03f30692297315-10">0.298706569397</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0000 seconds] -->
+<p>Your results should match mine (ignoring minor differences of precision).</p>
+<h2>What if I Am Still Getting Different Results?</h2>
+<p>To re-iterate, the most robust way to report results and compare models is to repeat your experiment many times (30+) and use summary statistics.</p>
+<p>If this is not possible, you can get 100% repeatable results by seeding the random number generators used by your code. The solutions above should cover most situations, but not all.</p>
+<p>What if you have followed the above instructions and still get different results from the same algorithm on the same data?</p>
+<p>It is possible that there are other sources of randomness that you have not accounted for.</p>
+<h3>Randomness from a Third-Party Library</h3>
+<p>Perhaps your code is using an additional library that uses a different random number generator that too must be seeded.</p>
+<p>Try cutting your code back to the minimum required (e.g. one data sample, one training epoch, etc.) and carefully read the API documentation in an effort to narrow down additional third-party libraries introducing randomness.</p>
+<h3>Randomness from Using the GPU</h3>
+<p>All of the above examples assume the code was run on a CPU.</p>
+<p>It is possible that when using the GPU to train your models, the backend may be configured to use a sophisticated stack of GPU libraries, and that some of these may introduce their own source of randomness that you may or may not be able to account for.</p>
+<p>For example, there is some evidence that if you are using <a href="https://developer.nvidia.com/cudnn">Nvidia cuDNN</a> in your stack, that this <a href="https://github.com/fchollet/keras/issues/2479#issuecomment-213987747">may introduce additional sources of randomness</a> and prevent the exact reproducibility of your results.</p>
+<h3>Randomness from a Sophisticated Model</h3>
+<p>It is possible that because of the sophistication of your model and the parallel nature of training, that you are getting unreproducible results.</p>
+<p>This is very likely caused by efficiencies made by the backend library and perhaps the inability to use the sequence of random numbers across cores.</p>
+<p>I have not seen this myself, but see signs in some GitHub issues and StackOverflow questions.</p>
+<p>You can try to reduce the complexity of your model to see if this affects the reproducibility of results, if only to narrow down the cause.</p>
+<p>I would suggest reading up on how your backend uses randomness and see if there are any options open to you.</p>
+<p>In Theano, see:</p>
+<ul>
+<li><a href="http://deeplearning.net/software/theano/sandbox/randomnumbers.html">Random Numbers</a></li>
+<li><a href="http://deeplearning.net/software/theano/library/tensor/shared_randomstreams.html">Friendly random numbers</a></li>
+<li><a href="http://deeplearning.net/software/theano/tutorial/examples.html#using-random-numbers">Using Random Numbers</a></li>
+</ul>
+<p>In TensorFlow, see:</p>
+<ul>
+<li><a href="https://www.tensorflow.org/api_guides/python/constant_op">Constants, Sequences, and Random Values</a></li>
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/set_random_seed">tf.set_random_seed</a></li>
+</ul>
+<p>Also, consider searching for other people with the same issue for further insight. Some great places to search include:</p>
+<ul>
+<li><a href="https://github.com/fchollet/keras/issues">Keras Issues on GitHub</a></li>
+<li><a href="https://github.com/Theano/Theano/issues">Theano Issues on Github</a></li>
+<li><a href="https://github.com/tensorflow/tensorflow/issues">TensorFlow Issues on GitHub</a></li>
+<li><a href="http://stackoverflow.com/">StackOverflow general programming Q&amp;A</a></li>
+<li><a href="https://stats.stackexchange.com/">CrossValidated machine learning Q&amp;A</a></li>
+</ul>
+<h2>Summary</h2>
+<p>In this tutorial, you discovered how to get reproducible results for neural network models in Keras.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>That neural networks are stochastic by design and that the source of randomness can be fixed to make results reproducible.</li>
+<li>That you can seed the random number generators in NumPy and TensorFlow and this will make most Keras code 100% reproducible.</li>
+<li>That there are some cases where there are additional sources of randomness and you have ideas on how to seek them out and perhaps fix them too.</li>
+</ul>
+<p>Did this tutorial help?<br/>
+Share your experience in the comments.</p>
+<p>Are you still getting unreproducible results with Keras?<br/>
+Share your experience; perhaps someone else here can help.</p>
+<div class="awac-wrapper"><div class="awac widget text-35"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<h2 style="text-align: center;">Frustrated With Your Progress In Deep Learning?</h2>
+<p><a href="/deep-learning-with-python/"><img align="left" alt="Deep Learning with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/DeepLearningWithPython-220.png" style="border: 0;"/></a></p>
+<h4 style="text-align: center;"> What If You Could Develop A Network in Minutes</h4>
+<p style="text-align: center;">…with just a few lines of Python</p>
+<p style="text-align: center;">Discover how in my new Ebook: <a href="https://machinelearningmastery.com/deep-learning-with-python/">Deep Learning With Python</a></p>
+<p style="text-align: center;">It covers <strong>self-study tutorials</strong> and <strong>end-to-end projects</strong> on topics like:<br/>
+<em>Multilayer Perceptrons</em>, <em>Convolutional Nets</em> and <em>Recurrent Neural Nets</em>, and more…</p>
+<h4 style="text-align: center;">Finally Bring Deep Learning To<br/>
+Your Own Projects</h4>
+<p style="text-align: center;">Skip the Academics. Just Results.</p>
+<p style="text-align: center;"><a href="https://machinelearningmastery.com/deep-learning-with-python/">Click to learn more</a>.</p>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4078 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Get+Reproducible+Results+with+Keras&amp;url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/how-to-use-an-encoder-decoder-lstm-to-echo-sequences-of-random-integers/" rel="prev"><i class="fa fa-angle-left"></i> How to use an Encoder-Decoder LSTM to Echo Sequences of Random Integers</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/develop-bidirectional-lstm-sequence-classification-python-keras/" rel="next">How to Develop a Bidirectional LSTM For Sequence Classification in Python with Keras <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">35 Responses to <em>How to Get Reproducible Results with Keras</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-404351">
+<div class="comment-container" id="li-comment-404351">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/3d3fda5b4c408f9e23e9713a18bc09d7?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/3d3fda5b4c408f9e23e9713a18bc09d7?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Marcel</span>
+<span class="date">June 30, 2017 at 6:51 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-404351" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hey,</p>
+<p>even though I’m setting a random seed for both numpy and tensorflow as described by your post, I’m being unable to reproduce the training of a model consisting of LSTM layers(+ 1 Dense at the end).</p>
+<p>Can you tell me if this is simply by the nature of LSTMs or if there is something else I can look into?</p>
+<p>Thanks.</p>
+<div class="reply">
+<a aria-label="Reply to Marcel" class="comment-reply-link" href="#comment-404351" onclick='return addComment.moveForm( "comment-404351", "404351", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-404413">
+<div class="comment-container" id="li-comment-404413">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 1, 2017 at 6:32 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-404413" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No, I believe LSTM results are reproducible if the seed is tied down.</p>
+<p>Are you using a tensorflow backend?<br/>
+Is Keras, TF and your scipy stack up to date?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404413" onclick='return addComment.moveForm( "comment-404413", "404413", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-404737">
+<div class="comment-container" id="li-comment-404737">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/bf816ebe3acf442fc3915bd86eea5958?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/bf816ebe3acf442fc3915bd86eea5958?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Marcel</span>
+<span class="date">July 4, 2017 at 11:56 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-404737" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m using the tensorflow backend and yes, everything is up to date. Freshly installed on Arch Linux at home. I stumpled upon the problem at work and want this to be fixed.</p>
+<p>I tried the imdb_lstm example of keras with fixed random seeds for numpy and tensorflow just as you described, using one model only which was saved after compiling but before training.<br/>
+I’m loading this model and training it again with, sadly, different results.<br/>
+I can see though that through the start of both trainings the accuracies and losses are the same until sample 1440 of 25000 where they begin to differ slightly and stay so until the end, e.g. 0.7468 vs. 0.7482 which I wouldn’t see critical. At the end then the validation accuracy though differs by 0.05 which should not be normal, in this case 0.8056 vs. 0.7496.<br/>
+I’m only training 1 epoch for this example .</p>
+<p>I also got pointed at LSTMs being deterministic as their equations don’t have any random part and thus results should be reproducible.</p>
+<p>I guess I will ask the guys of keras about this as it seems to be a deeper issue to me.</p>
+<p>If you have another idea, let me know. Great site btw, I often stumpled upon your blog already when I began learning machine learning 🙂</p>
+<p>Thanks for you help 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Marcel" class="comment-reply-link" href="#comment-404737" onclick='return addComment.moveForm( "comment-404737", "404737", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-404889">
+<div class="comment-container" id="li-comment-404889">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 6, 2017 at 10:17 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-404889" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Try an MLP in the same setup and see if it is the problem or data handling (e.g. embedding) introducing the random vars.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-404889" onclick='return addComment.moveForm( "comment-404889", "404889", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-407272">
+<div class="comment-container" id="li-comment-407272">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a33cc4eda404a85e75841e76c8348302?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a33cc4eda404a85e75841e76c8348302?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">kotb</span>
+<span class="date">July 25, 2017 at 9:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-407272" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi DR jason,</p>
+<p>I encountered the same problem as Marcel, and after doing research i found out that the problem is in Tensorflow Backend.I switch to theano backend, and i get reproducible results</p>
+<div class="reply">
+<a aria-label="Reply to kotb" class="comment-reply-link" href="#comment-407272" onclick='return addComment.moveForm( "comment-407272", "407272", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-407321">
+<div class="comment-container" id="li-comment-407321">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 26, 2017 at 7:53 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-407321" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Excellent. Thanks for sharing.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-407321" onclick='return addComment.moveForm( "comment-407321", "407321", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-410443">
+<div class="comment-container" id="li-comment-410443">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/192eaa63115469ea822d9a2685621baf?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/192eaa63115469ea822d9a2685621baf?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sharod Roy Choudhury</span>
+<span class="date">August 21, 2017 at 7:57 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-410443" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have read your responses and there seems to be a problem with the Tensorflow backend. Is there a solution for that because I need to use the tensorflow backend only and not the theano backend. I also have a single LSTM layer network and running on a server with 56 CPU cores and CentOS. Pls help !!!</p>
+<div class="reply">
+<a aria-label="Reply to Sharod Roy Choudhury" class="comment-reply-link" href="#comment-410443" onclick='return addComment.moveForm( "comment-410443", "410443", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-410502">
+<div class="comment-container" id="li-comment-410502">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 22, 2017 at 6:38 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-410502" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Did you try the methods for tensorflow listed in this post? Did they work for you?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-410502" onclick='return addComment.moveForm( "comment-410502", "410502", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-410554">
+<div class="comment-container" id="li-comment-410554">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/192eaa63115469ea822d9a2685621baf?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/192eaa63115469ea822d9a2685621baf?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sharod Roy Choudhury</span>
+<span class="date">August 22, 2017 at 2:08 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-410554" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>According to the solutions you gave:</p>
+<p>I am running the program on the same machine, so environment is being repeated.</p>
+<p>I am also seeding the random number generator for numpy and tensorflow as you have shown in your post. </p>
+<p>I am running my program on a server but using CPU only, no GPU.</p>
+<p>I am using only Keras and numpy so explicitly no third party software.</p>
+<p>My model isn’t that sophisticated either. Just a single layer LSTM and a softmax layer binary classification.</p>
+<p>Pls help !! I am stuck !!</p>
+<div class="reply">
+<a aria-label="Reply to Sharod Roy Choudhury" class="comment-reply-link" href="#comment-410554" onclick='return addComment.moveForm( "comment-410554", "410554", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-410643">
+<div class="comment-container" id="li-comment-410643">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 23, 2017 at 6:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-410643" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>All of my best ideas are in the post above.</p>
+<p>Double check your experiments.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-410643" onclick='return addComment.moveForm( "comment-410643", "410643", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-414356">
+<div class="comment-container" id="li-comment-414356">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jim Goodwin</span>
+<span class="date">September 20, 2017 at 2:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414356" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Repeat of prior posts; I can’t edit it, and HTML trashed it:</p>
+<p>Some experiences getting Theano to reproduce, which may<br/>
+be of value to others.</p>
+<p>My setup was Win7 64 bit, Keras 2.0.8,<br/>
+Theano 0.10.0beta2.dev-c3c477df9439fa466eb50335601d5c854491def8, </p>
+<p>Most of the effort was using my GPU, a GEForce 1060,<br/>
+but I checked at the end that everything worked with<br/>
+the CPU as well. What I was trying to do was make the<br/>
+“Nietzsche” LSTM example reproduce exactly. The source<br/>
+for that is at</p>
+<p><a href="https://raw.githubusercontent.com/fchollet/keras/master/examples/lstm_text_generation.py" rel="nofollow">https://raw.githubusercontent.com/fchollet/keras/master/examples/lstm_text_generation.py</a></p>
+<p>General remark: It is harder than it looks to get reproducibility,<br/>
+but it does work. It’s harder because there are so many little<br/>
+ways that some nondeterminism can sneak in on you, and because<br/>
+there is no decent documentation for anything, and the info on<br/>
+the web is copious, but disorganized, and frequently out of<br/>
+date or just plain wrong. In the end there was no way to find<br/>
+the last bug except the laborious process of repeatedly modifying<br/>
+the code and adding print statements of critical state data to<br/>
+find the place the divergence began. Crude, but after you’ve<br/>
+tried to be smart about it and failed enough times, the only way.</p>
+<p>Lessons learned:</p>
+<p>(1)<br/>
+It is indeed necessary to create a .theanorc (if it isn’t already<br/>
+there) and add certain lines to it. That file on windows is found at<br/>
+C:\Users\yourloginname\.theanorc</p>
+<p>If you try to create it in Windows Explorer, windows will block<br/>
+you because it doesn’t think “.theano” is a complete file name<br/>
+(it’s only a suffix). Create it as .theano.txt and then rename it<br/>
+using a command shell. </p>
+<p>It is said you need to add these lines to your .theanorc file:</p>
+<p>[dnn.conv]<br/>
+algo_bwd_data=deterministic<br/>
+algo_bwd_filter=deterministic<br/>
+optimizer_excluding=conv_dnn</p>
+<p>It turned out I didn’t need the last one and I commented it out.<br/>
+I imagine it is needed if you are using conv nets; I wasn’t.</p>
+<p>(2)<br/>
+You need to seed the random number generator FIRST THING:</p>
+<p>import numpy as np<br/>
+np.random.seed(any-constant-number)</p>
+<p>You need to do this absolutely as early as possible.<br/>
+You can’t do it before a “from future…” import but<br/>
+do it right after that, in your __main__ i.e. the .py<br/>
+file you run from the IDE or command line. </p>
+<p>Don’t get clever about this and put it in your favorite<br/>
+utility file and then import that early. I tried and it<br/>
+wasn’t worth it; there are so many ways something can<br/>
+get imported and mess with the RNG.</p>
+<p>(3)<br/>
+This was my last bug, and naturally therefore the dumbest:</p>
+<p>There are two random number generators (at least) floating<br/>
+around the Python world, numpy.random and Python’s native<br/>
+random.py. The code posted at the URL above uses BOTH of<br/>
+them: now one, now the other. Francois, I love you man, but…</p>
+<p>I seeded one, but never noticed that there was another.<br/>
+The unseeded one naturally caused the program to diverge. </p>
+<p>Make sure you’re using one of them only, throughout.<br/>
+If you are unsure what all your libraries might be doing,<br/>
+I suppose you could just seed them both (haven’t tried).</p>
+<p>(4)<br/>
+Prepare for the siege: cut your program down before you begin.<br/>
+Use a tiny dataset, fewer iterations, do whatever you can do<br/>
+to reduce the runtime. You don’t need to run it for 10 minutes<br/>
+to see that it’s going to diverge. When it works you can run<br/>
+it once with the full original settings. Well, okay, twice,<br/>
+to prove the point.</p>
+<p>(5)<br/>
+GPU and CPU give different results. This is natural.<br/>
+Each is reproducible, but they are different.<br/>
+The .theanorc settings and code changes (pinning RNG’s)<br/>
+to get reproducibility are the same.</p>
+<p>(6)<br/>
+During training, Theano produces lines like these on the console:</p>
+<p>76288/200287 [==========……………….] – ETA: 312s – loss: 2.2663</p>
+<p>These will not reproduce exactly. This is not a problem; it<br/>
+is just a real-time progress report, and the point at which<br/>
+it decides to report can vary slightly if the run goes a little<br/>
+faster or slower, but the run is not diverging. Often it does<br/>
+report at the same number (here: 76288) and when that happens,<br/>
+the reported loss will be the same. The ETA values (estimated time<br/>
+remaining to finish the epoch) will always vary a little.</p>
+<p>(7)<br/>
+How exact is exact? If you’ve got it right, it’s exact<br/>
+to the last bloody digit. Close may be good enough for<br/>
+your purposes, but true reproducibility is exact. If the<br/>
+final loss value looks pretty close, but doesn’t match exactly,<br/>
+you have not reproduced the run. If you go back and look at<br/>
+loss values in the middle of the run, you are apt to find<br/>
+they were all over the place, and you just got lucky that<br/>
+the final values ended up close.</p>
+<div class="reply">
+<a aria-label="Reply to Jim Goodwin" class="comment-reply-link" href="#comment-414356" onclick='return addComment.moveForm( "comment-414356", "414356", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-414360">
+<div class="comment-container" id="li-comment-414360">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 20, 2017 at 3:04 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414360" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Really nice write-up Jim, thank you so much for sharing!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-414360" onclick='return addComment.moveForm( "comment-414360", "414360", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-414394">
+<div class="comment-container" id="li-comment-414394">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jim Goodwin</span>
+<span class="date">September 21, 2017 at 3:04 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414394" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I forgot one crucial trick. The best thing to monitor, to see<br/>
+if it is diverging, is the sequence of loss values during training.<br/>
+Using the console output that model.train() normally produces has<br/>
+the issues I mentioned above under point 6. Using LossHistory<br/>
+callback is way better. See “Example: recording loss history”<br/>
+at <a href="https://keras.io/callbacks/#example-recording-loss-history" rel="nofollow">https://keras.io/callbacks/#example-recording-loss-history</a></p>
+<p>Jason, thanks for this blog page, I don’t know how much I have<br/>
+added to it, but without it I wouldn’t have succeeded.<br/>
+/jim</p>
+<div class="reply">
+<a aria-label="Reply to Jim Goodwin" class="comment-reply-link" href="#comment-414394" onclick='return addComment.moveForm( "comment-414394", "414394", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-414416">
+<div class="comment-container" id="li-comment-414416">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 21, 2017 at 5:55 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414416" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Jim, I really love to hear about your experiments and their results.</p>
+<p>Maybe I should start a little community forum for us “boots on the ground practitioners” 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-414416" onclick='return addComment.moveForm( "comment-414416", "414416", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even depth-2" id="comment-414566">
+<div class="comment-container" id="li-comment-414566">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jim Goodwin</span>
+<span class="date">September 22, 2017 at 10:01 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414566" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’ve seen it written that requiring deterministic execution will slow down execution by as much as two times. </p>
+<p>When I timed the LSTM setup described above, on GPU, the difference was negligible: 0.07% — 5 seconds on 6,756. </p>
+<p>It may depend on what kind of net you are running, but my example above was unaffected.</p>
+<p>That makes it acceptable to use deterministic execution by default.  (Just remember to re-fiddle the random number generator seed if you actually want a number of different runs, eg to average metrics.)<br/>
+/jim</p>
+<div class="reply">
+<a aria-label="Reply to Jim Goodwin" class="comment-reply-link" href="#comment-414566" onclick='return addComment.moveForm( "comment-414566", "414566", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-3" id="comment-414603">
+<div class="comment-container" id="li-comment-414603">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 23, 2017 at 5:40 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414603" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Interesting.</p>
+<p>Generally, I think the only place that fixing the random seed has is in debugging code. We should not be fixing the random seed when developing predictive models.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-414603" onclick='return addComment.moveForm( "comment-414603", "414603", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-414357">
+<div class="comment-container" id="li-comment-414357">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/12a58578642e831f28242b83f0dbce6b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jim Goodwin</span>
+<span class="date">September 20, 2017 at 2:49 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-414357" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>… and I meant to say I was using Python 2.7.13</p>
+<div class="reply">
+<a aria-label="Reply to Jim Goodwin" class="comment-reply-link" href="#comment-414357" onclick='return addComment.moveForm( "comment-414357", "414357", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-416463">
+<div class="comment-container" id="li-comment-416463">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/5f7fa901a5908d4cf60e48692c69ec11?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/5f7fa901a5908d4cf60e48692c69ec11?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://halsaied.me" rel="external nofollow">Hazem Al Saied</a></span>
+<span class="date">October 13, 2017 at 2:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-416463" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Thank you for this helpful tutorial, but i still have a question! </p>
+<p>If we are building a model and we want to test the effect of some changes, changing the input vector, some activation function, the optimiser etc … and we want to know if they are really enhancing the model, do you think that it makes sense if we mixed the two mentioned ways.<br/>
+In other words, we can repeat the execution for n times +30, every time we generate a random integer as a seed and we save its value.<br/>
+At the end, we calculate the average accuracy and recover the seed value generating the most close score of this average, and we use this seed value for our next experiences. </p>
+<p>Do you agree that in this scenario we get the “most representative” random values which could be usable and reliable in the tuning phase?</p>
+<div class="reply">
+<a aria-label="Reply to Hazem Al Saied" class="comment-reply-link" href="#comment-416463" onclick='return addComment.moveForm( "comment-416463", "416463", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-416491">
+<div class="comment-container" id="li-comment-416491">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 13, 2017 at 5:50 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-416491" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No, I would recommend multiple runs with different random numbers. The idea is to control for the stochastic nature of the algorithm,  you need different randomness for this.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-416491" onclick='return addComment.moveForm( "comment-416491", "416491", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-443407">
+<div class="comment-container" id="li-comment-443407">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/9a35e4816a2af0386ffe62f0b1266170?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/9a35e4816a2af0386ffe62f0b1266170?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">tianyu zhou</span>
+<span class="date">July 14, 2018 at 5:11 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-443407" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I think if we want to get best model from repeating the execution for n times +30, we need to get the highest accuracy rather than average accuracy. Am I right?</p>
+<div class="reply">
+<a aria-label="Reply to tianyu zhou" class="comment-reply-link" href="#comment-443407" onclick='return addComment.moveForm( "comment-443407", "443407", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-4" id="comment-443436">
+<div class="comment-container" id="li-comment-443436">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 14, 2018 at 6:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-443436" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Finalizing a model is different from evaluating it. You can learn more here:<br/>
+<a href="https://machinelearningmastery.com/train-final-machine-learning-model/" rel="nofollow">https://machinelearningmastery.com/train-final-machine-learning-model/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-443436" onclick='return addComment.moveForm( "comment-443436", "443436", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-430831">
+<div class="comment-container" id="li-comment-430831">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/e43492eb43f3fcac5fd42239fa929475?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/e43492eb43f3fcac5fd42239fa929475?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Tiru</span>
+<span class="date">March 1, 2018 at 8:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-430831" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p><a href="https://keras.io/getting-started/faq/#how-can-i-obtain-reproducible-results-using-keras-during-development" rel="nofollow">https://keras.io/getting-started/faq/#how-can-i-obtain-reproducible-results-using-keras-during-development</a></p>
+<p>This one is helped me to solve the problem for TF as backend for keras.</p>
+<div class="reply">
+<a aria-label="Reply to Tiru" class="comment-reply-link" href="#comment-430831" onclick='return addComment.moveForm( "comment-430831", "430831", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-430853">
+<div class="comment-container" id="li-comment-430853">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 2, 2018 at 5:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-430853" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Great, thanks for sharing. Looks new.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-430853" onclick='return addComment.moveForm( "comment-430853", "430853", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-437009">
+<div class="comment-container" id="li-comment-437009">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a1dca7ed9a7a74994db15d19790e5792?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a1dca7ed9a7a74994db15d19790e5792?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Chaitanya</span>
+<span class="date">May 9, 2018 at 8:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-437009" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m trying to reproduce results on an NVIDIA P100 GPU with Keras and Tensorflow as backend.<br/>
+I’m using CUDA 8.0 with cuDNN. I wanted to know if there is a way to get reproducible results in this setting. I’ve added all the seeds mentioned in the code shown above, but I still get around 1-2% difference in accuracy every time I run the code on the same dataset.</p>
+<div class="reply">
+<a aria-label="Reply to Chaitanya" class="comment-reply-link" href="#comment-437009" onclick='return addComment.moveForm( "comment-437009", "437009", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-444466">
+<div class="comment-container" id="li-comment-444466">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/55bacf320526dee9960c73d1a2a44df1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/55bacf320526dee9960c73d1a2a44df1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jonatan Jönsson</span>
+<span class="date">July 26, 2018 at 9:56 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-444466" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>import os<br/>
+os.environ[‘PYTHONHASHSEED’] = ‘0’<br/>
+os.environ[“CUDA_VISIBLE_DEVICES”]=”-1″<br/>
+os.environ[“TF_CUDNN_USE_AUTOTUNE”] =”0″<br/>
+from numpy.random import seed<br/>
+import random<br/>
+random.seed(1)<br/>
+seed(1)<br/>
+from tensorflow import set_random_seed<br/>
+set_random_seed(2)</p>
+<p>worked for me. I never got the GPU to produce exactly reproducible results. I guess it’s because it is comparing values in different order and then rounding gets in the way. With the CPU this works like a charm.</p>
+<div class="reply">
+<a aria-label="Reply to Jonatan Jönsson" class="comment-reply-link" href="#comment-444466" onclick='return addComment.moveForm( "comment-444466", "444466", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-444497">
+<div class="comment-container" id="li-comment-444497">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 27, 2018 at 5:54 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-444497" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Nice, thanks for sharing.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-444497" onclick='return addComment.moveForm( "comment-444497", "444497", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-444467">
+<div class="comment-container" id="li-comment-444467">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/55bacf320526dee9960c73d1a2a44df1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/55bacf320526dee9960c73d1a2a44df1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Jonatan Jönsson</span>
+<span class="date">July 26, 2018 at 9:58 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-444467" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)) also helps if tensorflow is used as a backend to Keras.</p>
+<div class="reply">
+<a aria-label="Reply to Jonatan Jönsson" class="comment-reply-link" href="#comment-444467" onclick='return addComment.moveForm( "comment-444467", "444467", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-445185">
+<div class="comment-container" id="li-comment-445185">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/c1c2f5576c9e494e2d3f063f86693ab2?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/c1c2f5576c9e494e2d3f063f86693ab2?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="https://faculty-web.msoe.edu/yoder/" rel="external nofollow">Josiah Yoder</a></span>
+<span class="date">August 4, 2018 at 4:13 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-445185" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I think there is a type.</p>
+<p>Where you say “This misunderstanding may also come in the **for** of questions like”<br/>
+I think you mean “This misunderstanding may also come in the **form** of questions like”</p>
+<div class="reply">
+<a aria-label="Reply to Josiah Yoder" class="comment-reply-link" href="#comment-445185" onclick='return addComment.moveForm( "comment-445185", "445185", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-445207">
+<div class="comment-container" id="li-comment-445207">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 4, 2018 at 6:13 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-445207" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks, fixed.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-445207" onclick='return addComment.moveForm( "comment-445207", "445207", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-446011">
+<div class="comment-container" id="li-comment-446011">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ef11f3129be0086895f27743ffc7a8cb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ef11f3129be0086895f27743ffc7a8cb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Faten</span>
+<span class="date">August 14, 2018 at 12:35 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-446011" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello sir,<br/>
+what about keras using cntk how to fix this problem?</p>
+<div class="reply">
+<a aria-label="Reply to Faten" class="comment-reply-link" href="#comment-446011" onclick='return addComment.moveForm( "comment-446011", "446011", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-446044">
+<div class="comment-container" id="li-comment-446044">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 14, 2018 at 6:21 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-446044" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I have not used CNTK, sorry.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446044" onclick='return addComment.moveForm( "comment-446044", "446044", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-449935">
+<div class="comment-container" id="li-comment-449935">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/56cbb68fc8abe8a57817ec199297d424?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/56cbb68fc8abe8a57817ec199297d424?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Sai sowmya grandhi</span>
+<span class="date">September 27, 2018 at 1:22 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-449935" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>In case ‘R’ what code should be used for reproducible results?<br/>
+Thanks in Advance.</p>
+<div class="reply">
+<a aria-label="Reply to Sai sowmya grandhi" class="comment-reply-link" href="#comment-449935" onclick='return addComment.moveForm( "comment-449935", "449935", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-449940">
+<div class="comment-container" id="li-comment-449940">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 27, 2018 at 2:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-449940" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t have examples in R with Keras.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449940" onclick='return addComment.moveForm( "comment-449940", "449940", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-456215">
+<div class="comment-container" id="li-comment-456215">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6385f3e3942e8ef83da3dba589b5ee8f?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6385f3e3942e8ef83da3dba589b5ee8f?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Gal Avineri</span>
+<span class="date">November 26, 2018 at 7:22 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-456215" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello 🙂 I haven’t read all the comments so I don’t know if anyone said that earlier, but setting the seeds as you described apparently isn’t enough. There are a couple more things you need to do, which are described very well in the Keras FAQ section here:<br/>
+<a href="https://keras.io/getting-started/faq/#how-can-i-obtain-reproducible-results-using-keras-during-development" rel="nofollow">https://keras.io/getting-started/faq/#how-can-i-obtain-reproducible-results-using-keras-during-development</a></p>
+<p>I can say myself that setting all the seeds didn’t make my results reproducible, but so far the method described in the link has provided reproducible results.</p>
+<p>I guess many people, like myself, read your article in attempt to get reproducible results, so would you care do add this to your article? 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Gal Avineri" class="comment-reply-link" href="#comment-456215" onclick='return addComment.moveForm( "comment-456215", "456215", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-456272">
+<div class="comment-container" id="li-comment-456272">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 27, 2018 at 6:33 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/#comment-456272" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks for sharing, the addition to the FAQ must be new.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-456272" onclick='return addComment.moveForm( "comment-456272", "456272", "respond", "4078" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/reproducible-results-neural-networks-keras/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4078"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="9d715e6f21"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="95"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-6"> <div class="textwidget"><p></p><center><br/>
+<strong>Deep Learning with Python</strong><br/>
+No math, just tutorials and working code.
+<p><a href="/deep-learning-with-python/">Click to Get Started Now!</a><br/>
+<a href="/deep-learning-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/05/DeepLearningWithPython-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,1833 @@
+<html lang="en-US" prefix="og: http://ogp.me/ns#">
+<head>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php" rel="pingback"/>
+<!--  Mobile viewport scale -->
+<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<!-- This site is optimized with the Yoast SEO plugin v9.2.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>How to Make Predictions with Long Short-Term Memory Models in Keras</title>
+<link href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" rel="canonical"/>
+<link href="https://plus.google.com/u/0/b/117073416089354242117/+MachinelearningmasteryHome/" rel="publisher"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="article" property="og:type"/>
+<meta content="How to Make Predictions with Long Short-Term Memory Models in Keras" property="og:title"/>
+<meta content="The goal of developing an LSTM model is a final model that you can use on your sequence prediction problem. In this post, you will discover how to finalize your model and use it to make predictions on new data. After completing this post, you will know: How to train a final LSTM model. How …" property="og:description"/>
+<meta content="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" property="og:url"/>
+<meta content="Machine Learning Mastery" property="og:site_name"/>
+<meta content="https://www.facebook.com/Machine-Learning-Mastery-1429846323896563/" property="article:publisher"/>
+<meta content="https://www.facebook.com/jason.brownlee.39" property="article:author"/>
+<meta content="Long Short-Term Memory Networks" property="article:section"/>
+<meta content="2017-08-27T19:00:49+00:00" property="article:published_time"/>
+<meta content="2017-08-27T20:06:35+00:00" property="article:modified_time"/>
+<meta content="2017-08-27T20:06:35+00:00" property="og:updated_time"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/08/How-to-Make-Predictions-with-Long-Short-Term-Memory-Models-with-Keras.jpg" property="og:image"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/08/How-to-Make-Predictions-with-Long-Short-Term-Memory-Models-with-Keras.jpg" property="og:image:secure_url"/>
+<meta content="640" property="og:image:width"/>
+<meta content="427" property="og:image:height"/>
+<meta content="How to Make Predictions with Long Short-Term Memory Models with Keras" property="og:image:alt"/>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","url":"https:\/\/machinelearningmastery.com\/","sameAs":["https:\/\/www.facebook.com\/Machine-Learning-Mastery-1429846323896563\/","https:\/\/www.linkedin.com\/in\/jasonbrownlee","https:\/\/plus.google.com\/u\/0\/b\/117073416089354242117\/+MachinelearningmasteryHome\/","https:\/\/twitter.com\/TeachTheMachine"],"@id":"https:\/\/machinelearningmastery.com\/#organization","name":"Machine Learning Mastery","logo":"https:\/\/machinelearningmastery.com\/wp-content\/uploads\/2016\/09\/cropped-icon.png"}</script>
+<!-- / Yoast SEO plugin. -->
+<link href="//s.w.org" rel="dns-prefetch"/>
+<link href="https://feeds.feedburner.com/MachineLearningMastery" rel="alternate" title="Machine Learning Mastery » Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/comments/feed/" rel="alternate" title="Machine Learning Mastery » Comments Feed" type="application/rss+xml"/>
+<link href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/feed/" rel="alternate" title="Machine Learning Mastery » How to Make Predictions with Long Short-Term Memory Models in Keras Comments Feed" type="application/rss+xml"/>
+<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/machinelearningmastery.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<style media="all" type="text/css">
+.wpautoterms-footer{background-color:#ffffff;text-align:center;}
+.wpautoterms-footer a{color:#000000;font-family:Arial, sans-serif;font-size:14px;}
+.wpautoterms-footer .separator{color:#cccccc;font-family:Arial, sans-serif;font-size:14px;}</style>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/css/min/crayon.min.css?ver=_2.7.2_beta" id="crayon-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/themes/classic/classic.css?ver=_2.7.2_beta" id="crayon-theme-classic-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=_2.7.2_beta" id="crayon-font-monaco-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/auto-terms-of-service-and-privacy-policy/css/wpautoterms.css?ver=4.9.8" id="wpautoterms_css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.0.5" id="contact-form-7-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/css/front.css?ver=2.0.20" id="ssb-front-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/ewd-ufaq-styles.css?ver=4.9.8" id="ewd-ufaq-style-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/ultimate-faqs/css/rrssb-min.css?ver=4.9.8" id="ewd-ufaq-rrssb-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/integrations/testimonials/css/testimonials.css?ver=4.9.8" id="woo-testimonials-css-css" media="all" rel="stylesheet" type="text/css"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/style.css?ver=5.9.21" id="theme-stylesheet-css" media="all" rel="stylesheet" type="text/css"/>
+<!--[if lt IE 9]>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/css/non-responsive.css" rel="stylesheet" type="text/css" />
+<style type="text/css">.col-full, #wrapper { width: 960px; max-width: 960px; } #inner-wrapper { padding: 0; } body.full-width #header, #nav-container, body.full-width #content, body.full-width #footer-widgets, body.full-width #footer { padding-left: 0; padding-right: 0; } body.fixed-mobile #top, body.fixed-mobile #header-container, body.fixed-mobile #footer-container, body.fixed-mobile #nav-container, body.fixed-mobile #footer-widgets-container { min-width: 960px; padding: 0 1em; } body.full-width #content { width: auto; padding: 0 1em;}</style>
+<![endif]-->
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"_2.7.2_beta","is_admin":"0","ajaxurl":"https:\/\/machinelearningmastery.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"Press %s to Copy, %s to Paste","minimize":"Click To Expand Code"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/crayon-syntax-highlighter/js/min/crayon.min.js?ver=_2.7.2_beta" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/simple-social-buttons/assets/js/front.js?ver=2.0.20" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/third-party.min.js?ver=4.9.8" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/modernizr.min.js?ver=2.6.2" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/includes/js/general.min.js?ver=4.9.8" type="text/javascript"></script>
+<link href="https://machinelearningmastery.com/wp-json/" rel="https://api.w.org/"/>
+<link href="https://machinelearningmastery.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/wlwmanifest.xml" rel="wlwmanifest" type="application/wlwmanifest+xml"/>
+<link href="https://machinelearningmastery.com/?p=4249" rel="shortlink"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fmake-predictions-long-short-term-memory-models-keras%2F" rel="alternate" type="application/json+oembed"/>
+<link href="https://machinelearningmastery.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fmachinelearningmastery.com%2Fmake-predictions-long-short-term-memory-models-keras%2F&amp;format=xml" rel="alternate" type="text/xml+oembed"/>
+<!-- Start Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44039733-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+<style media="screen">
+
+        .simplesocialbuttons.simplesocialbuttons_inline .ssb-fb-like {
+      margin: ;
+    }
+         /*inline margin*/
+    
+  
+  
+  
+  
+  
+          .simplesocialbuttons.simplesocialbuttons_inline.simplesocial-simple-icons button{
+         margin: ;
+     }
+
+          /*margin-digbar*/
+
+  
+  
+  
+  
+ 
+   
+   
+
+</style>
+<script type="text/javascript">
+        var ajaxurl = 'https://machinelearningmastery.com/wp-admin/admin-ajax.php';
+    </script>
+<!-- Custom CSS Styling -->
+<style type="text/css">
+#logo .site-title, #logo .site-description { display:none; }
+body {background-repeat:no-repeat;background-position:top left;background-attachment:scroll;border-top:0px solid #000000;}
+#header {background-repeat:no-repeat;background-position:left top;margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:10px;border:0px solid ;}
+#logo .site-title a {font:bold 40px/1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+#logo .site-description {font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#999999;}
+body, p { font:normal 14px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+h1 { font:bold 28px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h2 { font:bold 24px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h3 { font:bold 20px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h4 { font:bold 16px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h5 { font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }h6 { font:bold 12px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#222222; }
+.page-title, .post .title, .page .title {font:bold 28px/1.1em "Helvetica Neue", Helvetica, sans-serif;color:#222222;}
+.post .title a:link, .post .title a:visited, .page .title a:link, .page .title a:visited {color:#222222}
+.post-meta { font:normal 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+.entry, .entry p{ font:normal 15px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.post-more {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:;border-top:0px solid #e6e6e6;border-bottom:0px solid #e6e6e6;}
+#post-author, #connect {border-top:1px solid #e6e6e6;border-bottom:1px solid #e6e6e6;border-left:1px solid #e6e6e6;border-right:1px solid #e6e6e6;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background-color:#fafafa}
+.nav-entries a, .woo-pagination { font:normal 13px/1em "Helvetica Neue", Helvetica, sans-serif;color:#888; }
+.woo-pagination a, .woo-pagination a:hover {color:#888!important}
+.widget h3 {font:bold 14px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-bottom:1px solid #e6e6e6;}
+.widget_recent_comments li, #twitter li { border-color: #e6e6e6;}
+.widget p, .widget .textwidget { font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+.widget {font:normal 13px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555;border-radius:0px;-moz-border-radius:0px;-webkit-border-radius:0px;}
+#tabs .inside li a, .widget_woodojo_tabs .tabbable .tab-pane li a { font:bold 12px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#555555; }
+#tabs .inside li span.meta, .widget_woodojo_tabs .tabbable .tab-pane li span.meta { font:300 11px/1.5em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#tabs ul.wooTabs li a, .widget_woodojo_tabs .tabbable .nav-tabs li a { font:300 11px/2em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+@media only screen and (min-width:768px) {
+ul.nav li a, #navigation ul.rss a, #navigation ul.cart a.cart-contents, #navigation .cart-contents #navigation ul.rss, #navigation ul.nav-search, #navigation ul.nav-search a { font:bold 18px/1.2em "Helvetica Neue", Helvetica, sans-serif;color:#4c89bf; } #navigation ul.rss li a:before, #navigation ul.nav-search a.search-contents:before { color:#4c89bf;}
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover a, #navigation ul.nav li ul li a, #navigation ul.cart > li:hover > a, #navigation ul.cart > li > ul > div, #navigation ul.cart > li > ul > div p, #navigation ul.cart > li > ul span, #navigation ul.cart .cart_list a, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a { color:#4c89bf!important; }
+#navigation ul.nav > li a:hover, #navigation ul.nav > li:hover, #navigation ul.nav li ul, #navigation ul.cart li:hover a.cart-contents, #navigation ul.nav-search li:hover a.search-contents, #navigation ul.nav-search a.search-contents + ul, #navigation ul.cart a.cart-contents + ul, #navigation ul.nav li.current_page_item a, #navigation ul.nav li.current_page_parent a, #navigation ul.nav li.current-menu-ancestor a, #navigation ul.nav li.current-cat a, #navigation ul.nav li.current-menu-item a{background-color:#ffffff!important}
+#navigation ul.nav li ul, #navigation ul.cart > li > ul > div  { border: 0px solid #dbdbdb; }
+#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation ul.nav > li  { border-right: 0px solid #dbdbdb; }#navigation ul.nav > li:hover > ul  { left: 0; }
+#navigation { box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none; }#navigation ul li:first-child, #navigation ul li:first-child a { border-radius:0px 0 0 0px; -moz-border-radius:0px 0 0 0px; -webkit-border-radius:0px 0 0 0px; }
+#navigation {background:#ffffff;border-top:0px solid #dbdbdb;border-bottom:0px solid #dbdbdb;border-left:0px solid #dbdbdb;border-right:0px solid #dbdbdb;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+#top ul.nav li a { font:normal 12px/1.6em "Helvetica Neue", Helvetica, sans-serif;color:#ddd; }
+}
+#footer, #footer p { font:normal 13px/1.4em "Helvetica Neue", Helvetica, sans-serif;color:#999999; }
+#footer {border-top:1px solid #dbdbdb;border-bottom:0px solid ;border-left:0px solid ;border-right:0px solid ;border-radius:0px; -moz-border-radius:0px; -webkit-border-radius:0px;}
+.magazine #loopedSlider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-magazine .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.magazine #loopedSlider .content .excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-magazine .slide-content p, .wooslider-theme-magazine .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.magazine .block .post .title a {font:bold 18px/1.2em Helvetica Neue, Helvetica, sans-serif;color:#222222; }
+#loopedSlider.business-slider .content h2 { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#loopedSlider.business-slider .content h2.title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+.wooslider-theme-business .has-featured-image .slide-title a { font:bold 24px/1em Arial, sans-serif;color:#ffffff; }
+#wrapper #loopedSlider.business-slider .content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-content p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.wooslider-theme-business .has-featured-image .slide-excerpt p { font:300 13px/1.5em Arial, sans-serif;color:#cccccc; }
+.archive_header { font:bold 18px/1em Arial, sans-serif;color:#222222; }
+.archive_header {border-bottom:1px solid #e6e6e6;}
+.archive_header .catrss { display:none; }
+</style>
+<!-- Woo Shortcodes CSS -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/functions/css/shortcodes.css" rel="stylesheet" type="text/css"/>
+<!-- Custom Stylesheet -->
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/themes/canvas-new/custom.css" rel="stylesheet" type="text/css"/>
+<!-- Theme version -->
+<meta content="Canvas 5.9.21" name="generator"/>
+<meta content="WooFramework 6.2.9" name="generator"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-32x32.png" rel="icon" sizes="32x32"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-192x192.png" rel="icon" sizes="192x192"/>
+<link href="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-180x180.png" rel="apple-touch-icon-precomposed"/>
+<meta content="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cropped-icon-270x270.png" name="msapplication-TileImage"/>
+</head>
+<body class="post-template-default single single-post postid-4249 single-format-standard chrome alt-style-default two-col-left width-960 two-col-left-960">
+<div id="wrapper">
+<div id="inner-wrapper">
+<h3 class="nav-toggle icon"><a href="#navigation">Navigation</a></h3>
+<header class="col-full" id="header">
+<div id="logo">
+<a href="https://machinelearningmastery.com/" title="Making developers awesome at machine learning"><img alt="Machine Learning Mastery" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/09/icon-100x100.png"/></a>
+<span class="site-title"><a href="https://machinelearningmastery.com/">Machine Learning Mastery</a></span>
+<span class="site-description">Making developers awesome at machine learning</span>
+</div>
+<div class="header-widget">
+<div class="widget widget_text" id="text-31"> <div class="textwidget"><p>Want help with LSTMs? <a href="https://machinelearningmastery.lpages.co/lnwp-mini-course/">Take the FREE Mini-Course</a>.</p>
+</div>
+</div><div class="widget widget_search" id="search-3"><div class="search_main">
+<form action="https://machinelearningmastery.com/" class="searchform" method="get">
+<input class="field s" name="s" onblur="if (this.value == '') {this.value = 'Search...';}" onfocus="if (this.value == 'Search...') {this.value = '';}" type="text" value="Search..."/>
+<input name="post_type" type="hidden" value="post"/>
+<button class="fa fa-search submit" name="submit" type="submit" value="Search"></button>
+</form>
+<div class="fix"></div>
+</div></div> </div>
+</header>
+<nav class="col-full" id="navigation" role="navigation">
+<section class="menus">
+<a class="nav-home" href="https://machinelearningmastery.com"><span>Home</span></a>
+<h3>Main Menu</h3><ul class="nav fl" id="main-nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6503" id="menu-item-6503"><a href="https://machinelearningmastery.com/start-here/">Start Here</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-6501" id="menu-item-6501"><a href="https://machinelearningmastery.com/blog/">Blog</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-6506" id="menu-item-6506"><a href="#">Topics</a>
+<ul class="sub-menu">
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6508" id="menu-item-6508"><a href="https://machinelearningmastery.com/category/deep-learning/">Deep Learning (Keras)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-6511" id="menu-item-6511"><a href="https://machinelearningmastery.com/category/lstm/">LSTMs</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6509" id="menu-item-6509"><a href="https://machinelearningmastery.com/category/deep-learning-time-series/">Deep Learning for Time Series</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6515" id="menu-item-6515"><a href="https://machinelearningmastery.com/category/natural-language-processing/">Deep Learning for NLP</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6512" id="menu-item-6512"><a href="https://machinelearningmastery.com/category/machine-learning-algorithms/">Understand Algorithms</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6507" id="menu-item-6507"><a href="https://machinelearningmastery.com/category/algorithms-from-scratch/">Code Algorithms (Python)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6513" id="menu-item-6513"><a href="https://machinelearningmastery.com/category/machine-learning-process/">Machine Learning Process</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6516" id="menu-item-6516"><a href="https://machinelearningmastery.com/category/python-machine-learning/">Python (scikit-learn)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6517" id="menu-item-6517"><a href="https://machinelearningmastery.com/category/r-machine-learning/">R (caret)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6522" id="menu-item-6522"><a href="https://machinelearningmastery.com/category/weka-machine-learning/">Weka (no code)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6518" id="menu-item-6518"><a href="https://machinelearningmastery.com/category/start-machine-learning/">Getting Started</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6510" id="menu-item-6510"><a href="https://machinelearningmastery.com/category/linear-algebra/">Linear Algebra</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6519" id="menu-item-6519"><a href="https://machinelearningmastery.com/category/statistical-methods/">Statistical Methods</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6520" id="menu-item-6520"><a href="https://machinelearningmastery.com/category/time-series/">Time Series (introductory)</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6523" id="menu-item-6523"><a href="https://machinelearningmastery.com/category/xgboost/">XGBoost</a></li>
+<li class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-6514" id="menu-item-6514"><a href="https://machinelearningmastery.com/category/machine-learning-resources/">Resources</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6502" id="menu-item-6502"><a href="https://machinelearningmastery.com/products/">Ebooks</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6500" id="menu-item-6500"><a href="https://machinelearningmastery.com/faq/">FAQ</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6504" id="menu-item-6504"><a href="https://machinelearningmastery.com/about/">About</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6505" id="menu-item-6505"><a href="https://machinelearningmastery.com/contact/">Contact</a></li>
+</ul> <div class="side-nav">
+</div><!-- /#side-nav -->
+</section><!-- /.menus -->
+<a class="nav-close" href="#top"><span>Return to Content</span></a>
+</nav>
+<!-- #content Starts -->
+<div class="col-full" id="content">
+<div id="main-sidebar-container">
+<!-- #main Starts -->
+<section id="main">
+<article class="post-4249 post type-post status-publish format-standard has-post-thumbnail hentry category-lstm">
+<header>
+<h1 class="title entry-title">How to Make Predictions with Long Short-Term Memory Models in Keras</h1> </header>
+<div class="post-meta"><span class="small">By</span> <span class="author vcard"><span class="fn"><a href="https://machinelearningmastery.com/author/jasonb/" rel="author" title="Posts by Jason Brownlee">Jason Brownlee</a></span></span> <span class="small">on</span> <abbr class="date time published updated" title="2017-08-28T05:00:49+1100">August 28, 2017</abbr> <span class="small">in</span> <span class="categories"><a href="https://machinelearningmastery.com/category/lstm/" title="View all items in Long Short-Term Memory Networks">Long Short-Term Memory Networks</a></span> </div>
+<section class="entry">
+<div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4249 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Make+Predictions+with+Long+Short-Term+Memory+Models+in+Keras&amp;url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+<p>The goal of developing an LSTM model is a final model that you can use on your sequence prediction problem.</p>
+<p>In this post, you will discover how to finalize your model and use it to make predictions on new data.</p>
+<p>After completing this post, you will know:</p>
+<ul>
+<li>How to train a final LSTM model.</li>
+<li>How to save your final LSTM model, and later load it again.</li>
+<li>How to make predictions on new data.</li>
+</ul>
+<p>Let’s get started.</p>
+<div class="wp-caption aligncenter" id="attachment_4251" style="width: 650px"><img alt="How to Make Predictions with Long Short-Term Memory Models with Keras" class="size-full wp-image-4251" height="427" sizes="(max-width: 640px) 100vw, 640px" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/08/How-to-Make-Predictions-with-Long-Short-Term-Memory-Models-with-Keras.jpg" srcset="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/08/How-to-Make-Predictions-with-Long-Short-Term-Memory-Models-with-Keras.jpg 640w, https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/08/How-to-Make-Predictions-with-Long-Short-Term-Memory-Models-with-Keras-300x200.jpg 300w" width="640"/><p class="wp-caption-text">How to Make Predictions with Long Short-Term Memory Models with Keras<br/>Photo by <a href="https://www.flickr.com/photos/damonjah/15490904985/">damon jah</a>, some rights reserved.</p></div>
+<h2>Step 1. Train a Final Model</h2>
+<h3>What Is a Final LSTM Model?</h3>
+<p>A final LSTM model is one that you use to make predictions on new data.</p>
+<p>That is, given new examples of input data, you want to use the model to predict the expected output. This may be a classification (assign a label) or a regression (a real value).</p>
+<p>The goal of your sequence prediction project is to arrive at a final model that performs the best, where “best” is defined by:</p>
+<ul>
+<li><strong>Data</strong>: the historical data that you have available.</li>
+<li><strong>Time</strong>: the time you have to spend on the project.</li>
+<li><strong>Procedure</strong>: the data preparation steps, algorithm or algorithms, and the chosen algorithm configurations.</li>
+</ul>
+<p>In your project, you gather the data, spend the time you have, and discover the data preparation procedures, algorithm to use, and how to configure it.</p>
+<p>The final model is the pinnacle of this process, the end you seek in order to start actually making predictions.</p>
+<p>There is no such thing as a perfect model. There is only the best model that you were able to discover.</p>
+<h3>How to Finalize an LSTM Model?</h3>
+<p>You finalize a model by applying the chosen LSTM architecture and configuration on all of your data.</p>
+<p>There is no train and test split and no cross-validation folds. Put all of the data back together into one large training dataset and fit your model.</p>
+<p>That’s it.</p>
+<p>With the finalized model, you can:</p>
+<ul>
+<li>Save the model for later or operational use.</li>
+<li>Load the model and make predictions on new data.</li>
+</ul>
+<p>For more on training a final model, see the post:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/train-final-machine-learning-model/">How to Train a Final Machine Learning Model</a></li>
+</ul>
+<div class="woo-sc-hr"></div>
+<center>
+<h3>Need help with LSTMs for Sequence Prediction?</h3>
+<p>Take my free 7-day email course and discover 6 different LSTM architectures (with code).</p>
+<p>Click to sign-up and also get a free PDF Ebook version of the course.</p>
+<p><a href="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" rel="noopener" style="background: #ffce0a; color: #ffffff; text-decoration: none; font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 16px; line-height: 20px; padding: 10px; display: inline-block; max-width: 300px; border-radius: 5px; text-shadow: rgba(0, 0, 0, 0.25) 0px -1px 1px; box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 3px inset, rgba(0, 0, 0, 0.5) 0px 1px 3px;" target="_blank">Start Your FREE Mini-Course Now!</a><script data-config="%7B%7D" data-leadbox="1403a9373f72a2:164f8be4f346dc" data-url="https://machinelearningmastery.lpages.co/leadbox/1403a9373f72a2%3A164f8be4f346dc/5754903989321728/" src="https://machinelearningmastery.lpages.co/leadbox-1500400021.js" type="text/javascript"></script></p>
+</center>
+<div class="woo-sc-hr"></div>
+<h2>Step 2. Save Your Final Model</h2>
+<p>Keras provides an API to allow you to save your model to file.</p>
+<p>The model is saved in HDF5 file format that efficiently stores large arrays of numbers on disk. You will need to confirm that you have the h5py Python library installed. It can be installed as follows:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd2f644692104" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+sudo pip install h5py</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd2f644692104-1">1</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd2f644692104-1">sudo pip install h5py</div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>You can save a fit Keras model to file using the save() function on the model.</p>
+<p>For example:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd3a466804324" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+# define model
+model = Sequential()
+model.add(LSTM(...))
+# compile model
+model.compile(...)
+# fit model
+model.fit(...)
+# save model to single file
+model.save('lstm_model.h5')</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd3a466804324-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd3a466804324-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd3a466804324-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd3a466804324-4">4</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd3a466804324-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd3a466804324-6">6</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd3a466804324-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd3a466804324-8">8</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd3a466804324-9">9</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd3a466804324-1"><span class="crayon-p"># define model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd3a466804324-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd3a466804324-3"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">LSTM</span><span class="crayon-sy">(</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd3a466804324-4"><span class="crayon-p"># compile model</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd3a466804324-5"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd3a466804324-6"><span class="crayon-p"># fit model</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd3a466804324-7"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd3a466804324-8"><span class="crayon-p"># save model to single file</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd3a466804324-9"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">save</span><span class="crayon-sy">(</span><span class="crayon-s">'lstm_model.h5'</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0009 seconds] -->
+<p>This single file will contain the model architecture and weights. It also includes the specification of the chosen loss and optimization algorithm so that you can resume training.</p>
+<p>The model can be loaded again (from a different script in a different Python session) using the load_model() function.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd41739233002" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from keras.models import load_model
+# load model from single file
+model = load_model('lstm_model.h5')
+# make predictions
+yhat = model.predict(X, verbose=0)
+print(yhat)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd41739233002-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd41739233002-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd41739233002-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd41739233002-4">4</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd41739233002-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd41739233002-6">6</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd41739233002-1"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-v">load_model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd41739233002-2"><span class="crayon-p"># load model from single file</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd41739233002-3"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">load_model</span><span class="crayon-sy">(</span><span class="crayon-s">'lstm_model.h5'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd41739233002-4"><span class="crayon-p"># make predictions</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd41739233002-5"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd41739233002-6"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>Below is a complete example of fitting an LSTM model, saving it to a single file and later loading it again. Although the loading of the model is in the same script, this section may be run from another script in another Python session. Running the example saves the model to the file lstm_model.h5.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd49465837553" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from numpy import array
+from keras.models import load_model
+
+# return training data
+def get_train():
+seq = [[0.0, 0.1], [0.1, 0.2], [0.2, 0.3], [0.3, 0.4], [0.4, 0.5]]
+seq = array(seq)
+X, y = seq[:, 0], seq[:, 1]
+X = X.reshape((len(X), 1, 1))
+return X, y
+
+# define model
+model = Sequential()
+model.add(LSTM(10, input_shape=(1,1)))
+model.add(Dense(1, activation='linear'))
+# compile model
+model.compile(loss='mse', optimizer='adam')
+# fit model
+X,y = get_train()
+model.fit(X, y, epochs=300, shuffle=False, verbose=0)
+# save model to single file
+model.save('lstm_model.h5')
+
+# snip...
+# later, perhaps run from another script
+
+# load model from single file
+model = load_model('lstm_model.h5')
+# make predictions
+yhat = model.predict(X, verbose=0)
+print(yhat)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-4">4</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-6">6</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-8">8</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-9">9</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-10">10</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-11">11</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-12">12</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-13">13</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-14">14</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-15">15</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-16">16</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-17">17</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-18">18</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-19">19</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-20">20</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-21">21</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-22">22</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-23">23</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-24">24</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-25">25</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-26">26</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-27">27</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-28">28</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-29">29</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-30">30</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-31">31</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-32">32</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd49465837553-33">33</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd49465837553-34">34</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-1"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-e">Sequential</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-2"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">layers </span><span class="crayon-e">import </span><span class="crayon-e">Dense</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-3"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">layers </span><span class="crayon-e">import </span><span class="crayon-e">LSTM</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-4"><span class="crayon-e">from </span><span class="crayon-e">numpy </span><span class="crayon-e">import </span><span class="crayon-t">array</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-5"><span class="crayon-e">from </span><span class="crayon-v">keras</span><span class="crayon-sy">.</span><span class="crayon-e">models </span><span class="crayon-e">import </span><span class="crayon-v">load_model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-6"> </div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-7"><span class="crayon-p"># return training data</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-8"><span class="crayon-e">def </span><span class="crayon-e">get_train</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span><span class="crayon-o">:</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-9"><span class="crayon-v">seq</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-sy">[</span><span class="crayon-cn">0.0</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.1</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">0.1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.2</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">0.2</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.3</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">0.3</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.4</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-sy">[</span><span class="crayon-cn">0.4</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0.5</span><span class="crayon-sy">]</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-10"><span class="crayon-v">seq</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-t">array</span><span class="crayon-sy">(</span><span class="crayon-v">seq</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-11"><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">seq</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">0</span><span class="crayon-sy">]</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">seq</span><span class="crayon-sy">[</span><span class="crayon-o">:</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">]</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-12"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">.</span><span class="crayon-e">reshape</span><span class="crayon-sy">(</span><span class="crayon-sy">(</span><span class="crayon-e">len</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-13"><span class="crayon-st">return</span><span class="crayon-h"> </span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-14"> </div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-15"><span class="crayon-p"># define model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-16"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">Sequential</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-17"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">LSTM</span><span class="crayon-sy">(</span><span class="crayon-cn">10</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">input_shape</span><span class="crayon-o">=</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-cn">1</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-18"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">add</span><span class="crayon-sy">(</span><span class="crayon-e">Dense</span><span class="crayon-sy">(</span><span class="crayon-cn">1</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">activation</span><span class="crayon-o">=</span><span class="crayon-s">'linear'</span><span class="crayon-sy">)</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-19"><span class="crayon-p"># compile model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-20"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">compile</span><span class="crayon-sy">(</span><span class="crayon-v">loss</span><span class="crayon-o">=</span><span class="crayon-s">'mse'</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">optimizer</span><span class="crayon-o">=</span><span class="crayon-s">'adam'</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-21"><span class="crayon-p"># fit model</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-22"><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-v">y</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">get_train</span><span class="crayon-sy">(</span><span class="crayon-sy">)</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-23"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">fit</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">y</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">epochs</span><span class="crayon-o">=</span><span class="crayon-cn">300</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">shuffle</span><span class="crayon-o">=</span><span class="crayon-t">False</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-24"><span class="crayon-p"># save model to single file</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-25"><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">save</span><span class="crayon-sy">(</span><span class="crayon-s">'lstm_model.h5'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-26"> </div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-27"><span class="crayon-p"># snip...</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-28"><span class="crayon-p"># later, perhaps run from another script</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-29"> </div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-30"><span class="crayon-p"># load model from single file</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-31"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-e">load_model</span><span class="crayon-sy">(</span><span class="crayon-s">'lstm_model.h5'</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-32"><span class="crayon-p"># make predictions</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd49465837553-33"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">,</span><span class="crayon-h"> </span><span class="crayon-v">verbose</span><span class="crayon-o">=</span><span class="crayon-cn">0</span><span class="crayon-sy">)</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd49465837553-34"><span class="crayon-e">print</span><span class="crayon-sy">(</span><span class="crayon-v">yhat</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0017 seconds] -->
+<p>For more on saving and loading your Keras model, see the post:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/save-load-keras-deep-learning-models/">Save and Load Your Keras Deep Learning Models</a></li>
+</ul>
+<h2>Step 3. Make Predictions on New Data</h2>
+<p>After you have finalized your model and saved it to file, you can load it and use it to make predictions.</p>
+<p>For example:</p>
+<ul>
+<li>On a sequence regression problem, this may be the prediction of the real value at the next time step.</li>
+<li>On a sequence classification problem, this may be a class outcome for a given input sequence.</li>
+</ul>
+<p>Or it may be any other variation based on the specifics of your sequence prediction problem. You would like an outcome from your model (yhat) given an input sequence (X) where the true outcome for the sequence (y) is currently unknown.</p>
+<p>You may be interested in making predictions in a production environment, as the backend to an interface, or manually. It really depends on the goals of your project.</p>
+<p>Any data preparation performed on your training data prior to fitting your final model must also be applied to any new data prior to making predictions.</p>
+<p>Predicting is the easy part.</p>
+<p>It involves taking the prepared input data (X) and calling one of the Keras prediction methods on the loaded model.</p>
+<p>Remember that the input for making a prediction (X) is only comprised of the input sequence data required to make a prediction, not all prior training data. In the case of predicting the next value in one sequence, the input sequence would be 1 sample with the fixed number of time steps and features used when you defined and fit your model.</p>
+<p>For example, a raw prediction in the shape and scale of the activation function of the output layer can be made by calling the predict() function on the model:</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd52731098838" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+X = ...
+model = ...
+yhat = model.predict(X)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd52731098838-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd52731098838-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd52731098838-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd52731098838-1"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd52731098838-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd52731098838-3"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>The prediction of a class index can be made by calling the predict_classes() function on the model.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd5b073636776" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+X = ...
+model = ...
+yhat = model.predict_classes(X)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd5b073636776-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd5b073636776-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd5b073636776-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd5b073636776-1"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd5b073636776-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd5b073636776-3"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict_classes</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0002 seconds] -->
+<p>The prediction of probabilities can be made by calling the predict_proba() function on the model.</p><!-- Crayon Syntax Highlighter v_2.7.2_beta -->
+<div class="crayon-syntax crayon-theme-classic crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-mouseover" id="crayon-5c0ca85e1dd5f536534709" style=" margin-top: 12px; margin-bottom: 12px; font-size: 12px !important; line-height: 15px !important;">
+<div class="crayon-toolbar" data-settings=" mouseover overlay hide delay" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><span class="crayon-title"></span>
+<div class="crayon-tools" style="font-size: 12px !important;height: 18px !important; line-height: 18px !important;"><div class="crayon-button crayon-nums-button" title="Toggle Line Numbers"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="Toggle Plain Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="Toggle Line Wrap"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="Expand Code"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="Copy"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="Open Code In New Window"><div class="crayon-button-icon"></div></div></div></div>
+<div class="crayon-info" style="min-height: 16.8px !important; line-height: 16.8px !important;"></div>
+<div class="crayon-plain-wrap"><textarea class="crayon-plain print-no" data-settings="dblclick" readonly="" style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 12px !important; line-height: 15px !important;" wrap="soft">
+X = ...
+model = ...
+yhat = model.predict_proba(X)</textarea></div>
+<div class="crayon-main" style="">
+<table class="crayon-table">
+<tr class="crayon-row">
+<td class="crayon-nums " data-settings="show">
+<div class="crayon-nums-content" style="font-size: 12px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5c0ca85e1dd5f536534709-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5c0ca85e1dd5f536534709-2">2</div><div class="crayon-num" data-line="crayon-5c0ca85e1dd5f536534709-3">3</div></div>
+</td>
+<td class="crayon-code"><div class="crayon-pre" style="font-size: 12px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5c0ca85e1dd5f536534709-1"><span class="crayon-v">X</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line crayon-striped-line" id="crayon-5c0ca85e1dd5f536534709-2"><span class="crayon-v">model</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-sy">.</span><span class="crayon-sy">.</span><span class="crayon-sy">.</span></div><div class="crayon-line" id="crayon-5c0ca85e1dd5f536534709-3"><span class="crayon-v">yhat</span><span class="crayon-h"> </span><span class="crayon-o">=</span><span class="crayon-h"> </span><span class="crayon-v">model</span><span class="crayon-sy">.</span><span class="crayon-e">predict_proba</span><span class="crayon-sy">(</span><span class="crayon-v">X</span><span class="crayon-sy">)</span></div></div></td>
+</tr>
+</table>
+</div>
+</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>For more on the life-cycle of your Keras model, see the post:</p>
+<ul>
+<li><a href="http://machinelearningmastery.com/5-step-life-cycle-long-short-term-memory-models-keras/">The 5 Step Life-Cycle for Long Short-Term Memory Models in Keras</a></li>
+</ul>
+<h2>Further Reading</h2>
+<p>This section provides more resources on the topic if you are looking go deeper.</p>
+<h3>Posts</h3>
+<ul>
+<li><a href="http://machinelearningmastery.com/train-final-machine-learning-model/">How to Train a Final Machine Learning Model</a></li>
+<li><a href="http://machinelearningmastery.com/save-load-keras-deep-learning-models/">Save and Load Your Keras Deep Learning Models</a></li>
+<li><a href="http://machinelearningmastery.com/5-step-life-cycle-long-short-term-memory-models-keras/">The 5 Step Life-Cycle for Long Short-Term Memory Models in Keras</a></li>
+</ul>
+<h3>API</h3>
+<ul>
+<li><a href="https://keras.io/getting-started/faq/#how-can-i-save-a-keras-model">How can I save a Keras model? in the Keras FAQ</a>.</li>
+<li><a href="https://keras.io/models/about-keras-models/">Save and Load Keras API</a>.</li>
+</ul>
+<h2>Summary</h2>
+<p>In this post, you discovered how to finalize your model and use it to make predictions on new data.</p>
+<p>Specifically, you learned:</p>
+<ul>
+<li>How to train a final LSTM model.</li>
+<li>How to save your final LSTM model, and later load it again.</li>
+<li>How to make predictions on new data.</li>
+</ul>
+<p>Do you have any questions?<br/>
+Ask your questions in the comments below and I will do my best to answer.</p>
+<div class="awac-wrapper"><div class="awac widget text-30"> <div class="textwidget"><div class="woo-sc-hr"></div>
+<p></p><center>
+<h2>Develop LSTMs for Sequence Prediction Today!</h2>
+<p><a href="/lstms-with-python/"><img align="left" alt="Long Short-Term Memory Networks with Python" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png" style="border: 0;"/></a></p>
+<h4>Develop Your Own LSTM models in Minutes</h4>
+<p>…with just a few lines of python code</p>
+<p>Discover how in my new Ebook:<br/>
+<a href="/lstms-with-python/">Long Short-Term Memory Networks with Python</a></p>
+<p>It provides <strong>self-study tutorials</strong> on topics like:<br/>
+<em>CNN LSTMs, Encoder-Decoder LSTMs, generative models, data preparation, making predictions</em> and much more…</p>
+<h4>Finally Bring LSTM Recurrent Neural Networks to<br/>
+Your Sequence Predictions Projects</h4>
+<p>Skip the Academics. Just Results.</p>
+<p><a href="/lstms-with-python/">Click to learn more</a>.<br/>
+</p></center><br/>
+<div class="woo-sc-hr"></div>
+</div>
+</div></div><div class="simplesocialbuttons simplesocial-simple-icons simplesocialbuttons_inline simplesocialbuttons-align-left post-4249 post simplesocialbuttons-inline-no-animation">
+<button class="ssb_tweet-icon" data-href="https://twitter.com/share?text=How+to+Make+Predictions+with+Long+Short-Term+Memory+Models+in+Keras&amp;url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" rel="nofollow">
+<span class="icon"><svg viewbox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h72v72H0z" fill="none"></path><path class="icon" d="M68.812 15.14c-2.348 1.04-4.87 1.744-7.52 2.06 2.704-1.62 4.78-4.186 5.757-7.243-2.53 1.5-5.33 2.592-8.314 3.176C56.35 10.59 52.948 9 49.182 9c-7.23 0-13.092 5.86-13.092 13.093 0 1.026.118 2.02.338 2.98C25.543 24.527 15.9 19.318 9.44 11.396c-1.125 1.936-1.77 4.184-1.77 6.58 0 4.543 2.312 8.552 5.824 10.9-2.146-.07-4.165-.658-5.93-1.64-.002.056-.002.11-.002.163 0 6.345 4.513 11.638 10.504 12.84-1.1.298-2.256.457-3.45.457-.845 0-1.666-.078-2.464-.23 1.667 5.2 6.5 8.985 12.23 9.09-4.482 3.51-10.13 5.605-16.26 5.605-1.055 0-2.096-.06-3.122-.184 5.794 3.717 12.676 5.882 20.067 5.882 24.083 0 37.25-19.95 37.25-37.25 0-.565-.013-1.133-.038-1.693 2.558-1.847 4.778-4.15 6.532-6.774z" fill="#fff"></path></svg></span><i class="simplesocialtxt">Tweet </i></button>
+<button class="ssb_fbshare-icon" data-href="https://www.facebook.com/sharer/sharer.php?u=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+<span class="icon"><svg class="_1pbq" color="#ffffff" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path class="icon" d="M8 14H3.667C2.733 13.9 2 13.167 2 12.233V3.667A1.65 1.65 0 0 1 3.667 2h8.666A1.65 1.65 0 0 1 14 3.667v8.566c0 .934-.733 1.667-1.667 1.767H10v-3.967h1.3l.7-2.066h-2V6.933c0-.466.167-.9.867-.9H12v-1.8c.033 0-.933-.266-1.533-.266-1.267 0-2.434.7-2.467 2.133v1.867H6v2.066h2V14z" fill="#ffffff" fill-rule="evenodd"></path></svg></span>
+<span class="simplesocialtxt">Share </span> </button>
+<button class="ssb_linkedin-icon" data-href="https://www.linkedin.com/cws/share?url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"> <svg enable-background="new -301.4 387.5 15 14.1" height="14.1px" id="Layer_1" version="1.1" viewbox="-301.4 387.5 15 14.1" width="15px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"> <g id="XMLID_398_"> <path d="M-296.2,401.6c0-3.2,0-6.3,0-9.5h0.1c1,0,2,0,2.9,0c0.1,0,0.1,0,0.1,0.1c0,0.4,0,0.8,0,1.2 c0.1-0.1,0.2-0.3,0.3-0.4c0.5-0.7,1.2-1,2.1-1.1c0.8-0.1,1.5,0,2.2,0.3c0.7,0.4,1.2,0.8,1.5,1.4c0.4,0.8,0.6,1.7,0.6,2.5 c0,1.8,0,3.6,0,5.4v0.1c-1.1,0-2.1,0-3.2,0c0-0.1,0-0.1,0-0.2c0-1.6,0-3.2,0-4.8c0-0.4,0-0.8-0.2-1.2c-0.2-0.7-0.8-1-1.6-1 c-0.8,0.1-1.3,0.5-1.6,1.2c-0.1,0.2-0.1,0.5-0.1,0.8c0,1.7,0,3.4,0,5.1c0,0.2,0,0.2-0.2,0.2c-1,0-1.9,0-2.9,0 C-296.1,401.6-296.2,401.6-296.2,401.6z" fill="#FFFFFF" id="XMLID_399_"></path> <path d="M-298,401.6L-298,401.6c-1.1,0-2.1,0-3,0c-0.1,0-0.1,0-0.1-0.1c0-3.1,0-6.1,0-9.2 c0-0.1,0-0.1,0.1-0.1c1,0,2,0,2.9,0h0.1C-298,395.3-298,398.5-298,401.6z" fill="#FFFFFF" id="XMLID_400_"></path> <path d="M-299.6,390.9c-0.7-0.1-1.2-0.3-1.6-0.8c-0.5-0.8-0.2-2.1,1-2.4c0.6-0.2,1.2-0.1,1.8,0.2 c0.5,0.4,0.7,0.9,0.6,1.5c-0.1,0.7-0.5,1.1-1.1,1.3C-299.1,390.8-299.4,390.8-299.6,390.9L-299.6,390.9z" fill="#FFFFFF" id="XMLID_401_"></path> </g> </svg> </span>
+<span class="simplesocialtxt">Share</span> </button>
+<button class="ssb_gplus-icon" data-href="https://plus.google.com/share?url=https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/" onclick="javascript:window.open(this.dataset.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+<span class="icon"><svg class="ozWidgetRioButtonSvg_ ozWidgetRioButtonPlusOne_" height="18px" preserveaspectratio="xMidYMid meet" version="1.1" viewbox="-10 -6 60 36" width="30px" xmlns="http://www.w3.org/2000/svg"><path d="M30 7h-3v4h-4v3h4v4h3v-4h4v-3h-4V7z"></path><path d="M11 9.9v4h5.4C16 16.3 14 18 11 18c-3.3 0-5.9-2.8-5.9-6S7.7 6 11 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C15.9 3 13.7 2 11 2 5.5 2 1 6.5 1 12s4.5 10 10 10c5.8 0 9.6-4.1 9.6-9.8 0-.7-.1-1.5-.2-2.2H11z"></path></svg></span>
+<span class="simplesocialtxt">Google Plus </span></button>
+</div>
+</section><!-- /.entry -->
+<div class="fix"></div>
+<aside id="post-author">
+<div class="profile-image"><img alt="" class="avatar avatar-80 photo" height="80" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=160&amp;d=mm&amp;r=g 2x" width="80"/></div>
+<div class="profile-content">
+<h4>About Jason Brownlee</h4>
+		Jason Brownlee, PhD is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.				<div class="profile-link">
+<a href="https://machinelearningmastery.com/author/jasonb/">
+				View all posts by Jason Brownlee <span class="meta-nav">→</span> </a>
+</div><!--#profile-link-->
+</div>
+<div class="fix"></div>
+</aside>
+<div class="post-utility"></div>
+</article><!-- /.post -->
+<div class="post-entries">
+<div class="nav-prev fl"><a href="https://machinelearningmastery.com/gentle-introduction-generative-long-short-term-memory-networks/" rel="prev"><i class="fa fa-angle-left"></i> Gentle Introduction to Generative Long Short-Term Memory Networks</a></div>
+<div class="nav-next fr"><a href="https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/" rel="next">How to Reshape Input Data for Long Short-Term Memory Networks in Keras <i class="fa fa-angle-right"></i></a></div>
+<div class="fix"></div>
+</div>
+<div id="comments"> <h3 id="comments-title">52 Responses to <em>How to Make Predictions with Long Short-Term Memory Models in Keras</em></h3>
+<ol class="commentlist">
+<li class="comment even thread-even depth-1" id="comment-411676">
+<div class="comment-container" id="li-comment-411676">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a309c869da076b74a18bb4b3e40fe5ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a309c869da076b74a18bb4b3e40fe5ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Klaas Brau</span>
+<span class="date">August 30, 2017 at 2:03 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-411676" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks Jason</p>
+<p>One question. Why should we finalize the model on the whole data. We would change the weights again right? The model which was trained on the training data is the one we tested on unseen data (test set). The new model (trained on all data) could be worse, overfitted,… not?</p>
+<div class="reply">
+<a aria-label="Reply to Klaas Brau" class="comment-reply-link" href="#comment-411676" onclick='return addComment.moveForm( "comment-411676", "411676", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-411702">
+<div class="comment-container" id="li-comment-411702">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 30, 2017 at 6:18 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-411702" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Learn more about how and why to finalize models here:<br/>
+<a href="https://machinelearningmastery.com/train-final-machine-learning-model/" rel="nofollow">https://machinelearningmastery.com/train-final-machine-learning-model/</a></p>
+<p>I address this exact concern.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-411702" onclick='return addComment.moveForm( "comment-411702", "411702", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-413795">
+<div class="comment-container" id="li-comment-413795">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/a3ef8f86d17a0652faad382c6fd76e36?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/a3ef8f86d17a0652faad382c6fd76e36?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="https://fxdata.cloud/" rel="external nofollow">ketan</a></span>
+<span class="date">September 14, 2017 at 7:02 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-413795" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I tried both keras and tensorflow. Tensorflow has more features.</p>
+<div class="reply">
+<a aria-label="Reply to ketan" class="comment-reply-link" href="#comment-413795" onclick='return addComment.moveForm( "comment-413795", "413795", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-413896">
+<div class="comment-container" id="li-comment-413896">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 15, 2017 at 12:12 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-413896" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It does, but it is much harder to use.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-413896" onclick='return addComment.moveForm( "comment-413896", "413896", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-416563">
+<div class="comment-container" id="li-comment-416563">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6599c8cd181f3bfcf57fd6f8f2820f1e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6599c8cd181f3bfcf57fd6f8f2820f1e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">tieliu</span>
+<span class="date">October 13, 2017 at 6:53 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-416563" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>thanks, Jason.</p>
+<p>I ran your sample code, but found the result as below, which seems not expected.  </p>
+<p>… …<br/>
+Epoch 290/300<br/>
+6/6 [==============================] – 0s – loss: 0.0155<br/>
+Epoch 295/300<br/>
+6/6 [==============================] – 0s – loss: 0.0153<br/>
+Epoch 296/300<br/>
+6/6 [==============================] – 0s – loss: 0.0153<br/>
+Epoch 297/300<br/>
+6/6 [==============================] – 0s – loss: 0.0152<br/>
+Epoch 298/300<br/>
+6/6 [==============================] – 0s – loss: 0.0152<br/>
+Epoch 299/300<br/>
+6/6 [==============================] – 0s – loss: 0.0152<br/>
+Epoch 300/300<br/>
+6/6 [==============================] – 0s – loss: 0.0151<br/>
+[[ 0.28978038]<br/>
+ [ 0.31878966]<br/>
+ [ 0.3477335 ]<br/>
+ [ 0.37631655]<br/>
+ [ 0.4042924 ]<br/>
+ [ 0.43146992]]</p>
+<p>Suppose input of X are 0 0.1 0.2 0.3 0.4 0.5, then predict value of y should be similar to 0.1 0.2… 0.6.  but the result is such value as 0.28978038… … 0.43146992.  </p>
+<p>can you check more about it?</p>
+<div class="reply">
+<a aria-label="Reply to tieliu" class="comment-reply-link" href="#comment-416563" onclick='return addComment.moveForm( "comment-416563", "416563", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-416620">
+<div class="comment-container" id="li-comment-416620">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 14, 2017 at 5:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-416620" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>What is the problem exactly?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-416620" onclick='return addComment.moveForm( "comment-416620", "416620", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-442316">
+<div class="comment-container" id="li-comment-442316">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kingsley Udeh</span>
+<span class="date">June 29, 2018 at 10:31 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442316" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Dr. Jason,</p>
+<p>Thanks so much for your tutorials.</p>
+<p>I will like to clarify what Tieliu’s question was:</p>
+<p>He was making a reference to the example cited on this page where you demonstrated making predictions with LSTM as follows:</p>
+<p># return training data<br/>
+def get_train():<br/>
+seq = [[0.0, 0.1], [0.1, 0.2], [0.2, 0.3], [0.3, 0.4], [0.4, 0.5]]<br/>
+seq = array(seq)<br/>
+X, y = seq[:, 0], seq[:, 1]<br/>
+X = X.reshape((len(X), 1, 1))<br/>
+return X, y</p>
+<p># define model<br/>
+model = Sequential()<br/>
+model.add(LSTM(10, input_shape=(1,1)))<br/>
+model.add(Dense(1, activation=’linear’))<br/>
+# compile model<br/>
+model.compile(loss=’mse’, optimizer=’adam’)<br/>
+# fit model<br/>
+X,y = get_train()<br/>
+model.fit(X, y, epochs=300, shuffle=False, verbose=0)<br/>
+# save model to single file<br/>
+model.save(‘lstm_model.h5’)</p>
+<p># snip…<br/>
+# later, perhaps run from another script</p>
+<p># load model from single file<br/>
+model = load_model(‘lstm_model.h5’)<br/>
+# make predictions<br/>
+yhat = model.predict(X, verbose=0)<br/>
+print(yhat)</p>
+<p>When you run the code, the trained model did not make good prediction of the actual response variable y. It has the following predicted yhat values:</p>
+<p>[[0.24346247]<br/>
+ [0.27623463]<br/>
+ [0.30942053]<br/>
+ [0.34286284]<br/>
+ [0.37640885]]</p>
+<p>Rather than the actual y values:</p>
+<p>[[0.1]<br/>
+ [0.2]<br/>
+ [0.3]<br/>
+[0.4]<br/>
+[0.5]]</p>
+<p>In other words, if we approximate the predicted values to 2 decimal places, the model predicted 0.2, 0.3, and 0.4, correctly, but failed in predicting 0.1 and 0.5.  In this situation, could we say our final model should be discarded  and we then decide to train another model with a different set of procedures and configurations?</p>
+<p>Sorry, this question is a bit longer than expected, but I wanted to clarify the initial question as there was no further conversation on this.</p>
+<div class="reply">
+<a aria-label="Reply to Kingsley Udeh" class="comment-reply-link" href="#comment-442316" onclick='return addComment.moveForm( "comment-442316", "442316", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-4" id="comment-442334">
+<div class="comment-container" id="li-comment-442334">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 29, 2018 at 3:26 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442334" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t follow, why would we discard the model?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-442334" onclick='return addComment.moveForm( "comment-442334", "442334", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-5" id="comment-442352">
+<div class="comment-container" id="li-comment-442352">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kingsley Udeh</span>
+<span class="date">June 29, 2018 at 7:25 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442352" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Because not all the predicted values are equal to the actual values as shown between yhat and y, or am I missing some important concept of your tutorial?</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-5" id="comment-442381">
+<div class="comment-container" id="li-comment-442381">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 30, 2018 at 6:06 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442381" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>No model is perfect. If perfection was possible we would not need machine learning.</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment even depth-5" id="comment-442396">
+<div class="comment-container" id="li-comment-442396">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6e414586915a976767216a6f578e4615?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Kingsley Udeh</span>
+<span class="date">June 30, 2018 at 11:12 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442396" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Got it! Thanks so much.</p>
+<p>BWT:How do we show or tell that a model is good? Do we just only care about the scores, for example, a regression problem?</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-5" id="comment-442423">
+<div class="comment-container" id="li-comment-442423">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">July 1, 2018 at 6:22 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-442423" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Correct.</p>
+<div class="reply">
+</div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-416920">
+<div class="comment-container" id="li-comment-416920">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/964681efc4fe0b44601d2b76e17d20c1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/964681efc4fe0b44601d2b76e17d20c1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Fawad</span>
+<span class="date">October 16, 2017 at 9:27 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-416920" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi, I want to predict for a whole record of shape like (160, 72) for single time step. How would I shape my numpy array of features for test. For more clear understanding, I have trained my model on trainX with shape (235, 1, 72) and trainY with shape (235,). Now I want to predict a single timestep but for 160 rows. How to do that?</p>
+<div class="reply">
+<a aria-label="Reply to Fawad" class="comment-reply-link" href="#comment-416920" onclick='return addComment.moveForm( "comment-416920", "416920", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-416978">
+<div class="comment-container" id="li-comment-416978">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 17, 2017 at 5:45 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-416978" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>See this post on how to reshape data for LSTMs:<br/>
+<a href="https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/" rel="nofollow">https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-416978" onclick='return addComment.moveForm( "comment-416978", "416978", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-430525">
+<div class="comment-container" id="li-comment-430525">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">joseph</span>
+<span class="date">February 26, 2018 at 2:59 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-430525" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>When performing model.predict, i do get some inconsistent outputs. Does that mean my model is wrong?as far as i know, possible scenario for inconsistent outputs is if i try to re-fit the model and not during prediction. Am i missing something? hope to get some comments from you. thank you very much</p>
+<div class="reply">
+<a aria-label="Reply to joseph" class="comment-reply-link" href="#comment-430525" onclick='return addComment.moveForm( "comment-430525", "430525", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-2" id="comment-430527">
+<div class="comment-container" id="li-comment-430527">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">joseph</span>
+<span class="date">February 26, 2018 at 3:01 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-430527" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>from numpy.random import seed<br/>
+seed(1)<br/>
+from tensorflow import set_random_seed<br/>
+set_random_seed(2)</p>
+<p>i have also set the seed before running them</p>
+<div class="reply">
+<a aria-label="Reply to joseph" class="comment-reply-link" href="#comment-430527" onclick='return addComment.moveForm( "comment-430527", "430527", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-3" id="comment-430586">
+<div class="comment-container" id="li-comment-430586">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 27, 2018 at 6:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-430586" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It looks like you’re doing all the right things.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-430586" onclick='return addComment.moveForm( "comment-430586", "430586", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-430585">
+<div class="comment-container" id="li-comment-430585">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">February 27, 2018 at 6:23 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-430585" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>LSTMs are a stochastic algorithm, this post will shed light on this issue:<br/>
+<a href="https://machinelearningmastery.com/randomness-in-machine-learning/" rel="nofollow">https://machinelearningmastery.com/randomness-in-machine-learning/</a></p>
+<p>This post has advice on how to get reproducible results with Keras:<br/>
+<a href="https://machinelearningmastery.com/reproducible-results-neural-networks-keras/" rel="nofollow">https://machinelearningmastery.com/reproducible-results-neural-networks-keras/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-430585" onclick='return addComment.moveForm( "comment-430585", "430585", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment even depth-3" id="comment-430707">
+<div class="comment-container" id="li-comment-430707">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/2cffbd9e5ab04126024dd33e3501c07e?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">joseph</span>
+<span class="date">February 28, 2018 at 1:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-430707" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thank you so much for the advise.. i will think about it more..</p>
+<div class="reply">
+<a aria-label="Reply to joseph" class="comment-reply-link" href="#comment-430707" onclick='return addComment.moveForm( "comment-430707", "430707", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-432508">
+<div class="comment-container" id="li-comment-432508">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d95cc0796f07e552a88f0c616c8a59aa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d95cc0796f07e552a88f0c616c8a59aa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Maryam</span>
+<span class="date">March 18, 2018 at 8:36 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-432508" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I am so grateful for the post U shared with us.<br/>
+I just want to load 3 finalized model namely RNN, CNN, LSTM in one script concurrently which have already saved as a finalized model in keras to using them in an ensemble model to gain an average result for predicting. Is it necessary to use dask data frame to load multi finalized (saved model) models?? or loading multi finalized model has the same commands as loading one finalized model?<br/>
+Thank U in advanced for taking your time to replying.</p>
+<div class="reply">
+<a aria-label="Reply to Maryam" class="comment-reply-link" href="#comment-432508" onclick='return addComment.moveForm( "comment-432508", "432508", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-432550">
+<div class="comment-container" id="li-comment-432550">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">March 19, 2018 at 6:02 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-432550" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>A Pandas DataFrame is not required. Each model can be saved and loaded to and from separate files and used in an ensemble.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-432550" onclick='return addComment.moveForm( "comment-432550", "432550", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-433887">
+<div class="comment-container" id="li-comment-433887">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/66324e87fab5ed0bbced4307f3d0fc35?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/66324e87fab5ed0bbced4307f3d0fc35?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Delaram</span>
+<span class="date">April 2, 2018 at 7:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-433887" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I am really appreciated about this helpful tutorial.<br/>
+I train and then save a finalized cnn model in a script after that I load the finalized cnn model in another different script just used this command :(load_model(‘cnn_model.h5’) .<br/>
+In fact I have a test dataset which does not have any label and I wanna gain the proability of belonging of each sample to each class by this command : (model_cnn_final.predict_proba) but gave me this error:((AttributeError: ‘Model’ object has no attribute ‘predict_proba’) and also when I applied this command:[yhat=model.predict_classes(X) ] it gave me this error :(‘Model’ object has no attribute ‘predict_classes’).<br/>
+I have used the command :(yhat = model.predict(X)) and it worked fine.</p>
+<p>what is the problem with these  commands which cuase error??<br/>
+how can I fixe the errors?</p>
+<div class="reply">
+<a aria-label="Reply to Delaram" class="comment-reply-link" href="#comment-433887" onclick='return addComment.moveForm( "comment-433887", "433887", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-433904">
+<div class="comment-container" id="li-comment-433904">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 2, 2018 at 2:47 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-433904" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I believe these methods are only supported on Sequential models, you may be using the functional Model API. In that case, you may be limited to the predict() function alone, which will return probabilities in the case of a softmax activation function in the output layer.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-433904" onclick='return addComment.moveForm( "comment-433904", "433904", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-odd thread-alt depth-1" id="comment-434082">
+<div class="comment-container" id="li-comment-434082">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/01ed267374c42577c6b3b81ddbd20d5c?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/01ed267374c42577c6b3b81ddbd20d5c?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Fredrik Nilsson</span>
+<span class="date">April 4, 2018 at 6:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-434082" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi</p>
+<p>This is super good Jason!</p>
+<p>Thanks your writings 🙂</p>
+<div class="reply">
+<a aria-label="Reply to Fredrik Nilsson" class="comment-reply-link" href="#comment-434082" onclick='return addComment.moveForm( "comment-434082", "434082", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-434152">
+<div class="comment-container" id="li-comment-434152">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 5, 2018 at 5:41 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-434152" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m glad it helps.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-434152" onclick='return addComment.moveForm( "comment-434152", "434152", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment odd alt thread-even depth-1" id="comment-435375">
+<div class="comment-container" id="li-comment-435375">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7af78eae43cd19fe4d131082e53000e4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7af78eae43cd19fe4d131082e53000e4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Bastien</span>
+<span class="date">April 19, 2018 at 2:24 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-435375" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,</p>
+<p>Thank you for this really helpful tutorial.</p>
+<p>I have a question. I think I am missing something to make predictions. I don’t understand what should be the input on model.predict(X) to predict new data. Let’s say I have one year of data (sampled every hour) and I want to predict the following week. What should my X be ?</p>
+<div class="reply">
+<a aria-label="Reply to Bastien" class="comment-reply-link" href="#comment-435375" onclick='return addComment.moveForm( "comment-435375", "435375", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor even depth-2" id="comment-435399">
+<div class="comment-container" id="li-comment-435399">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">April 19, 2018 at 6:37 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-435399" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It depends on how you define your model.</p>
+<p>If the model expects 1 year of data to make a 1 week forecast, then you must provide 1 year of data as X.</p>
+<p>Does that help?</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-435399" onclick='return addComment.moveForm( "comment-435399", "435399", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment odd alt depth-3" id="comment-435535">
+<div class="comment-container" id="li-comment-435535">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/7af78eae43cd19fe4d131082e53000e4?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/7af78eae43cd19fe4d131082e53000e4?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Bastien</span>
+<span class="date">April 20, 2018 at 11:33 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-435535" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It does but I still don’t get it. I am following your tutorial on Mutlivariate Time Series Forecasting (<a href="https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/" rel="nofollow">https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/</a>) and I can’t find where you are defining these parameters of the model.</p>
+<div class="reply">
+<a aria-label="Reply to Bastien" class="comment-reply-link" href="#comment-435535" onclick='return addComment.moveForm( "comment-435535", "435535", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-436433">
+<div class="comment-container" id="li-comment-436433">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/33ad48f1ed5ddde90eaafb2e2eaa4f34?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/33ad48f1ed5ddde90eaafb2e2eaa4f34?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">ata</span>
+<span class="date">May 2, 2018 at 7:26 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-436433" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello, it is realy nice explanation, but I want to ask what verbose does ? why we assign it to 0 ?</p>
+<div class="reply">
+<a aria-label="Reply to ata" class="comment-reply-link" href="#comment-436433" onclick='return addComment.moveForm( "comment-436433", "436433", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-436497">
+<div class="comment-container" id="li-comment-436497">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">May 3, 2018 at 6:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-436497" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Verbose gives output. We can turn off this output by setting it to 0.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-436497" onclick='return addComment.moveForm( "comment-436497", "436497", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-440008">
+<div class="comment-container" id="li-comment-440008">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d14964c4ca0bd20b47e0484498b44b4b?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d14964c4ca0bd20b47e0484498b44b4b?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Francisco</span>
+<span class="date">June 6, 2018 at 11:46 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440008" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, thank you for your tutorial. I’m very grateful for what I have learnt from you. </p>
+<p>I have a question. Let’s say I have my LSTM model and it is working properly with the train and test data, so the model is ready to be used in production. The data that I have has the following features: timestamp, price and capitalization. If I want to predict tomorrow’s price,  must<br/>
+I provide timestamp and capitalization values? or only timestamp?</p>
+<div class="reply">
+<a aria-label="Reply to Francisco" class="comment-reply-link" href="#comment-440008" onclick='return addComment.moveForm( "comment-440008", "440008", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440043">
+<div class="comment-container" id="li-comment-440043">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 7, 2018 at 6:29 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440043" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>To make one prediction, it must be provided with one input sequence, as defined by your model during training.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440043" onclick='return addComment.moveForm( "comment-440043", "440043", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-440492">
+<div class="comment-container" id="li-comment-440492">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fba81f7b038ff9d0da950bbb8fcc1ccc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fba81f7b038ff9d0da950bbb8fcc1ccc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">SM</span>
+<span class="date">June 12, 2018 at 12:42 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440492" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, all your blogposts are super insightful. Cannot wait to read more articles.</p>
+<p>Earlier, I had not preprocessed X and y correctly. Now I have used the “Stacked LSTM for sequence classification” referenced in keras homepage <a href="https://keras.io/getting-started/sequential-model-guide/#examples" rel="nofollow">https://keras.io/getting-started/sequential-model-guide/#examples</a>. </p>
+<p>This is how my result looks. <a href="https://github.com/sagar-m/character-classification/blob/master/SAP.ipynb" rel="nofollow">https://github.com/sagar-m/character-classification/blob/master/SAP.ipynb</a> Unfortunately, I do not have ytest.txt to verify my results. Please have a look and let me know if you have any comments.</p>
+<p>My number of classes to predict is 12, however the predicted output range in classes was 1 to 10. Not sure why and if it incorrect. </p>
+<p>Thanks a lot again.</p>
+<div class="reply">
+<a aria-label="Reply to SM" class="comment-reply-link" href="#comment-440492" onclick='return addComment.moveForm( "comment-440492", "440492", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440525">
+<div class="comment-container" id="li-comment-440525">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 12, 2018 at 6:43 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440525" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Thanks.</p>
+<p>I’m eager to help and answer questions, but I don’t have the capacity to review your code, I explain more here:<br/>
+<a href="https://machinelearningmastery.com/faq/single-faq/can-you-read-review-or-debug-my-code" rel="nofollow">https://machinelearningmastery.com/faq/single-faq/can-you-read-review-or-debug-my-code</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440525" onclick='return addComment.moveForm( "comment-440525", "440525", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-440494">
+<div class="comment-container" id="li-comment-440494">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fba81f7b038ff9d0da950bbb8fcc1ccc?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fba81f7b038ff9d0da950bbb8fcc1ccc?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">SM</span>
+<span class="date">June 12, 2018 at 12:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440494" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason, one question I have : “validation schemes are supposed to be used to estimate quality of the model. When you found the right hyper-parameters and want to get test predictions don’t forget to retrain your model using all training data.”</p>
+<p>Once the model is trained with validation set, should I retrain the model using all training data?</p>
+<p>Thank you.</p>
+<div class="reply">
+<a aria-label="Reply to SM" class="comment-reply-link" href="#comment-440494" onclick='return addComment.moveForm( "comment-440494", "440494", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-440527">
+<div class="comment-container" id="li-comment-440527">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 12, 2018 at 6:44 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-440527" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>A final model is trained on all available data.</p>
+<p>More here:<br/>
+<a href="https://machinelearningmastery.com/train-final-machine-learning-model/" rel="nofollow">https://machinelearningmastery.com/train-final-machine-learning-model/</a></p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-440527" onclick='return addComment.moveForm( "comment-440527", "440527", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-441317">
+<div class="comment-container" id="li-comment-441317">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/74c32edb4aacec8d4aac4a2d76716b47?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/74c32edb4aacec8d4aac4a2d76716b47?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Hamied</span>
+<span class="date">June 19, 2018 at 11:17 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-441317" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I have a concern related RealTime validation if you have input test data (60 frame per ms ) and you would like to do prediction in Realtime . How you could ensure the prediction will be done. ?</p>
+<p>On the other hand, lets give an example that, we ‘re getting input test data ( 100 x 162 ) , time stamp x features . We are fitting all the information in one sample array (1,100,162,1), then you would like to do prediction for each time instance when you receive the data. The problem the streaming dataset is too fast to be catch by model:<br/>
+y_predict = model.predict_classes(test_input)<br/>
+I would like to know if you have any suggestions regarfing such a problem. In term of how we could make the prediction possible in realtime streaming data for each time the input change only. ?</p>
+<p>If you run it with this speed ( the prediction will be going on frem old dataset . Cant catch the new samples ) </p>
+<p>Thanks in advance</p>
+<div class="reply">
+<a aria-label="Reply to Hamied" class="comment-reply-link" href="#comment-441317" onclick='return addComment.moveForm( "comment-441317", "441317", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-441366">
+<div class="comment-container" id="li-comment-441366">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 20, 2018 at 6:27 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-441366" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Making predictions is very fast. </p>
+<p>Only training the model is slow, which is only done once before it is used.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-441366" onclick='return addComment.moveForm( "comment-441366", "441366", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-441727">
+<div class="comment-container" id="li-comment-441727">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/d95cc0796f07e552a88f0c616c8a59aa?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/d95cc0796f07e552a88f0c616c8a59aa?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Maryam</span>
+<span class="date">June 23, 2018 at 6:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-441727" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+Thank you for the awesome and also practical tutorial as ever been.<br/>
+I face a question as that is if I wanna use predict(x_dataset) function, is it necessary to padding “x_dataset” or not??<br/>
+I will be grateful if you answer the question.<br/>
+Best Regard<br/>
+Maryam</p>
+<div class="reply">
+<a aria-label="Reply to Maryam" class="comment-reply-link" href="#comment-441727" onclick='return addComment.moveForm( "comment-441727", "441727", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-441827">
+<div class="comment-container" id="li-comment-441827">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">June 24, 2018 at 7:25 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-441827" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>To make a prediction, the input data must be prepared in the same way as the training data, including lengths and transforms.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-441827" onclick='return addComment.moveForm( "comment-441827", "441827", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-445685">
+<div class="comment-container" id="li-comment-445685">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/977b665e6e674b81d84e112fc5588a91?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/977b665e6e674b81d84e112fc5588a91?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Matteo</span>
+<span class="date">August 9, 2018 at 10:07 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-445685" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi.<br/>
+I have one question.<br/>
+I have a training set with the labels, let’s say that I play cheess and I have the historical matches with label of the winner [0 = player1, 1 = player 2]<br/>
+And I want to predict if after 10/15 moves I’ll have more probability to win or lose.<br/>
+How can I write the model that predict a number between 0 and 1 ( close to 0 means that I’ll win and close to 1 means i’ll lose )<br/>
+Thanks !</p>
+<div class="reply">
+<a aria-label="Reply to Matteo" class="comment-reply-link" href="#comment-445685" onclick='return addComment.moveForm( "comment-445685", "445685", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-445719">
+<div class="comment-container" id="li-comment-445719">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 10, 2018 at 6:14 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-445719" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>A good approach might be to use rating systems to estimate the skill of each player and feed this into a predictive model.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-445719" onclick='return addComment.moveForm( "comment-445719", "445719", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-446872">
+<div class="comment-container" id="li-comment-446872">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/0fc05ea80f16ee23120c44af6bacfbbb?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/0fc05ea80f16ee23120c44af6bacfbbb?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Noe</span>
+<span class="date">August 24, 2018 at 7:35 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-446872" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason, and many thanks for this awesome tutorial.</p>
+<p>My preoccupation is about using the trained and tested model to predict the future. This means values after the test set. </p>
+<p>Thank you.</p>
+<div class="reply">
+<a aria-label="Reply to Noe" class="comment-reply-link" href="#comment-446872" onclick='return addComment.moveForm( "comment-446872", "446872", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-446896">
+<div class="comment-container" id="li-comment-446896">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">August 25, 2018 at 5:47 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-446896" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m happy it helped.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-446896" onclick='return addComment.moveForm( "comment-446896", "446896", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-449965">
+<div class="comment-container" id="li-comment-449965">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/6a7be2a0eb8db032af6e1a5388d848c6?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/6a7be2a0eb8db032af6e1a5388d848c6?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Alireza</span>
+<span class="date">September 27, 2018 at 10:06 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-449965" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hi Jason,<br/>
+I tried to make predictions just for one Row input data. But I like to Know should my new data be scaled or not? if yes I tried with my scaled model but I got “0” for each feature!! which way is correct? please help me.</p>
+<p>Thank you.</p>
+<div class="reply">
+<a aria-label="Reply to Alireza" class="comment-reply-link" href="#comment-449965" onclick='return addComment.moveForm( "comment-449965", "449965", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-449998">
+<div class="comment-container" id="li-comment-449998">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">September 28, 2018 at 6:15 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-449998" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Your input data must be prepared in the same way as the training data.</p>
+<p>If the training data was scaled, then new data must be scaled using the same coefficients.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-449998" onclick='return addComment.moveForm( "comment-449998", "449998", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-451261">
+<div class="comment-container" id="li-comment-451261">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/fd8fd9c4155060241c7ec53f33fb5ad3?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/fd8fd9c4155060241c7ec53f33fb5ad3?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">bedorlan</span>
+<span class="date">October 11, 2018 at 1:48 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-451261" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Finally an easy to understand gist on how to implement an LSTM. Thank you!</p>
+<div class="reply">
+<a aria-label="Reply to bedorlan" class="comment-reply-link" href="#comment-451261" onclick='return addComment.moveForm( "comment-451261", "451261", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451304">
+<div class="comment-container" id="li-comment-451304">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 11, 2018 at 7:58 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-451304" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>I’m happy that it helped!</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451304" onclick='return addComment.moveForm( "comment-451304", "451304", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-odd thread-alt depth-1" id="comment-451319">
+<div class="comment-container" id="li-comment-451319">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/ba4d308e5b72dd40db10c298d6d022ad?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/ba4d308e5b72dd40db10c298d6d022ad?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Saurabh Swaroop</span>
+<span class="date">October 11, 2018 at 10:59 am</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-451319" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,</p>
+<p>I tried 6.7 code example from Long Short Term Memory Networks with Python. But its giving error.</p>
+<p>from random import randint<br/>
+from numpy import array<br/>
+from numpy import argmax<br/>
+from keras.models import Sequential<br/>
+from keras.layers import LSTM<br/>
+from keras.layers import Dense</p>
+<p># generate a sequence of random numbers in [0, n_features)<br/>
+def generate_sequence(length, n_features):<br/>
+    return [randint(0, n_features-1) for _ in range(length)]</p>
+<p># one hot encode sequence<br/>
+def one_hot_encode(sequence, n_features):<br/>
+    encoding = list()<br/>
+    for value in sequence:<br/>
+        vector = [0 for _ in range(n_features)]<br/>
+        vector[value] = 1<br/>
+        encoding.append(vector)<br/>
+        return array(encoding)</p>
+<p># decode a one hot encoded string<br/>
+def one_hot_decode(encoded_seq):<br/>
+    return [argmax(vector) for vector in encoded_seq]</p>
+<p># generate one example for an lstm<br/>
+def generate_example(length, n_features, out_index):<br/>
+    # generate sequence<br/>
+    sequence = generate_sequence(length, n_features)<br/>
+    # one hot encode<br/>
+    encoded = one_hot_encode(sequence, n_features)<br/>
+    print(“Shape of encoded is:”, encoded.shape)<br/>
+    # reshape sequence to be 3D<br/>
+    X = encoded.reshape((1, length, n_features))<br/>
+    # select output<br/>
+    y = encoded[out_index].reshape(1, n_features)<br/>
+    return X, y</p>
+<p># define model<br/>
+length = 5<br/>
+n_features = 10<br/>
+out_index = 2<br/>
+model = Sequential()<br/>
+model.add(LSTM(25, input_shape=(length, n_features)))<br/>
+model.add(Dense(n_features, activation=’softmax’))<br/>
+model.compile(loss=’categorical_crossentropy’, optimizer=’adam’, metrics=[‘acc’])<br/>
+model.summary()</p>
+<p># fit model<br/>
+for i in range(10000):<br/>
+    X, y = generate_example(length, n_features, out_index)<br/>
+    model.fit(X, y, epochs=1, verbose=2)</p>
+<p>Shape of encoded is: (1, 10)<br/>
+—————————————————————————<br/>
+ValueError                                Traceback (most recent call last)<br/>
+ in ()<br/>
+      1 # fit model<br/>
+      2 for i in range(10000):<br/>
+—-&gt; 3     X, y = generate_example(length, n_features, out_index)<br/>
+      4     model.fit(X, y, epochs=1, verbose=2)</p>
+<p> in generate_example(length, n_features, out_index)<br/>
+      7     print(“Shape of encoded is:”, encoded.shape)<br/>
+      8     # reshape sequence to be 3D<br/>
+—-&gt; 9     X = encoded.reshape((1, length, n_features))<br/>
+     10     # select output<br/>
+     11     y = encoded[out_index].reshape(1, n_features)</p>
+<p>ValueError: cannot reshape array of size 10 into shape (1,5,10)</p>
+<div class="reply">
+<a aria-label="Reply to Saurabh Swaroop" class="comment-reply-link" href="#comment-451319" onclick='return addComment.moveForm( "comment-451319", "451319", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-451336">
+<div class="comment-container" id="li-comment-451336">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">October 11, 2018 at 4:13 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-451336" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>It suggest that the shape of your data does not match the expectation of your model.</p>
+<p>You can change the shape of the data or change the expectation of the model.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-451336" onclick='return addComment.moveForm( "comment-451336", "451336", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+<li class="comment even thread-even depth-1" id="comment-453327">
+<div class="comment-container" id="li-comment-453327">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/efd0440efc1d6f09bed790b6e7e013c1?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/efd0440efc1d6f09bed790b6e7e013c1?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name">Shooter</span>
+<span class="date">November 1, 2018 at 2:13 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-453327" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Hello Jason,<br/>
+Thanks for the great tutorial. I just wanted to know how can i calculate computational complexity of LSTM? </p>
+<p>Thanks in advance.</p>
+<div class="reply">
+<a aria-label="Reply to Shooter" class="comment-reply-link" href="#comment-453327" onclick='return addComment.moveForm( "comment-453327", "453327", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+<ul class="children">
+<li class="comment byuser comment-author-jasonb bypostauthor odd alt depth-2" id="comment-453335">
+<div class="comment-container" id="li-comment-453335">
+<div class="avatar"><img alt="" class="avatar avatar-40 photo" height="40" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=40&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=80&amp;d=mm&amp;r=g 2x" width="40"/></div>
+<div class="comment-head">
+<span class="name"><a class="url" href="http://MachineLearningMastery.com" rel="external nofollow">Jason Brownlee</a></span>
+<span class="date">November 1, 2018 at 2:34 pm</span>
+<span class="perma"><a href="https://machinelearningmastery.com/make-predictions-long-short-term-memory-models-keras/#comment-453335" title="Direct link to this comment">#</a></span>
+<span class="edit"></span>
+</div><!-- /.comment-head -->
+<div class="comment-entry">
+<p>Sorry, I don’t have material on calculating the computational complexity of neural networks.</p>
+<div class="reply">
+<a aria-label="Reply to Jason Brownlee" class="comment-reply-link" href="#comment-453335" onclick='return addComment.moveForm( "comment-453335", "453335", "respond", "4249" )' rel="nofollow">Reply</a> </div><!-- /.reply -->
+</div><!-- /comment-entry -->
+</div><!-- /.comment-container -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ol>
+</div> <div class="comment-respond" id="respond">
+<h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="/make-predictions-long-short-term-memory-models-keras/#respond" id="cancel-comment-reply-link" rel="nofollow" style="display:none;">Click here to cancel reply.</a></small></h3> <form action="https://machinelearningmastery.com/wp-comments-post.php?wpe-comment-post=mlmastery" class="comment-form" id="commentform" method="post">
+<p class="comment-form-comment"><label class="hide" for="comment">Comment</label> <textarea cols="50" id="comment" maxlength="65525" name="comment" required="required" rows="10" tabindex="4"></textarea></p><p class="comment-form-author"><input aria-required="true" class="txt" id="author" name="author" size="30" tabindex="1" type="text" value=""/><label for="author">Name <span class="required">(required)</span></label> </p>
+<p class="comment-form-email"><input aria-required="true" class="txt" id="email" name="email" size="30" tabindex="2" type="text" value=""/><label for="email">Email (will not be published) <span class="required">(required)</span></label> </p>
+<p class="comment-form-url"><input class="txt" id="url" name="url" size="30" tabindex="3" type="text" value=""/><label for="url">Website</label></p>
+<p class="form-submit"><input class="submit" id="submit" name="submit" type="submit" value="Submit Comment"/> <input id="comment_post_ID" name="comment_post_ID" type="hidden" value="4249"/>
+<input id="comment_parent" name="comment_parent" type="hidden" value="0"/>
+</p><p style="display: none;"><input id="akismet_comment_nonce" name="akismet_comment_nonce" type="hidden" value="6ab2d7a541"/></p><p style="display: none;"><input id="ak_js" name="ak_js" type="hidden" value="117"/></p> </form>
+</div><!-- #respond -->
+</section><!-- /#main -->
+<aside id="sidebar">
+<div class="widget widget_woo_blogauthorinfo" id="woo_blogauthorinfo-2"><h3>Welcome to Machine Learning Mastery!</h3><span class="left"><img alt="" class="avatar avatar-100 photo" height="100" src="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=100&amp;d=mm&amp;r=g" srcset="https://secure.gravatar.com/avatar/1d75d46040c28497f0dee5d8e100db37?s=200&amp;d=mm&amp;r=g 2x" width="100"/></span>
+<p>Hi, I'm Jason Brownlee, PhD
+<br/>
+I write tutorials to help developers (<i>like you</i>) get results with machine learning.</p>
+<p><a href="/about">Read More</a></p>
+<div class="fix"></div>
+</div><div class="widget widget_text" id="text-29"> <div class="textwidget"><p></p><center><br/>
+<strong>Long Short-Term Memory Networks</strong><br/>
+Develop sequence prediction models in Keras.
+<p><a href="/lstms-with-python/">Click to Get Started Now!</a><br/>
+<a href="/lstms-with-python/"><img src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/07/Cover-220.png"/></a><br/>
+</p></center>
+</div>
+</div>
+<div class="widget widget_woo_tabs" id="woo_tabs-2"> <div id="tabs">
+<ul class="wooTabs">
+<li class="popular"><a href="#tab-pop">Popular</a></li> </ul>
+<div class="clear"></div>
+<div class="boxes box inside">
+<ul class="list" id="tab-pop">
+<li>
+<a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch"><img alt="How to Develop a Neural Machine Translation System in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/01/How-to-Develop-a-Neural-Machine-Translation-System-in-Keras-150x150.jpg" title="How to Develop a Neural Machine Translation System from Scratch" width="45"/></a> <a href="https://machinelearningmastery.com/develop-neural-machine-translation-system-keras/" title="How to Develop a Neural Machine Translation System from Scratch">How to Develop a Neural Machine Translation System from Scratch</a>
+<span class="meta">January 10, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning"><img alt="Difference Between Classification and Regression in Machine Learning" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/Difference-Between-Classification-and-Regression-in-Machine-Learning-150x150.jpg" title="Difference Between Classification and Regression in Machine Learning" width="45"/></a> <a href="https://machinelearningmastery.com/classification-versus-regression-in-machine-learning/" title="Difference Between Classification and Regression in Machine Learning">Difference Between Classification and Regression in Machine Learning</a>
+<span class="meta">December 11, 2017</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem..."><img alt="So, You are Working on a Machine Learning Problem..." class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/So-You-are-Working-on-a-Machine-Learning-Problem...-150x150.jpg" title="So, You are Working on a Machine Learning Problem..." width="45"/></a> <a href="https://machinelearningmastery.com/working-machine-learning-problem/" title="So, You are Working on a Machine Learning Problem…">So, You are Working on a Machine Learning Problem…</a>
+<span class="meta">April 4, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis"><img alt="Plot of the Multichannel Convolutional Neural Network For Text" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/10/Plot-of-the-Multichannel-Convolutional-Neural-Network-For-Text-150x150.png" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis" width="45"/></a> <a href="https://machinelearningmastery.com/develop-n-gram-multichannel-convolutional-neural-network-sentiment-analysis/" title="How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis">How to Develop an N-gram Multichannel Convolutional Neural Network for Sentiment Analysis</a>
+<span class="meta">January 12, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras"><img alt="How to Make Classification and Regression Predictions for Deep Learning Models in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/How-to-Make-Classification-and-Regression-Predictions-for-Deep-Learning-Models-in-Keras-150x150.jpg" title="How to Make Predictions with Keras" width="45"/></a> <a href="https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/" title="How to Make Predictions with Keras">How to Make Predictions with Keras</a>
+<span class="meta">April 9, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)"><img alt="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2018/08/11-Classical-Time-Series-Forecasting-Methods-in-Python-Cheat-Sheet-150x150.jpg" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)" width="45"/></a> <a href="https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/" title="11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)">11 Classical Time Series Forecasting Methods in Python (Cheat Sheet)</a>
+<span class="meta">August 6, 2018</span>
+<div class="fix"></div>
+</li>
+<li>
+<a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras"><img alt="How to Visualize a Deep Learning Neural Network Model in Keras" class="thumbnail wp-post-image" height="45" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/uploads/2017/12/How-to-Visualize-a-Deep-Learning-Neural-Network-Model-in-Keras-150x150.jpg" title="How to Visualize a Deep Learning Neural Network Model in Keras" width="45"/></a> <a href="https://machinelearningmastery.com/visualize-deep-learning-neural-network-model-keras/" title="How to Visualize a Deep Learning Neural Network Model in Keras">How to Visualize a Deep Learning Neural Network Model in Keras</a>
+<span class="meta">December 13, 2017</span>
+<div class="fix"></div>
+</li>
+</ul>
+</div><!-- /.boxes -->
+</div><!-- /wooTabs -->
+</div> <div class="widget_text widget widget_custom_html" id="custom_html-2"><h3>You might also like…</h3><div class="textwidget custom-html-widget"><ul>
+<li><a href="/setup-python-environment-machine-learning-deep-learning-anaconda/">How to Install Python for Machine Learning</a></li>
+<li><a href="/machine-learning-in-python-step-by-step/">Your First Machine Learning Project in Python</a></li>
+<li><a href="/tutorial-first-neural-network-python-keras/">Your First Neural Network in Python</a></li>
+<li><a href="/how-to-run-your-first-classifier-in-weka/">Your First Classifier in Weka</a></li>
+<li><a href="/arima-for-time-series-forecasting-with-python/">Your First Time Series Forecasting Project</a></li>
+</ul></div></div></aside><!-- /#sidebar -->
+</div><!-- /#main-sidebar-container -->
+</div><!-- /#content -->
+<footer class="col-full" id="footer">
+<div class="col-left" id="copyright">
+<p>© 2018 Machine Learning Mastery. All Rights Reserved. </p> </div>
+<div class="col-right" id="credit">
+<p></p><p>
+<a href="/privacy/">Privacy</a> | 
+<a href="/disclaimer/">Disclaimer</a> | 
+<a href="/terms-of-service/">Terms</a> | 
+<a href="/contact/">Contact</a>
+</p> </div>
+</footer>
+</div><!-- /#inner-wrapper -->
+</div><!-- /#wrapper -->
+<div class="fix"></div><!--/.fix-->
+<!-- Drip -->
+<script type="text/javascript">
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '9556588';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/9556588.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<!-- end Drip --><!-- Woo Tabs Widget -->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// UL = .wooTabs
+	// Tab contents = .inside
+
+	var tag_cloud_class = '#tagcloud';
+
+	//Fix for tag clouds - unexpected height before .hide()
+	var tag_cloud_height = jQuery( '#tagcloud').height();
+
+	jQuery( '.inside ul li:last-child').css( 'border-bottom','0px' ); // remove last border-bottom from list in tab content
+	jQuery( '.wooTabs').each(function(){
+		jQuery(this).children( 'li').children( 'a:first').addClass( 'selected' ); // Add .selected class to first tab on load
+	});
+	jQuery( '.inside > *').hide();
+	jQuery( '.inside > *:first-child').show();
+
+	jQuery( '.wooTabs li a').click(function(evt){ // Init Click funtion on Tabs
+
+		var clicked_tab_ref = jQuery(this).attr( 'href' ); // Strore Href value
+
+		jQuery(this).parent().parent().children( 'li').children( 'a').removeClass( 'selected' ); //Remove selected from all tabs
+		jQuery(this).addClass( 'selected' );
+		jQuery(this).parent().parent().parent().children( '.inside').children( '*').hide();
+
+		jQuery( '.inside ' + clicked_tab_ref).fadeIn(500);
+
+		 evt.preventDefault();
+
+	})
+})
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=4.9.8" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/machinelearningmastery.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"},"recaptcha":{"messages":{"empty":"Please verify that you are not a robot."}},"cached":"1"};
+/* ]]> */
+</script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.0.5" type="text/javascript"></script>
+<script src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-includes/js/wp-embed.min.js?ver=4.9.8" type="text/javascript"></script>
+<script async="async" src="https://3qeqpr26caki16dnhd19sv6by6v-wpengine.netdna-ssl.com/wp-content/plugins/akismet/_inc/form.js?ver=4.1" type="text/javascript"></script>
+</body>
+</html>
